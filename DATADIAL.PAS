@@ -3,7 +3,7 @@ Unit DataDialogs;
 interface
 uses
   Objects, Drivers, Views, Dialogs, StdDlg,
-  DataObjects, Stale;
+  DataObjects, Stale, Help;
 
 type { typ opisuj¥cy bazowe okienko edycji danych }
   PDataDialog = ^TDataDialog;
@@ -105,6 +105,14 @@ begin
       end;
       kbUp: SelectNext(True);
       kbDown: SelectNext(False);
+    end;
+  end
+  else if (Event.What=evBroadcast) or (Event.What=evCommand) then
+  case Event.Command of
+    cmHelp:
+    begin
+      ShowHelp(GetHelpCtx);
+      ClearEvent(Event);
     end;
   end;
   inherited HandleEvent(Event);
@@ -239,6 +247,14 @@ end;
 procedure TChooseDataDialog.HandleEvent;
 begin
   TDialog.HandleEvent(Event);
+  if (Event.What=evBroadcast) or (Event.What=evCommand) then
+  case Event.Command of
+    cmHelp:
+    begin
+      ShowHelp(GetHelpCtx);
+      ClearEvent(Event);
+    end;
+  end;
 end;
 
 procedure TChooseDataDialog.GetData;

@@ -2,7 +2,7 @@ Program PlanLekcji;
 uses
   App, Objects, Drivers, Views, Dialogs, Menus,
   Stale, Resource,
-  DataObjects, DataDialogs, DataBase, Help,
+  DataObjects, DataDialogs, DataBase, Help, ClockViewer,
   Nauczyciel, Przedmiot, Klasa, Sala, Dzwonek, Lekcja,
   HostWin, MainWin, SpecWins;
 
@@ -10,8 +10,10 @@ type { typ opisujcy gˆ¢wn aplikacj© }
   PMainApp = ^TMainApp;
   TMainApp = object (TApplication)
     MainEditWindow: PMainEditWindow;
+    ClockViewer: PClockViewer;
     constructor Init;
     destructor Done; virtual;
+    procedure Idle; virtual;
     procedure InitStatusLine; virtual;
     procedure InitMenuBar; virtual;
     procedure GetEvent(var Event: TEvent); virtual;
@@ -22,10 +24,14 @@ type { typ opisujcy gˆ¢wn aplikacj© }
 constructor TMainApp.Init;
 var
   L: PLekcja;
+  R: TRect;
 begin
   OpenResources('PLAN.RES');
   OpenFiles('DATA');
   inherited Init;
+  R.Assign(Size.X-9, 0, Size.X, 1);
+  New(ClockViewer, Init(R));
+  Insert(ClockViewer);
   MainEditWindow:=PMainEditWindow(ResourceFile.Get('MainEditWindow'));
   if LoadSuccessful(MainEditWindow) then
   begin
@@ -40,6 +46,12 @@ begin
   CloseFiles;
   CloseResources;
   inherited Done;
+end;
+
+procedure TMainApp.Idle;
+begin
+  inherited Idle;
+  if Assigned(ClockViewer) then ClockViewer^.Draw;
 end;
 
 procedure TMainApp.InitStatusLine;
