@@ -504,6 +504,7 @@ begin
     Win^.SetTitle('Edycja planu lekcji dla: '+S);
     Win^.SetEditorData(Data);
     Win^.UpdateLists;
+    Win^.HelpCtx:=Win^.HelpCtx+1;
     Application^.InsertWindow(Win);
   end;
 end;
@@ -528,6 +529,7 @@ begin
     Win^.SetTitle('Edycja planu lekcji dla: '+S);
     Win^.SetEditorData(Data);
     Win^.UpdateLists;
+    Win^.HelpCtx:=Win^.HelpCtx+2;
     Application^.InsertWindow(Win);
   end;
 end;

@@ -15,7 +15,7 @@ begin
 
   R.Assign(0, 24, 80, 25);
   StatusLine:=New(PHintStatusLine, Init(R,
-    NewStatusDef(10, $1000,
+    NewStatusDef(10, $FF0,
       NewStatusKey('~Alt+X~ Koniec', kbAltX, cmQuit,
       NewStatusKey('~F1~ Pomoc', kbF1, cmHelp,
       NewStatusKey('~Ins~ Nowa', kbIns, cmLekcjaAdd,
@@ -26,6 +26,10 @@ begin
       NewStatusKey('', kbCtrlF2, cmNext,
       NewStatusKey('', kbCtrlF1, cmAboutBox,
     nil))))))))),
+    NewStatusDef($FF0, $FFF,
+      NewStatusKey('~Esc~ Zamknij pomoc', kbEsc, cmClose,
+      NewStatusKey('~F5~ Powi©ksz okno', kbF5, cmZoom,
+    nil)),
     NewStatusDef($1000, $1500,
       NewStatusKey('~Enter~ Wybierz', kbNoKey, $FFFE,
       NewStatusKey('~Esc~ Anuluj', kbEsc, cmCancel,
@@ -43,7 +47,7 @@ begin
     nil))),
     NewStatusDef($1500, $FFFF,
     nil,
-  nil)))))));
+  nil))))))));
 
   StoreObject(StatusLine);
 end;

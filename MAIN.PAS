@@ -14,6 +14,7 @@ type { typ opisujcy gˆ¢wn aplikacj© }
     destructor Done; virtual;
     procedure InitStatusLine; virtual;
     procedure InitMenuBar; virtual;
+    procedure GetEvent(var Event: TEvent); virtual;
     procedure HandleEvent(var Event: TEvent); virtual;
     procedure ShowAboutBox; virtual;
   end;
@@ -59,6 +60,25 @@ var
 begin
   D:=PDialog(ResourceFile.Get('AboutBox'));
   if Assigned(D) then ExecuteDialog(D, nil);
+end;
+
+procedure TMainApp.GetEvent;
+var
+  W: PWindow;
+  S: String;
+begin
+  inherited GetEvent(Event);
+  case Event.What of
+    evCommand, evBroadcast:
+    begin
+      if (Event.Command = cmHelp) and (not HelpInUse) then
+      begin
+        ShowHelp(GetHelpCtx);
+        ClearEvent(Event);
+      end;
+    end;
+    evMouseDown: if Event.Buttons<>1 then Event.What := evNothing;
+  end;
 end;
 
 procedure TMainApp.HandleEvent;
