@@ -1,0 +1,11 @@
+
+     Ü Wyb¢r klasy z listy
+     ßßßßßßßßßßßßßßßßßßßßßß
+
+    Aby wybra† klas© z listy nale¾y za pomoc¥ klawiszy kursora
+  pod˜wietli† ¾¥dan¥ osob© a nast©pnie wcisn¥† klawisz [ENTER].
+
+    Istnieje mo¾liwo˜† szybkiego wyszukiwania danych w li˜cie. Odbywa si©
+  to za pomoc¥ klawiszy alfanumerycznych i klawisza [BS]. W celu szybkiego
+  znalezienia ¾¥danej osoby nale¾y skasowa† klawiszem [BS] zawarto˜† pola
+  "klasa" a nast©pnie wpisa† z klawiatury numer i liter© poszukiwanej klasy.

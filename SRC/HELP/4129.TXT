@@ -1,0 +1,22 @@
+
+     Ü Dodawanie nowego przedmiotu
+     ßßßßßßßßßßßßßßßßßßßßßßßßßßßßßß
+
+  Dodawanie nowego przedmiotu wymaga od u¾ytkownika podania dw¢ch
+  danych opisuj¥cych jednoznacznie wprowadzany przedmiot:
+
+    Nazwa
+    Skr¢t
+
+  Dane nie mog¥ si© powtarza† ze wzgl©du na konieczno˜† jednoznacznej
+  identyfikacji wprowadzanego przedmiotu
+
+  Wprowadzanie danych odbywa si© za pomoc¥ nast©puj¥cych klawiszy:
+
+    [ENTER]       - zatwierdzenie wprowadzanych dnych
+    [ESC]         - zaniechanie wprowadzania danych
+    [TAB]         - przej˜cie do nast©pnej linii
+    [Shift]+[TAB] - przej˜cie do poprzedniej linii
+
+  oraz klawiszy alfanumerycznych. Nie istnieje konieczno˜† u¾ywania
+  du¾ych i maˆych liter, gdy¾ program sam o to zadba.

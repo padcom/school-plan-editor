@@ -1,0 +1,16 @@
+
+     Ü Wyb¢r nauczyciela z listy
+     ßßßßßßßßßßßßßßßßßßßßßßßßßßßß
+
+    Aby wybra† nauczyciela z listy nale¾y za pomoc¥ klawiszy kursora
+  pod˜wietli† ¾¥dan¥ osob© a nast©pnie wcisn¥† klawisz [ENTER].
+
+    Istnieje mo¾liwo˜† szybkiego wyszukiwania os¢b w li˜cie. Odbywa si©
+  to za pomoc¥ klawiszy alfanumerycznych i klawisza [BS]. W celu szybkiego
+  znalezienia ¾¥danej osoby nale¾y skasowa† klawiszem [BS] zawarto˜† pola
+  "Nauczyciel" a nast©pnie wpisa† z klawiatury imi© i nazwisko poszukiwanej
+  osoby. W przypadku wyst¥pienia przedrostk¢w takich jak "Mgr", "In¾."
+  nale¾y je r¢wnie¾ poda†. Reasumuj¥c, szybkie wyszukiwanie pozwala na
+  znalezienie konkretnego wpisu w li˜cie nauczycieli uwzgl©dniaj¥c przy tym
+  przedrostki opisuj¥ce stopieä naukowy (o ile zostaˆy one podane).
+  
