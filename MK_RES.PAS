@@ -281,6 +281,8 @@ begin
     R.Assign(2, 4, Size.X-3, 5);
     New(IloscGrupLabel, Init(R, '~I~lo˜† grup', IloscGrupRadioButtons));
     Insert(IloscGrupLabel);
+
+    NumerInputLine^.Select;
   end;
 
   StoreObject(D);

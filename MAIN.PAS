@@ -65,6 +65,12 @@ begin
       cmSalaAdd: SalaAdd;
       cmSalaDel: SalaDel;
       cmSalaEdit: SalaEdit;
+      cmKlasaAdd: KlasaAdd;
+      cmKlasaDel: KlasaDel;
+      cmKlasaEdit: KlasaEdit;
+      cmDzwonekAdd: DzwonekAdd;
+      cmDzwonekDel: DzwonekDel;
+      cmDzwonekEdit: DzwonekEdit;
     end;
   end;
 end;
@@ -74,6 +80,8 @@ var
   N: PNauczyciel;
 
 begin
+  New(Dzwonki, Init(10, 5));
+  New(Klasy, Init(10, 5));
   New(Sale, Init(10, 5));
   New(Przedmioty, Init(10, 5));
   New(Nauczyciele, Init(10, 5));

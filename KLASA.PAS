@@ -15,6 +15,7 @@ type { typ opisuj¥cy klas© }
     constructor Load(var S: TStream);
     function Compare(Data: PDataObject): Integer; virtual;
     function GetText(MaxLen: Integer): String; virtual;
+    procedure Assign(Data: PDataObject); virtual;
     procedure Clear; virtual;
     procedure Store(var S: TStream); virtual;
   end;
@@ -31,6 +32,7 @@ type { typ opisuj¥cy okno edycji danych klasy }
     constructor Load(var S: TStream);
     procedure GetData(var Rec); virtual;
     procedure SetData(var Rec); virtual;
+    procedure HandleEvent(var Event: TEvent); virtual;
     procedure Store(var S: TStream); virtual;
   end;
 
@@ -87,13 +89,21 @@ begin
   GetText:=Copy(S, 1, MaxLen);
 end;
 
+procedure TKlasa.Assign;
+begin
+  inherited Assign(Data);
+  Numer:=PKlasa(Data)^.Numer;
+  Litera:=PKlasa(Data)^.Litera;
+  IloscGrup:=PKlasa(Data)^.IloscGrup;
+end;
+
 procedure TKlasa.Clear;
 begin
   inherited Clear;
-  Numer:=1;
-  Litera:='A';
-  IloscGrup:=1;
-  Grupy:=$FFFF;
+  Numer:=0;
+  Litera:=' ';
+  IloscGrup:=0;
+  Grupy:=0;
 end;
 
 procedure TKlasa.Store;
@@ -118,11 +128,59 @@ begin
 end;
 
 procedure TKlasaDialog.GetData;
+var
+  S: String;
+  E: Integer;
+  L: LongInt;
 begin
+  with TKlasa(Rec) do
+  begin
+    NumerInputLine^.GetData(S);
+    Val(S, Numer, E);
+    LiteraInputLine^.GetData(S);
+    Litera:=S[1];
+    IloscGrupRadioButtons^.GetData(L);
+    IloscGrup:=L+1;
+  end;
 end;
 
 procedure TKlasaDialog.SetData;
+var
+  S: String;
+  L: LongInt;
 begin
+  with TKlasa(Rec) do
+  begin
+    Str(Numer, S);
+    NumerInputLine^.SetData(S);
+    S:=Litera;
+    LiteraInputLine^.SetData(S);
+    L:=IloscGrup-1;
+    IloscGrupRadioButtons^.SetData(L);
+  end;
+end;
+
+procedure TKlasaDialog.HandleEvent;
+begin
+  if Event.What=evKeyboard then
+  case Event.KeyCode of
+    kbDown:
+    begin
+      SelectNext(False);
+      ClearEvent(Event);
+    end;
+    kbUp:
+    begin
+      SelectNext(True);
+      ClearEvent(Event);
+    end;
+    kbEnter: if (Current<>PView(OkButton)) and (Current<>PView(CancelButton)) and (Current<>PView(HelpButton)) then
+    begin
+      SelectNext(False);
+      ClearEvent(Event);
+    end;
+  end;
+  TDialog.HandleEvent(Event);
 end;
 
 procedure TKlasaDialog.Store;

@@ -13,6 +13,7 @@ type { typ opiusuj¥cy dzwonek }
     constructor Load(var S: TStream);
     function Compare(Data: PDataObject): Integer; virtual;
     function GetText(MaxLen: Integer): String; virtual;
+    procedure Assign(Data: PDataObject); virtual;
     procedure Clear; virtual;
     procedure Store(var S: TStream); virtual;
   end;
@@ -71,12 +72,19 @@ var
   S, S1, S2: String;
 begin
   Str(Poczatek div 60, S1); while Length(S1)<2 do S1:='0'+S1;
-  Str(Poczatek mod 60, S2); while Length(S1)<2 do S1:='0'+S1;
+  Str(Poczatek mod 60, S2); while Length(S2)<2 do S2:='0'+S2;
   S:=S1+':'+S2;
   Str((Poczatek+Dlugosc) div 60, S1); while Length(S1)<2 do S1:='0'+S1;
   Str((Poczatek+Dlugosc) mod 60, S2); while Length(S1)<2 do S1:='0'+S1;
   S:=S+' - '+S1+':'+S2;
-  GetText:=S;
+  GetText:=Copy(S, 1, MaxLen);
+end;
+
+procedure TDzwonek.Assign;
+begin
+  inherited Assign(Data);
+  Poczatek:=PDzwonek(Data)^.Poczatek;
+  Dlugosc:=PDzwonek(Data)^.Dlugosc;
 end;
 
 procedure TDzwonek.Clear;
@@ -104,11 +112,35 @@ begin
 end;
 
 procedure TDzwonekDialog.GetData;
+var
+  S: String;
+  L: LongInt;
+  E: Integer;
 begin
+  with TDzwonek(Rec) do
+  begin
+    PoczatekInputLine^.GetData(S);
+    Val(S[1]+S[2], L, E);
+    Poczatek:=60*L;
+    Val(S[4]+S[5], L, E);
+    Poczatek:=Poczatek+L;
+    DlugoscInputLine^.GetData(S);
+    Val(S, L, E);
+    Dlugosc:=L;
+  end;
 end;
 
 procedure TDzwonekDialog.SetData;
+var
+  S: String;
 begin
+  with TDzwonek(Rec) do
+  begin
+    S:=GetText(5);
+    PoczatekInputLine^.SetData(S);
+    Str(Dlugosc, S);
+    DlugoscInputLine^.SetData(S);
+  end;
 end;
 
 procedure TDzwonekDialog.Store;

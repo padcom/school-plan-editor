@@ -15,12 +15,21 @@ function PrzedmiotEdit: Boolean;
 function SalaAdd: Boolean;
 function SalaDel: Boolean;
 function SalaEdit: Boolean;
+function KlasaAdd: Boolean;
+function KlasaDel: Boolean;
+function KlasaEdit: Boolean;
+function DzwonekAdd: Boolean;
+function DzwonekDel: Boolean;
+function DzwonekEdit: Boolean;
 
 function ChooseNauczyciel(List: PDataCollection): PNauczyciel;
 function ChoosePrzedmiot(List: PDataCollection): PPrzedmiot;
 function ChooseSala(List: PDataCollection): PSala;
 function ChooseKlasa(List: PDataCollection): PKlasa;
-function EditLekcja(var Data: PLekcja): Boolean;
+function ChooseDzwonek(List: PDataCollection): PDzwonek;
+
+function LekcjaDel(List: PDataCollection; Data: PLekcja): Boolean;
+function LekcjaEdit(var Data: PLekcja): Boolean;
 
 implementation
 
@@ -291,6 +300,204 @@ begin
   Dispose(Temp, Done);
 end;
 
+function KlasaAdd;
+var
+  Data: PKlasa;
+  Dialog: PDataDialog;
+  I: Integer;
+begin
+  New(Data, Init);
+  Data^.Numer:=1;
+  Data^.Litera:='A';
+  Data^.IloscGrup:=1;
+  Dialog:=PDataDialog(ResourceFile.Get('KlasaEditDialog'));
+  if LoadSuccessful(Dialog) and (Application^.ExecuteDialog(Dialog, Data)=cmOK) then
+  begin
+    if Klasy^.Search(Data, I) then
+    begin
+      MessageBox(#3'Taka klasa ju¾ istnieje !', nil, mfError or mfCancelButton);
+      KlasaAdd:=False;
+    end
+    else
+    begin
+      Klasy^.Insert(Data);
+      KlasaAdd:=True;
+    end;
+  end
+  else
+  begin
+    Dispose(Data, Done);
+    KlasaAdd:=False;
+  end;
+end;
+
+function KlasaDel;
+var
+  Data: PDataObject;
+  I: Integer;
+
+procedure UsunKlaseZLekcji(Item: Pointer); far;
+begin
+  if PLekcja(Item)^.SalaIndex=Data^.Index then
+  begin
+    PLekcja(Item)^.KlasaIndex:=-1;
+    PLekcja(Item)^.Grupy:=0;
+  end;
+end;
+
+begin
+  Data:=ChooseKlasa(Klasy);
+  if Assigned(Data) then
+  begin
+    if MessageBox(#3'Czy na pewno chcesz usun¥† t¥ klas© ?',nil,mfConfirmation or mfYesButton or mfNoButton)=cmYes then
+    begin
+      for I:=1 to IloscDni do if Assigned(Lekcje[I]) then Lekcje[I]^.ForEach(@UsunKlaseZLekcji);
+      Klasy^.Free(Data);
+      KlasaDel:=True;
+    end;
+    KlasaDel:=False;
+  end;
+end;
+
+function KlasaEdit;
+var
+  Data, Temp: PKlasa;
+  Dialog: PDataDialog;
+  I: Integer;
+
+procedure UaktualnijKlaseNaPlanieZajec(Item: Pointer); far;
+var
+  Mask, I: Word;
+begin
+  for I:=1 to Data^.IloscGrup do I:=I shl 1;
+  if PLekcja(Item)^.KlasaIndex=Data^.Index then PLekcja(Item)^.Grupy:=PLekcja(Item)^.Grupy and Mask;
+end;
+
+begin
+  Data:=ChooseKlasa(Klasy);
+  if not Assigned(Data) then Exit;
+
+  New(Temp, Init);
+  Temp^.Assign(Data);
+  Klasy^.Delete(Data);
+
+  Dialog:=PDataDialog(ResourceFile.Get('KlasaEditDialog'));
+  if LoadSuccessful(Dialog) and (Application^.ExecuteDialog(Dialog, Temp)=cmOK) then
+  begin
+    if Klasy^.Search(Temp, I) then
+    begin
+      MessageBox(#3'Taka klasa ju¾ istnieje !', nil, mfError or mfCancelButton);
+      Klasy^.Insert(Data);
+      KlasaEdit:=False;
+    end
+    else
+    begin
+      for I:=1 to IloscDni do if Assigned(Lekcje[I]) then Lekcje[I]^.ForEach(@UaktualnijKlaseNaPlanieZajec);
+      Data^.Assign(Temp);
+      Klasy^.Insert(Data);
+      KlasaEdit:=True;
+    end;
+  end
+  else
+  begin
+    Klasy^.Insert(Data);
+    KlasaEdit:=False;
+  end;
+  Dispose(Temp, Done);
+end;
+
+function DzwonekAdd;
+var
+  Data: PDzwonek;
+  Dialog: PDataDialog;
+  I: Integer;
+begin
+  New(Data, Init);
+  Dialog:=PDataDialog(ResourceFile.Get('DzwonekEditDialog'));
+  if LoadSuccessful(Dialog) and (Application^.ExecuteDialog(Dialog, Data)=cmOK) then
+  begin
+    if Dzwonki^.Search(Data, I) then
+    begin
+      MessageBox(#3'Taki dzwonek ju¾ istnieje !', nil, mfError or mfCancelButton);
+      DzwonekAdd:=False;
+    end
+    else
+    begin
+      Dzwonki^.Insert(Data);
+      DzwonekAdd:=True;
+    end;
+  end
+  else
+  begin
+    Dispose(Data, Done);
+    DzwonekAdd:=False;
+  end;
+end;
+
+function DzwonekDel;
+var
+  Data: PDataObject;
+  I: Integer;
+
+procedure UsunDzwonekZLekcji(Item: Pointer); far;
+begin
+  if PLekcja(Item)^.DzwonekIndex=Data^.Index then
+  begin
+    Dispose(PLekcja(Item), Done);
+  end;
+end;
+
+begin
+  Data:=ChooseDzwonek(Dzwonki);
+  if Assigned(Data) then
+  begin
+    if MessageBox(#3'Czy na pewno chcesz usun¥† ten dzwonek ?',nil,mfConfirmation or mfYesButton or mfNoButton)=cmYes then
+    begin
+      for I:=1 to IloscDni do if Assigned(Lekcje[I]) then Lekcje[I]^.ForEach(@UsunDzwonekZLekcji);
+      Dzwonki^.Free(Data);
+      DzwonekDel:=True;
+    end;
+    DzwonekDel:=False;
+  end;
+end;
+
+function DzwonekEdit;
+var
+  Data, Temp: PDzwonek;
+  Dialog: PDataDialog;
+  I: Integer;
+begin
+  Data:=ChooseDzwonek(Dzwonki);
+  if not Assigned(Data) then Exit;
+
+  New(Temp, Init);
+  Temp^.Assign(Data);
+  Dzwonki^.Delete(Data);
+
+  Dialog:=PDataDialog(ResourceFile.Get('DzwonekEditDialog'));
+  if LoadSuccessful(Dialog) and (Application^.ExecuteDialog(Dialog, Temp)=cmOK) then
+  begin
+    if Dzwonki^.Search(Temp, I) then
+    begin
+      MessageBox(#3'Taki dzwonek ju¾ istnieje !', nil, mfError or mfCancelButton);
+      Dzwonki^.Insert(Data);
+      DzwonekEdit:=False;
+    end
+    else
+    begin
+      Data^.Assign(Temp);
+      Dzwonki^.Insert(Data);
+      DzwonekEdit:=True;
+    end;
+  end
+  else
+  begin
+    Dzwonki^.Insert(Data);
+    DzwonekEdit:=False;
+  end;
+  Dispose(Temp, Done);
+end;
+
 
 function ChooseFromList(List: PDataCollection; EmptyListMsg: String; DataListLabel: String): PDataObject;
 var
@@ -347,7 +554,26 @@ begin
   ChooseKlasa:=PKlasa(ChooseFromList(List, 'Lista dost©pnych klas jest pusta !', '~L~ista klas'));
 end;
 
-function EditLekcja;
+function ChooseDzwonek;
+begin
+  ChooseDzwonek:=PDzwonek(ChooseFromList(List, 'Lista dost©pnych dzwonk¢w jest pusta !', '~L~ista dzwonk¢w'));
+end;
+
+function LekcjaDel;
+var
+  I: Integer;
+begin
+  LekcjaDel:=False;
+  if Assigned(List) and (not List^.Empty) and Assigned(Data) then
+    if List^.Search(Data, I) then
+      if MessageBox(#3'Czy na pewno chczes usun¥† t¥ lekcj© ?',nil,mfconfirmation or mfYesButton or mfCancelButton)=cmYes then
+      begin
+        List^.Delete(Data);
+        LekcjaDel:=True;
+      end;
+end;
+
+function LekcjaEdit;
 var
   D: PLekcjaDialog;
   DataCreated: Boolean;
@@ -362,8 +588,8 @@ begin
   D:=PLekcjaDialog(ResourceFile.Get('LekcjaEditDialog'));
   if LoadSuccessful(D) then
   begin
-    if Application^.ExecuteDialog(D, Data)=cmOK then EditLekcja:=True
-    else EditLekcja:=False;
+    if Application^.ExecuteDialog(D, Data)=cmOK then LekcjaEdit:=True
+    else LekcjaEdit:=False;
   end;
 end;
 
