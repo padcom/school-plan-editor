@@ -4,7 +4,7 @@ uses
   Stale, Resource,
   DataObjects, DataDialogs, DataBase, Help,
   Nauczyciel, Przedmiot, Klasa, Sala, Dzwonek, Lekcja,
-  MainWin;
+  MainWin, SpecWins;
 
 
 type { typ opisujcy gˆ¢wn aplikacj© }

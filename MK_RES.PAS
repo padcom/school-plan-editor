@@ -3,7 +3,7 @@ uses
   App, Objects, Drivers, Views, Dialogs, Menus,
   DataObjects, DataDialogs, Resource, Stale,
   Nauczyciel, Przedmiot, Klasa, Sala, Dzwonek, Lekcja,
-  Help, DataBase, MainWin;
+  Help, DataBase, MainWin, SpecWins;
 
 { *** procedury tworz¥ce poszczeg¢lne elementy aplikacji *** }
 
@@ -586,22 +586,31 @@ begin
 {  TestDialog(D);}
 end;
 
+procedure CreatePlanLekcjiNauczycielWindow;
+var
+  R: TRect;
+  D: PPlanLekcjiNauczycielWindow;
+begin
+  BeginCreating('PlanLekcjiNauczycielWindow');
+
+  R.Assign(0, 0, 78, 21);
+  New(D, Init(R, ''));
+  with D^ do
+  begin
+    Options:=Options or ofCentered;
+    Palette:=dpBlueDialog;
+  end;
+
+  StoreObject(D);
+  TestDialog(D);
+end;
+
 var
   D: PDzwonek;
   L: PLekcja;
 
 begin
   CreateResources('PLAN.RES');
-{  OpenFiles('DATA');}
-{
-  New(L, Init);
-  L^.NauczycielIndex:=0;
-  L^.PrzedmiotIndex:=0;
-  L^.SalaIndex:=0;
-  L^.KlasaIndex:=0;
-  L^.Grupy:=12;
-  Lekcje[1]^.Insert(L);
-}
   CreateStatusLine;
   CreateMenuBar;
   CreateAboutBox;
@@ -614,7 +623,7 @@ begin
   CreateChooseDataDialog;
   CreateHints;
   CreateMainWindow;
+  CreatePlanLekcjiNauczycielWindow;
   DumpNames;
   CloseResources;
-{  CloseFiles;}
 end.
