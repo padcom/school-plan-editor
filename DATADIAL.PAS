@@ -195,7 +195,7 @@ begin
   if Event.What=evKeyDown then
   begin
     case Event.CharCode of
-      'A'..'Z', 'a'..'z', ' ', '.', '-':
+      'A'..'Z', 'a'..'z', ' ', '.', '-', '0'..'9':
       begin
         SearchText:=SearchText+Event.CharCode;
         DoSearch;
