@@ -215,6 +215,15 @@ begin
       cmUpdateDzwonekListView: UpdateDzwonekListView;
       cmUpdateLekcjaListView: UpdateLekcjaListView;
       cmUpdateLekcjaDetailView: UpdateLekcjaDetailView;
+      cmDataBaseChanged:
+      begin
+        Lock;
+        UpdateLists;
+        UpdateDzwonekListView;
+        UpdateLekcjaListView;
+        UpdateLekcjaDetailView;
+        UnLock;
+      end
     end;
   end;
 end;

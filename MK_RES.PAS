@@ -23,7 +23,7 @@ begin
       NewStatusKey('~Ctrl+Enter~ Popraw', kbCtrlEnter, cmLekcjaEdit,
       NewStatusKey('~F10~ Menu', kbF10, cmMenu,
       NewStatusKey('', kbAltF3, cmClose,
-      NewStatusKey('', kbCtrlF6, cmNext,
+      NewStatusKey('', kbCtrlF2, cmNext,
       NewStatusKey('', kbCtrlF1, cmAboutBox,
     nil))))))))),
     NewStatusDef($1000, $1500,

@@ -64,6 +64,7 @@ begin
       Data^.Index:=Nauczyciele^.GetFirstFreeIndex;
       Nauczyciele^.Insert(Data);
       Message(Desktop^.Current, evBroadcast, cmDataBaseChanged, nil);
+      UpdateFiles;
       NauczycielAdd:=True;
     end;
   end
@@ -93,6 +94,7 @@ begin
       for I:=1 to IloscDni do if Assigned(Lekcje[I]) then Lekcje[I]^.ForEach(@UsunNauczycielaZLekcji);
       Nauczyciele^.Free(Data);
       Message(Desktop^.Current, evBroadcast, cmDataBaseChanged, nil);
+      UpdateFiles;
       NauczycielDel:=True;
     end
     else NauczycielDel:=False;
@@ -128,6 +130,7 @@ begin
       Data^.Assign(Temp);
       Nauczyciele^.Insert(Data);
       Message(Desktop^.Current, evBroadcast, cmDataBaseChanged, nil);
+      UpdateFiles;
       NauczycielEdit:=True;
     end;
   end
@@ -161,6 +164,7 @@ begin
       Data^.Index:=Przedmioty^.GetFirstFreeIndex;
       Przedmioty^.Insert(Data);
       Message(Desktop^.Current, evBroadcast, cmDataBaseChanged, nil);
+      UpdateFiles;
       PrzedmiotAdd:=True;
     end;
   end
@@ -190,6 +194,7 @@ begin
       for I:=1 to IloscDni do if Assigned(Lekcje[I]) then Lekcje[I]^.ForEach(@UsunPrzedmiotZLekcji);
       Przedmioty^.Free(Data);
       Message(Desktop^.Current, evBroadcast, cmDataBaseChanged, nil);
+      UpdateFiles;
       PrzedmiotDel:=True;
     end
     else PrzedmiotDel:=False;
@@ -225,6 +230,7 @@ begin
       Data^.Assign(Temp);
       Przedmioty^.Insert(Data);
       Message(Desktop^.Current, evBroadcast, cmDataBaseChanged, nil);
+      UpdateFiles;
       PrzedmiotEdit:=True;
     end;
   end
@@ -258,6 +264,7 @@ begin
       Data^.Index:=Sale^.GetFirstFreeIndex;
       Sale^.Insert(Data);
       Message(Desktop^.Current, evBroadcast, cmDataBaseChanged, nil);
+      UpdateFiles;
       SalaAdd:=True;
     end;
   end
@@ -287,6 +294,7 @@ begin
       for I:=1 to IloscDni do if Assigned(Lekcje[I]) then Lekcje[I]^.ForEach(@UsunSaleZLekcji);
       Sale^.Free(Data);
       Message(Desktop^.Current, evBroadcast, cmDataBaseChanged, nil);
+      UpdateFiles;
       SalaDel:=True;
     end
     else SalaDel:=False;
@@ -322,6 +330,7 @@ begin
       Data^.Assign(Temp);
       Sale^.Insert(Data);
       Message(Desktop^.Current, evBroadcast, cmDataBaseChanged, nil);
+      UpdateFiles;
       SalaEdit:=True;
     end;
   end
@@ -358,6 +367,7 @@ begin
       Data^.Index:=Klasy^.GetFirstFreeIndex;
       Klasy^.Insert(Data);
       Message(Desktop^.Current, evBroadcast, cmDataBaseChanged, nil);
+      UpdateFiles;
       KlasaAdd:=True;
     end;
   end
@@ -391,6 +401,7 @@ begin
       for I:=1 to IloscDni do if Assigned(Lekcje[I]) then Lekcje[I]^.ForEach(@UsunKlaseZLekcji);
       Klasy^.Free(Data);
       Message(Desktop^.Current, evBroadcast, cmDataBaseChanged, nil);
+      UpdateFiles;
       KlasaDel:=True;
     end
     else KlasaDel:=False;
@@ -442,6 +453,7 @@ begin
       for I:=1 to IloscDni do if Assigned(Lekcje[I]) then Lekcje[I]^.ForEach(@UaktualnijKlaseNaPlanieZajec);
       Message(Desktop, evBroadcast, cmDataBaseChanged, nil);
       Message(Desktop, evBroadcast, cmUpdateLekcjaListView, nil);
+      UpdateFiles;
       KlasaEdit:=True;
     end;
   end
@@ -512,6 +524,7 @@ begin
       Dzwonki^.Insert(Data);
       Message(Desktop^.Current, evBroadcast, cmUpdateLists, nil);
       Message(Desktop^.Current, evBroadcast, cmDataBaseChanged, nil);
+      UpdateFiles;
       DzwonekAdd:=True;
     end;
   end
@@ -546,6 +559,7 @@ begin
       Dzwonki^.Free(Data);
       Message(Desktop^.Current, evBroadcast, cmUpdateLists, nil);
       Message(Desktop^.Current, evBroadcast, cmDataBaseChanged, nil);
+      UpdateFiles;
       DzwonekDel:=True;
     end
     else DzwonekDel:=False;
@@ -583,6 +597,7 @@ begin
       Message(Desktop^.Current, evBroadcast, cmUpdateLists, nil);
       Message(Desktop^.Current, evBroadcast, cmDataBaseChanged, nil);
       DzwonekEdit:=True;
+      UpdateFiles;
     end;
   end
   else
@@ -664,7 +679,7 @@ begin
                'Lista dost©pnych klas jest pusta !',
                '~L~ista klas',
               hcKlasaDialogChoose));
-  if ChooseGroup and (Data^.IloscGrup>1) then
+  if Assigned(Data) and ChooseGroup and (Data^.IloscGrup>1) then
   begin
     D:=PChooseGrupaKlasyDialog(ResourceFile.Get('ChooseGrupaKlasyDialog'));
     if Loadsuccessful(D) then
@@ -752,6 +767,7 @@ begin
     Message(Desktop, evBroadcast, cmUpdateLists, nil);
     Message(Desktop, evBroadcast, cmListItemChanged, nil);
     Message(Desktop, evBroadcast, cmDataBaseChanged, nil);
+    UpdateFiles;
   end
   else
   begin
@@ -769,6 +785,7 @@ begin
     Message(Desktop, evBroadcast, cmUpdateLists, nil);
     Message(Desktop, evBroadcast, cmListItemChanged, nil);
     Message(Desktop, evBroadcast, cmDataBaseChanged, nil);
+    UpdateFiles;
   end;
 end;
 
@@ -783,6 +800,7 @@ begin
   Message(Desktop, evBroadcast, cmUpdateLists, nil);
   Message(Desktop, evBroadcast, cmListItemChanged, nil);
   Message(Desktop, evBroadcast, cmDataBaseChanged, nil);
+  UpdateFiles;
 end;
 
 { *** }
