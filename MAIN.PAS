@@ -4,7 +4,7 @@ uses
   Stale, Resource,
   DataObjects, DataDialogs, DataBase, Help, ClockViewer,
   Nauczyciel, Przedmiot, Klasa, Sala, Dzwonek, Lekcja,
-  HostWin, MainWin, SpecWins;
+  HostWin, MainWin, SpecWins, Archiwizacja;
 
 type { typ opisujcy gˆ¢wn aplikacj© }
   PMainApp = ^TMainApp;
@@ -102,6 +102,8 @@ begin
   begin
     case Event.Command of
       cmAboutBox: ShowAboutBox;
+      cmArchiwizacja: Archiwizuj;
+      cmOdzysk: Odtworz;
       cmNauczycielAdd: NauczycielAdd;
       cmNauczycielDel: NauczycielDel;
       cmNauczycielEdit: NauczycielEdit;

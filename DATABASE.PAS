@@ -69,7 +69,7 @@ begin
     begin
       Data^.Index:=Nauczyciele^.GetFirstFreeIndex;
       Nauczyciele^.Insert(Data);
-      Message(Desktop^.Current, evBroadcast, cmDataBaseChanged, nil);
+      Message(Desktop, evBroadcast, cmDataBaseChanged, nil);
       UpdateFiles;
       NauczycielAdd:=True;
     end;
@@ -99,7 +99,7 @@ begin
     begin
       for I:=1 to IloscDni do if Assigned(Lekcje[I]) then Lekcje[I]^.ForEach(@UsunNauczycielaZLekcji);
       Nauczyciele^.Free(Data);
-      Message(Desktop^.Current, evBroadcast, cmDataBaseChanged, nil);
+      Message(Desktop, evBroadcast, cmDataBaseChanged, nil);
       UpdateFiles;
       NauczycielDel:=True;
     end
@@ -135,7 +135,7 @@ begin
     begin
       Data^.Assign(Temp);
       Nauczyciele^.Insert(Data);
-      Message(Desktop^.Current, evBroadcast, cmDataBaseChanged, nil);
+      Message(Desktop, evBroadcast, cmDataBaseChanged, nil);
       UpdateFiles;
       NauczycielEdit:=True;
     end;
@@ -848,27 +848,30 @@ begin
                'Lista dost©pnych klas jest pusta !',
                '~L~ista klas',
               hcKlasaDialogChoose));
-  if Assigned(Data) and ChooseGroup and (Data^.IloscGrup>1) then
+  if Assigned(Data) then
   begin
-    D:=PChooseGrupaKlasyDialog(ResourceFile.Get('ChooseGrupaKlasyDialog'));
-    if Loadsuccessful(D) then
+    if ChooseGroup and (Data^.IloscGrup>1) then
     begin
-      D^.HelpCtx:=hcKlasaDialogChooseGrupa;
-      L:=0;
-      for I:=1 to Data^.IloscGrup do L:=(L shl 1)+1;
-      D^.GrupaRadioButtons^.EnableMask:=L;
-      L:=0;
-      if Application^.ExecuteDialog(D, @L)=cmOK then
+      D:=PChooseGrupaKlasyDialog(ResourceFile.Get('ChooseGrupaKlasyDialog'));
+      if Loadsuccessful(D) then
       begin
-        Inc(L);
-        Grupa:=1;
-        for I:=1 to L do Grupa:=Grupa shl 1;
-        Data^.Grupy:=L;
-      end
-      else Data:=nil;
-    end;
-  end
-  else Data^.Grupy:=0;
+        D^.HelpCtx:=hcKlasaDialogChooseGrupa;
+        L:=0;
+        for I:=1 to Data^.IloscGrup do L:=(L shl 1)+1;
+        D^.GrupaRadioButtons^.EnableMask:=L;
+        L:=0;
+        if Application^.ExecuteDialog(D, @L)=cmOK then
+        begin
+          Inc(L);
+          Grupa:=1;
+          for I:=1 to L do Grupa:=Grupa shl 1;
+          Data^.Grupy:=L;
+        end
+        else Data:=nil;
+      end;
+    end
+    else Data^.Grupy:=0;
+  end;
   ChooseKlasa:=Data;
 end;
 
