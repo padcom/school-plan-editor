@@ -28,8 +28,11 @@ const
   cmArchiwizacja    = 160;
   cmOdzysk          = 161;
   cmAboutBox        = 170;
+  cmPlanNauczyciela = 180;
+  cmPlanKlasy       = 181;
   cmClickActiveText = 250;
   cmChooseFromList  = 251;
+
 
   { konteksty pomocy }
   hcNauczycielAdd   = $1100;
@@ -59,9 +62,15 @@ const
   hcDzwonkiMenu     = $2005;
 
   hcPlanLekcjiMenu  = $2006;
-  hcArchiwizacjaMenu= $2007;
+  hcSystemMenu      = $2007;
   hcPomocMenu       = $2008;
   hcAboutBox        = $2009;
+  hcPlanKlasy       = $2010;
+  hcClickActiveText = $2011;
+  hcPlanNauczyciela = $2012;
+  hcArchiwizacja    = $2013;
+  hcOdzysk          = $2014;
+  hcQuit            = $2015;
 
 implementation
 

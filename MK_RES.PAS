@@ -36,7 +36,14 @@ begin
   BeginCreating('MenuBar');
   R.Assign(0, 0, 80, 1);
   MenuBar:=New(PMenuBar, Init(R, NewMenu(
-    NewSubMenu('~S~ˆowniki', hcSlownikiMenu, NewMenu(
+    NewSubMenu('~S~ystem', hcSystemMenu, NewMenu(
+      NewItem('~A~rchiwizacja danych', '', kbNoKey, cmArchiwizacja, hcArchiwizacja,
+      NewItem('~O~dzysk danych', '', kbNoKey, cmOdzysk, hcOdzysk,
+      NewLine(
+      NewItem('~D~OS shell', '', kbNoKey, cmDosShell, hcDosShell,
+      NewItem('~K~oniec', 'Alt+X', kbAltX, cmQuit, hcQuit,
+    nil)))))),
+    NewSubMenu('Sˆ~o~wniki', hcSlownikiMenu, NewMenu(
       NewSubMenu('~N~auczyciele', hcNauczycieleMenu, NewMenu(
         NewItem('~N~owy', 'F5', kbF5, cmNauczycielAdd, hcNauczycielAdd,
         NewItem('~P~opraw', 'Shift+F5', kbShiftF5, cmNauczycielEdit, hcNauczycielEdit,
@@ -64,7 +71,15 @@ begin
         NewItem('~U~suä', 'Ctrl+F9', KbCtrlF9, cmDzwonekDel, hcDzwonekDel,
       nil)))),
     nil))))))),
-  nil))));
+    NewSubMenu('~P~lan lekcji', hcPlanLekcjiMenu, NewMenu(
+      NewItem('~N~owa lekcja', 'Ins', kbIns, cmLekcjaAdd, hcLekcjaAdd,
+      NewItem('~U~suä lekcje', 'Del', kbDel, cmLekcjaDel, hcLekcjaDel,
+      NewItem('~P~opraw lekcje', 'Ctrl+Enter', kbCtrlEnter, cmLekcjaEdit, hcLekcjaEdit,
+      NewLine(
+      NewItem('Plan lekcji n~a~uczyciela', 'F3', kbF3, cmPlanNauczyciela, hcPlanNauczyciela,
+      NewItem('Plan lekcji grupy k~l~asy', 'F4', kbF4, cmPlanKlasy, hcPlanKlasy,
+    nil))))))),
+  nil))))));
   StoreObject(MenuBar);
   Dispose(MenuBar); MenuBar:=nil;
 end;

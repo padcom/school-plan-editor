@@ -45,6 +45,7 @@ var
 begin
   New(Data, Init);
   Dialog:=PDataDialog(ResourceFile.Get('NauczycielEditDialog'));
+  Dialog^.SetTitle('Dodawanie nowego nauczyciela');
   if LoadSuccessful(Dialog) and (Application^.ExecuteDialog(Dialog, Data)=cmOK) then
   begin
     if Nauczyciele^.Search(Data, I) then
@@ -103,6 +104,7 @@ begin
   Nauczyciele^.Delete(Data);
 
   Dialog:=PDataDialog(ResourceFile.Get('NauczycielEditDialog'));
+  Dialog^.SetTitle('Poprawianie wpisu nauczyciela');
   if LoadSuccessful(Dialog) and (Application^.ExecuteDialog(Dialog, Temp)=cmOK) then
   begin
     if Nauczyciele^.Search(Temp, I) then
@@ -134,6 +136,7 @@ var
 begin
   New(Data, Init);
   Dialog:=PDataDialog(ResourceFile.Get('PrzedmiotEditDialog'));
+  Dialog^.SetTitle('Dodawanie nowego przedmiotu');
   if LoadSuccessful(Dialog) and (Application^.ExecuteDialog(Dialog, Data)=cmOK) then
   begin
     if Przedmioty^.Search(Data, I) then
@@ -192,6 +195,7 @@ begin
   Przedmioty^.Delete(Data);
 
   Dialog:=PDataDialog(ResourceFile.Get('PrzedmiotEditDialog'));
+  Dialog^.SetTitle('Poprawianie wpisu przedmiotu');
   if LoadSuccessful(Dialog) and (Application^.ExecuteDialog(Dialog, Temp)=cmOK) then
   begin
     if Przedmioty^.Search(Temp, I) then
@@ -223,6 +227,7 @@ var
 begin
   New(Data, Init);
   Dialog:=PDataDialog(ResourceFile.Get('SalaEditDialog'));
+  Dialog^.SetTitle('Dodawanie nowej sali');
   if LoadSuccessful(Dialog) and (Application^.ExecuteDialog(Dialog, Data)=cmOK) then
   begin
     if Sale^.Search(Data, I) then
@@ -281,6 +286,7 @@ begin
   Sale^.Delete(Data);
 
   Dialog:=PDataDialog(ResourceFile.Get('SalaEditDialog'));
+  Dialog^.SetTitle('Poprawianie wpisu sali');
   if LoadSuccessful(Dialog) and (Application^.ExecuteDialog(Dialog, Temp)=cmOK) then
   begin
     if Sale^.Search(Temp, I) then
@@ -315,6 +321,7 @@ begin
   Data^.Litera:='A';
   Data^.IloscGrup:=1;
   Dialog:=PDataDialog(ResourceFile.Get('KlasaEditDialog'));
+  Dialog^.SetTitle('Dodawanie nowej klasy');
   if LoadSuccessful(Dialog) and (Application^.ExecuteDialog(Dialog, Data)=cmOK) then
   begin
     if Klasy^.Search(Data, I) then
@@ -386,6 +393,7 @@ begin
   Klasy^.Delete(Data);
 
   Dialog:=PDataDialog(ResourceFile.Get('KlasaEditDialog'));
+  Dialog^.SetTitle('Poprawianie wpisu klasy');
   if LoadSuccessful(Dialog) and (Application^.ExecuteDialog(Dialog, Temp)=cmOK) then
   begin
     if Klasy^.Search(Temp, I) then
@@ -418,6 +426,7 @@ var
 begin
   New(Data, Init);
   Dialog:=PDataDialog(ResourceFile.Get('DzwonekEditDialog'));
+  Dialog^.SetTitle('Dodawanie nowego dzwonka');
   if LoadSuccessful(Dialog) and (Application^.ExecuteDialog(Dialog, Data)=cmOK) then
   begin
     if Dzwonki^.Search(Data, I) then
@@ -479,6 +488,7 @@ begin
   Dzwonki^.Delete(Data);
 
   Dialog:=PDataDialog(ResourceFile.Get('DzwonekEditDialog'));
+  Dialog^.SetTitle('Poprawianie wpisu dzwonka');
   if LoadSuccessful(Dialog) and (Application^.ExecuteDialog(Dialog, Temp)=cmOK) then
   begin
     if Dzwonki^.Search(Temp, I) then
