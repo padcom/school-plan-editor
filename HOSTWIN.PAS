@@ -39,6 +39,7 @@ type { typ opisuj¥cy nadrz©dne ze wzgl©du na dziedziczenie okno edycji planu zaj
     procedure UpdateLekcjaDetailView; virtual;
     procedure UpdateLists; virtual;
     procedure SetEditorData(EditorData: PDataObject); virtual;
+    procedure SetTitle(ATitle: TTitleStr); virtual;
   end;
 
 const
@@ -240,8 +241,13 @@ begin
 end;
 
 function THostEditWindow.GetCurrentLekcja;
+var
+  Dzien, DzwonekPos: Integer;
 begin
-  GetCurrentLekcja:=GetLekcja(Lekcje[GetCurrentDzien], GetCurrentDzwonekPos);
+  Dzien:=GetCurrentDzien;
+  DzwonekPos:=GetCurrentDzwonekPos;
+  if (Dzien=-1) or (DzwonekPos=-1) then GetCurrentLekcja:=nil
+  else GetCurrentLekcja:=GetLekcja(Lekcje[Dzien], GetCurrentDzwonekPos);
 end;
 
 function THostEditWindow.CompareData;
@@ -275,6 +281,14 @@ begin
   Data:=EditorData;
 end;
 
+procedure THostEditWindow.SetTitle;
+begin
+  if ATitle='' then Exit;
+  if Assigned(Title) then DisposeStr(Title);
+  Title:=nil;
+  Title:=NewStr(ATitle);
+end;
+
 procedure THostEditWindow.UpdateDzwonekListView;
 begin
   Abstract;
@@ -289,7 +303,6 @@ procedure THostEditWindow.UpdateLekcjaDetailView;
 begin
   if Assigned(LekcjaDetailView) then LekcjaDetailView^.DrawView;
 end;
-
 
 procedure THostEditWindow.UpdateLists;
 begin

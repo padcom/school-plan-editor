@@ -4,8 +4,7 @@ uses
   Stale, Resource,
   DataObjects, DataDialogs, DataBase, Help,
   Nauczyciel, Przedmiot, Klasa, Sala, Dzwonek, Lekcja,
-  HostWin, MainWin{, SpecWins};
-
+  HostWin, MainWin, SpecWins;
 
 type { typ opisujcy gˆ¢wn aplikacj© }
   PMainApp = ^TMainApp;
@@ -104,7 +103,7 @@ begin
         if Assigned(HostWindow) then with HostWindow^ do LekcjaEdit(GetCurrentDzien, GetCurrentDzwonekIndex, GetCurrentLekcja);
         ClearEvent(Event);
       end;
-{     cmPlanNauczyciela: RunPlanLekcjiNauczyciela;}
+      cmPlanNauczyciela: RunPlanLekcjiNauczyciela;
     end;
   end;
 end;

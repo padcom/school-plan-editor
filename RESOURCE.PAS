@@ -6,7 +6,7 @@ uses
   TextView, Colorsel, Editors, App, Validate, Outline,
   DataObjects, DataDialogs,
   Nauczyciel, Przedmiot, Klasa, Sala, Dzwonek, Lekcja,
-  Help, HostWin, MainWin{, SpecWins};
+  Help, HostWin, MainWin, SpecWins;
 
 var
   ResourceFile: TResourceFile;
@@ -63,7 +63,7 @@ begin
   RegisterLekcja;
   RegisterHelp;
   RegisterMainWin;
-{  RegisterSpecWins;}
+  RegisterSpecWins;
   RegisterHostWin;
   Writeln('OK.');
 end;

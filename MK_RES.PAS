@@ -3,7 +3,7 @@ uses
   App, Objects, Drivers, Views, Dialogs, Menus,
   DataObjects, DataDialogs, Resource, Stale,
   Nauczyciel, Przedmiot, Klasa, Sala, Dzwonek, Lekcja,
-  Help, DataBase, MainWin{, SpecWins};
+  Help, DataBase, MainWin, SpecWins;
 
 { *** procedury tworz¥ce poszczeg¢lne elementy aplikacji *** }
 
@@ -585,17 +585,16 @@ begin
   end;
 
   StoreObject(D);
-  TestDialog(D);
+{  TestDialog(D);}
 end;
 
-(*
 procedure CreatePlanLekcjiNauczycielWindow;
 var
   R: TRect;
-  D: PPlanLekcjiNauczycielWindow;
+  D: PNauczycielEditWindow;
   I: Integer;
 begin
-  BeginCreating('PlanLekcjiNauczycielWindow');
+  BeginCreating('NauczycielEditWindow');
 
   R.Assign(0, 0, 72, 18);
   New(D, Init(R, 'Plan lekcji nauczyciela'));
@@ -612,7 +611,7 @@ begin
     InsideFrames^.GrowMode:=gfGrowHiX or gfGrowHiY;
 
     R.Assign(1, 3, 10, Size.Y-7);
-    New(DzwonekListView, Init(R, 1, nil));
+    New(DzwonekListView, Init(R, 1, nil, nil));
     Insert(DzwonekListView);
     R.Assign(1, 1, 10, 2);
     New(DzwonekLabel, Init(R, 'Dzwonki', DzwonekListView));
@@ -637,18 +636,19 @@ begin
 
     R.Assign(1, Size.Y-6, Size.X-1, Size.Y-1);
     New(LekcjaDetailView, Init(R));
-    for I:=1 to 4 do LekcjaDetailView^.ListView[I]:=LekcjaListView[I];
+{    for I:=1 to 4 do LekcjaDetailView^.ListView[I]:=LekcjaListView[I];}
     Insert(LekcjaDetailView);
     LekcjaDetailView^.GrowMode:=gfGrowLoY or gfGrowHiY;
 
     FirstDzien:=1; SelectedDzien:=1;
     LekcjaListView[1]^.Select;
+
   end;
 
   StoreObject(D);
-{  TestDialog(D);}
+  TestDialog(D);
 end;
-*)
+
 var
   D: PDzwonek;
   L: PLekcja;
@@ -667,7 +667,7 @@ begin
   CreateChooseDataDialog;
   CreateHints;
   CreateMainWindow;
-{  CreatePlanLekcjiNauczycielWindow;}
+  CreatePlanLekcjiNauczycielWindow;
   DumpNames;
   CloseResources;
 end.
