@@ -2,7 +2,7 @@ Unit Klasa;
 
 interface
 uses
-  Objects, Drivers, Views, Dialogs, Menus,
+  Objects, Drivers, Views, Dialogs, Menus, Validate,
   DataObjects, DataDialogs, Stale;
 
 type { typ opisuj¥cy klas© }
@@ -18,6 +18,22 @@ type { typ opisuj¥cy klas© }
     procedure Assign(Data: PDataObject); virtual;
     procedure Clear; virtual;
     procedure Store(var S: TStream); virtual;
+  end;
+
+type { typ opisuj¥cy walidator numeru klasy }
+  PNumerValidator = ^TNumerValidator;
+  TNumerValidator = object (TValidator)
+    function IsValidInput(var S: string; SuppressFill: Boolean): Boolean; virtual;
+    function IsValid(const S: string): Boolean; virtual;
+    procedure Error; virtual;
+  end;
+
+type { typ opisuj¥cy walidator litery klasy }
+  PLiteraValidator = ^TLiteraValidator;
+  TLiteraValidator = object (TValidator)
+    function IsValidInput(var S: string; SuppressFill: Boolean): Boolean; virtual;
+    function IsValid(const S: string): Boolean; virtual;
+    procedure Error; virtual;
   end;
 
 type { typ opisuj¥cy okno edycji danych klasy }
@@ -47,6 +63,16 @@ const
     VmtLink: Ofs(TypeOf(TKlasaDialog)^);
     Load   : @TKlasaDialog.Load;
     Store  : @TKlasaDialog.Store);
+  RNumerValidator: TStreamRec = (
+    ObjType: $5003;
+    VmtLink: Ofs(TypeOf(TNumerValidator)^);
+    Load   : @TNumerValidator.Load;
+    Store  : @TNumerValidator.Store);
+  RLiteraValidator: TStreamRec = (
+    ObjType: $5004;
+    VmtLink: Ofs(TypeOf(TLiteraValidator)^);
+    Load   : @TLiteraValidator.Load;
+    Store  : @TLiteraValidator.Store);
 
 var
   Klasy: PDataCollection;
@@ -55,7 +81,7 @@ procedure RegisterKlasa;
 
 implementation
 uses
-  Latin2;
+  Latin2, MsgBox;
 
 { TKlasa }
 
@@ -112,6 +138,53 @@ begin
   S.Write(Numer, SizeOf(Numer));
   S.Write(Litera, SizeOf(Litera));
   S.Write(IloscGrup, SizeOf(IloscGrup));
+end;
+
+{ TNumerValidator }
+
+function TNumerValidator.IsValidInput;
+var
+  I: Integer;
+begin
+  IsValidInput:=True;
+  if S='' then Exit;
+  for I:=1 to Length(S) do if Pos(S[1], '0123456789')=0 then
+  begin
+    IsValidInput:=False;
+    Exit;
+  end;
+end;
+
+function TNumerValidator.IsValid;
+begin
+  IsValid:=True;
+  if S='' then IsValid:=False
+  else if S[1]='0' then IsValid:=False;
+end;
+
+procedure TNumerValidator.Error;
+begin
+  MessageBox(#3'Nale¾y poda† numer klasy', nil, mfError or mfCancelButton);
+end;
+
+{ TLiteraValidator }
+
+function TLiteraValidator.IsValidInput;
+begin
+  IsValidInput:=True;
+  if S='' then Exit;
+  S[1]:=UpCase(S[1]);
+  IsValidInput:=Pos(S[1], DuzeLitery)<>0;
+end;
+
+function TLiteraValidator.IsValid;
+begin
+  IsValid:=not (Length(S)=0);
+end;
+
+procedure TLiteraValidator.Error;
+begin
+  MessageBox(#3'Nale¾y poda† liter© klasy', nil, mfError or mfCancelButton);
 end;
 
 { TKlasaDialog }
@@ -200,6 +273,8 @@ procedure RegisterKlasa;
 begin
   RegisterType(RKlasa);
   RegisterType(RKlasaDialog);
+  RegisterType(RNumerValidator);
+  RegisterType(RLiteraValidator);
 end;
 
 begin

@@ -2,7 +2,7 @@ Unit Nauczyciel;
 
 interface
 uses
-  Objects, Drivers, Views, Dialogs, Menus,
+  Objects, Drivers, Views, Dialogs, Menus, Validate,
   DataObjects, DataDialogs, Stale;
 
 type { typ opisuj¥cy nauczyciela }
@@ -16,6 +16,22 @@ type { typ opisuj¥cy nauczyciela }
     procedure Assign(Data: PDataObject); virtual;
     procedure Clear; virtual;
     procedure Store(var S: TStream); virtual;
+  end;
+
+type { typ opisuj¥cy walidator imienia i nazwiska }
+  PImieNazwiskoValidator = ^TImieNazwiskoValidator;
+  TImieNazwiskoValidator = object (TValidator)
+    function IsValidInput(var S: string; SuppressFill: Boolean): Boolean; virtual;
+    function IsValid(const S: string): Boolean; virtual;
+    procedure Error; virtual;
+  end;
+
+type { typ opisuj¥cy walidator skr¢tu }
+  PSkrotValidator = ^TSkrotValidator;
+  TSkrotValidator = object (TValidator)
+    function IsValidInput(var S: string; SuppressFill: Boolean): Boolean; virtual;
+    function IsValid(const S: string): Boolean; virtual;
+    procedure Error; virtual;
   end;
 
 type { typ opisuj¥cy okno edycji danych nauczyciela }
@@ -42,6 +58,16 @@ const
     VmtLink: Ofs(TypeOf(TNauczycielDialog)^);
     Load   : @TNauczycielDialog.Load;
     Store  : @TNauczycielDialog.Store);
+  RImieNazwiskoValidator: TStreamRec = (
+    ObjType: $2002;
+    VmtLink: Ofs(TypeOf(TImieNazwiskoValidator)^);
+    Load   : @TImieNazwiskoValidator.Load;
+    Store  : @TImieNazwiskoValidator.Store);
+  RSkrotValidator: TStreamRec = (
+    ObjType: $2003;
+    VmtLink: Ofs(TypeOf(TSkrotValidator)^);
+    Load   : @TSkrotValidator.Load;
+    Store  : @TSkrotValidator.Store);
 
 var
   Nauczyciele: PDataCollection;
@@ -50,7 +76,7 @@ procedure RegisterNauczyciel;
 
 implementation
 uses
-  Latin2;
+  Latin2, MsgBox;
 
 { TNauczyciel }
 
@@ -103,6 +129,55 @@ begin
   inherited Store(S);
   S.WriteStr(ImieNazwisko);
   S.WriteStr(Skrot);
+end;
+
+{ TImieNazwiskoValidator }
+
+function TImieNazwiskoValidator.IsValidInput;
+var
+  I: Integer;
+  MakeUpper: Boolean;
+begin
+  IsValidInput:=True;
+  if S='' then Exit;
+  MakeUpper:=True;
+  for I:=1 to Length(S) do
+  begin
+    if MakeUpper then S[I]:=UpCase(S[I])
+    else S[I]:=LowCase(S[I]);
+    MakeUpper:=Pos(S[I], Litery)=0;
+  end;
+end;
+
+function TImieNazwiskoValidator.IsValid;
+begin
+  IsValid:=not (Length(S)=0);
+end;
+
+procedure TImieNazwiskoValidator.Error;
+begin
+  MessageBox(#3'Nale¾y poda† imi© i nazwisko nauczyciela', nil, mfError or mfCancelButton);
+end;
+
+{ TSkrotValidator }
+
+function TSkrotValidator.IsValidInput;
+var
+  I: Integer;
+begin
+  isValidInput:=True;
+  if S='' then Exit;
+  for I:=1 to Length(S) do S[I]:=UpCase(S[I]);
+end;
+
+function TSkrotValidator.IsValid;
+begin
+  IsValid:=not (Length(S)=0);
+end;
+
+procedure TSkrotValidator.Error;
+begin
+  MessageBox(#3'Nale¾y poda† skr¢t identyfikuj¥cy nauczyciela', nil, mfError or mfCancelButton);
 end;
 
 { TNauczycielDialog }
@@ -158,6 +233,8 @@ procedure RegisterNauczyciel;
 begin
   RegisterType(RNauczyciel);
   RegisterType(RNauczycielDialog);
+  RegisterType(RImieNazwiskoValidator);
+  RegisterType(RSkrotValidator);
 end;
 
 begin

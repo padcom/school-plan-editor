@@ -2,7 +2,7 @@ Unit Dzwonek;
 
 interface
 uses
-  Objects, Drivers, Views, Dialogs, Menus,
+  Objects, Drivers, Views, Dialogs, Menus, Validate,
   DataObjects, DataDialogs, Stale;
 
 type { typ opiusuj¥cy dzwonek }
@@ -16,6 +16,22 @@ type { typ opiusuj¥cy dzwonek }
     procedure Assign(Data: PDataObject); virtual;
     procedure Clear; virtual;
     procedure Store(var S: TStream); virtual;
+  end;
+
+type { typ opisuj¥cy walidator pocz¥tku lekcji }
+  PPoczatekValidator = ^TPoczatekValidator;
+  TPoczatekValidator = object (TValidator)
+    function IsValidInput(var S: string; SuppressFill: Boolean): Boolean; virtual;
+    function IsValid(const S: string): Boolean; virtual;
+    procedure Error; virtual;
+  end;
+
+type { typ opisuj¥cy walidator dˆugo˜† lekcji }
+  PDlugoscValidator = ^TDlugoscValidator;
+  TDlugoscValidator = object (TValidator)
+    function IsValidInput(var S: string; SuppressFill: Boolean): Boolean; virtual;
+    function IsValid(const S: string): Boolean; virtual;
+    procedure Error; virtual;
   end;
 
 type { typ opisuj¥cy okno edycji danych dzwonka }
@@ -42,6 +58,16 @@ const
     VmtLink: Ofs(TypeOf(TDzwonekDialog)^);
     Load   : @TDzwonekDialog.Load;
     Store  : @TDzwonekDialog.Store);
+  RPoczatekValidator: TStreamRec = (
+    ObjType: $6002;
+    VmtLink: Ofs(TypeOf(TPoczatekValidator)^);
+    Load   : @TPoczatekValidator.Load;
+    Store  : @TPoczatekValidator.Store);
+  RDlugoscValidator: TStreamRec = (
+    ObjType: $6003;
+    VmtLink: Ofs(TypeOf(TDlugoscValidator)^);
+    Load   : @TDlugoscValidator.Load;
+    Store  : @TDlugoscValidator.Store);
 
 var
   Dzwonki: PDataCollection;
@@ -49,6 +75,8 @@ var
 procedure RegisterDzwonek;
 
 implementation
+uses
+  Latin2, MsgBox;
 
 { TDzwonek }
 
@@ -98,6 +126,80 @@ begin
   inherited Store(S);
   S.Write(Poczatek, SizeOf(Poczatek));
   S.Write(Dlugosc, SizeOf(Dlugosc));
+end;
+
+{ TPoczatekValidator }
+
+function TPoczatekValidator.IsValidInput;
+var
+  I: Integer;
+begin
+  IsValidInput:=True;
+  if S='' then Exit;
+  for I:=1 to Length(S) do
+  begin
+    case I of
+      1,2, 4,5: if Pos(S[I], '0123456789')=0 then
+      begin
+        IsValidInput:=False;
+        Exit;
+      end;
+      3: S[I]:=':';
+    end;
+  end;
+end;
+
+function TPoczatekValidator.IsValid;
+var
+  G, M, E: Integer;
+begin
+  IsValid:=True;
+  if Length(S)<5 then IsValid:=False
+  else
+  begin
+    Val(S[1]+S[2], G, E);
+    if (E<>0) or (G>23) then IsValid:=False;
+    Val(S[4]+S[5], M, E);
+    if (E<>0) or (M>59) then IsValid:=False;
+  end;
+end;
+
+procedure TPoczatekValidator.Error;
+begin
+  MessageBox(#3'Nale¾y poda† poprawn¥ godzin© pocz¥tkow¥ w formacie GG:MM', nil, mfError or mfCancelButton);
+end;
+
+{ TDlugoscValidator }
+
+function TDlugoscValidator.IsValidInput;
+var
+  I: Integer;
+begin
+  IsValidInput:=True;
+  if S='' then Exit;
+  for I:=1 to Length(S) do if Pos(S[I], '0123456789')=0 then
+  begin
+    IsValidInput:=False;
+    Exit;
+  end;
+end;
+
+function TDlugoscValidator.IsValid;
+var
+  L, E: Integer;
+begin
+  IsValid:=True;
+  if S='' then IsValid:=False
+  else
+  begin
+    Val(S, L, E);
+    if (E<>0) or (L<30) then IsValid:=False;
+  end;
+end;
+
+procedure TDlugoscValidator.Error;
+begin
+  MessageBox(#3'Nale¾y poda† dˆugo˜† trwania lekcji (>=30 min)', nil, mfError or mfCancelButton);
 end;
 
 { TDzwonekDialog }
@@ -158,6 +260,8 @@ procedure RegisterDzwonek;
 begin
   RegisterType(RDzwonek);
   RegisterType(RDzwonekDialog);
+  RegisterType(RPoczatekValidator);
+  RegisterType(RDlugoscValidator);
 end;
 
 begin

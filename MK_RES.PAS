@@ -158,6 +158,7 @@ begin
     R.Assign(2, 2, Size.X-3, 3);
     New(ImieNazwiskoLabel, Init(R, '~I~mi©, nazwisko', ImieNazwiskoInputLine));
     Insert(ImieNazwiskoLabel);
+    ImieNazwiskoInputLine^.SetValidator(New(Nauczyciel.PImieNazwiskoValidator, Init));
 
     { linia wprowadzania skr¢tu nauczyciela }
     R.Assign(3, 5, 10, 6);
@@ -166,6 +167,7 @@ begin
     R.Assign(2, 4, Size.X-3, 5);
     New(SkrotLabel, Init(R, '~S~krot', SkrotInputLine));
     Insert(SkrotLabel);
+    SkrotInputLine^.SetValidator(New(Nauczyciel.PSkrotValidator, Init));
 
     ImieNazwiskoInputLine^.Select;
   end;
@@ -198,6 +200,7 @@ begin
     R.Assign(2, 2, Size.X-3, 3);
     New(NazwaLabel, Init(R, '~N~azwa przedmiotu', NazwaInputLine));
     Insert(NazwaLabel);
+    NazwaInputLine^.SetValidator(New(Przedmiot.PNazwaValidator, Init));
 
     { linia wprowadzania skr¢tu przedmiotu }
     R.Assign(3, 5, 10, 6);
@@ -206,6 +209,7 @@ begin
     R.Assign(2, 4, Size.X-3, 5);
     New(SkrotLabel, Init(R, '~S~krot', SkrotInputLine));
     Insert(SkrotLabel);
+    SkrotInputLine^.SetValidator(New(Przedmiot.PSkrotValidator, Init));
 
     NazwaInputLine^.Select;
   end;
@@ -238,6 +242,7 @@ begin
     R.Assign(2, 2, Size.X-3, 3);
     New(NumerLabel, Init(R, '~N~umer', NumerInputLine));
     Insert(NumerLabel);
+    NumerInputLine^.SetValidator(New(Sala.PNumerValidator, Init));
 
     { linia wprowadzania nazwy pracowni, kt¢r¥ jest edytowana sala }
     R.Assign(3, 5, Size.X-3, 6);
@@ -246,6 +251,7 @@ begin
     R.Assign(2, 4, Size.X-3, 5);
     New(NazwaLabel, Init(R, '~N~azwa pracowni', NazwaInputLine));
     Insert(NazwaLabel);
+    NazwaInputLine^.SetValidator(New(Sala.PNazwaValidator, Init));
 
     NumerInputLine^.Select;
   end;
@@ -273,11 +279,12 @@ begin
 
     { linia wprowadzania numeru klasy }
     R.Assign(9, 2, 12, 3);
-    New(NumerInputLine, Init(R, 5));
+    New(NumerInputLine, Init(R, 1));
     Insert(NumerInputLine);
     R.Assign(2, 2, 8, 3);
     New(NumerLabel, Init(R, '~N~umer', NumerInputLine));
     Insert(NumerLabel);
+    NumerInputLine^.SetValidator(New(Klasa.PNumerValidator, Init));
 
     { linia wprowadzania litery klasy }
     R.Assign(23, 2, 26, 3);
@@ -286,6 +293,7 @@ begin
     R.Assign(15, 2, 22, 3);
     New(LiteraLabel, Init(R, '~L~itera', LiteraInputLine));
     Insert(LiteraLabel);
+    LiteraInputLine^.SetValidator(New(Klasa.PLiteraValidator, Init));
 
     R.Assign(3, 5, Size.X-3, 6);
     New(IloscGrupRadioButtons, Init(R,
@@ -332,6 +340,7 @@ begin
     R.Assign(12, 2, 25, 3);
     New(PoczatekLabel, Init(R, 'P~o~cz¥tek', PoczatekInputLine));
     Insert(PoczatekLabel);
+    PoczatekInputLine^.SetValidator(New(Dzwonek.PPoczatekValidator, Init));
 
     { linia wprowadzania dˆugo˜ci lekcji }
     R.Assign(25, 4, 30, 5);
@@ -340,6 +349,7 @@ begin
     R.Assign(12, 4, 25, 5);
     New(DlugoscLabel, Init(R, '~D~ˆugo˜†', DlugoscInputLine));
     Insert(DlugoscLabel);
+    DlugoscInputLine^.SetValidator(New(Dzwonek.PDlugoscValidator, Init));
 
     PoczatekInputLine^.Select;
   end;

@@ -2,7 +2,7 @@ Unit Przedmiot;
 
 interface
 uses
-  Objects, Drivers, Views, Dialogs, Menus,
+  Objects, Drivers, Views, Dialogs, Menus, Validate,
   DataObjects, DataDialogs, Stale;
 
 type { typ opisuj¥cy przedmiot }
@@ -16,6 +16,22 @@ type { typ opisuj¥cy przedmiot }
     procedure Assign(Data: PDataObject); virtual;
     procedure Clear; virtual;
     procedure Store(var S: TStream); virtual;
+  end;
+
+type { typ opisuj¥cy walidator nazwy przedmiotu }
+  PNazwaValidator = ^TNazwaValidator;
+  TNazwaValidator = object (TValidator)
+    function IsValidInput(var S: string; SuppressFill: Boolean): Boolean; virtual;
+    function IsValid(const S: string): Boolean; virtual;
+    procedure Error; virtual;
+  end;
+
+type { typ opisuj¥cy walidator skr¢tu }
+  PSkrotValidator = ^TSkrotValidator;
+  TSkrotValidator = object (TValidator)
+    function IsValidInput(var S: string; SuppressFill: Boolean): Boolean; virtual;
+    function IsValid(const S: string): Boolean; virtual;
+    procedure Error; virtual;
   end;
 
 type { typ opisuj¥cy okno edycji przedmiotu }
@@ -42,6 +58,16 @@ const
     VmtLink: Ofs(TypeOf(TPrzedmiotDialog)^);
     Load   : @TPrzedmiotDialog.Load;
     Store  : @TPrzedmiotDialog.Store);
+  RNazwaValidator: TStreamRec = (
+    ObjType: $3002;
+    VmtLink: Ofs(TypeOf(TNazwaValidator)^);
+    Load   : @TNazwaValidator.Load;
+    Store  : @TNazwaValidator.Store);
+  RSkrotValidator: TStreamRec = (
+    ObjType: $3003;
+    VmtLink: Ofs(TypeOf(TSkrotValidator)^);
+    Load   : @TSkrotValidator.Load;
+    Store  : @TSkrotValidator.Store);
 
 var
   Przedmioty: PDataCollection;
@@ -50,7 +76,7 @@ procedure RegisterPrzedmiot;
 
 implementation
 uses
-  Latin2;
+  Latin2, MsgBox;
 
 { TPrzedmiot }
 
@@ -106,6 +132,46 @@ begin
   S.WriteStr(Skrot);
 end;
 
+{ TNazwaValidator }
+
+function TNazwaValidator.IsValidInput;
+begin
+  IsValidInput:=True;
+  if S='' then Exit;
+  S[1]:=UpCase(S[1]);
+end;
+
+function TNazwaValidator.IsValid;
+begin
+  IsValid:=not (Length(S)=0);
+end;
+
+procedure TNazwaValidator.Error;
+begin
+  MessageBox(#3'Nale¾y poda† nazw© identyfikuj¥c¥ przedmiot', nil, mfError or mfCancelButton);
+end;
+
+{ TSkrotValidator }
+
+function TSkrotValidator.IsValidInput;
+var
+  I: Integer;
+begin
+  isValidInput:=True;
+  if S='' then Exit;
+  for I:=1 to Length(S) do S[I]:=UpCase(S[I]);
+end;
+
+function TSkrotValidator.IsValid;
+begin
+  IsValid:=not (Length(S)=0);
+end;
+
+procedure TSkrotValidator.Error;
+begin
+  MessageBox(#3'Nale¾y poda† skr¢t identyfikuj¥cy przedmiot', nil, mfError or mfCancelButton);
+end;
+
 { TPrzedmiotDialog }
 
 constructor TPrzedmiotDialog.Load;
@@ -159,6 +225,8 @@ procedure RegisterPrzedmiot;
 begin
   RegisterType(RPrzedmiot);
   RegisterType(RPrzedmiotDialog);
+  RegisterType(RNazwaValidator);
+  RegisterType(RSkrotValidator);
 end;
 
 begin

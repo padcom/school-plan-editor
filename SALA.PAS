@@ -2,7 +2,7 @@ Unit Sala;
 
 interface
 uses
-  Objects, Drivers, Views, Dialogs, Menus,
+  Objects, Drivers, Views, Dialogs, Menus, Validate,
   DataObjects, DataDialogs, Stale;
 
 type { typ opisuj¥cy sal© }
@@ -16,6 +16,20 @@ type { typ opisuj¥cy sal© }
     procedure Assign(Data: PDataObject); virtual;
     procedure Clear; virtual;
     procedure Store(var S: TStream); virtual;
+  end;
+
+type { typ opisuj¥cy walidator numeru sali }
+  PNumerValidator = ^TNumerValidator;
+  TNumerValidator = object (TValidator)
+    function IsValidInput(var S: string; SuppressFill: Boolean): Boolean; virtual;
+    function IsValid(const S: string): Boolean; virtual;
+    procedure Error; virtual;
+  end;
+
+type { typ opisuj¥cy walidator nazwy sali }
+  PNazwaValidator = ^TNazwaValidator;
+  TNazwaValidator = object (TValidator)
+    function IsValidInput(var S: string; SuppressFill: Boolean): Boolean; virtual;
   end;
 
 type { typ opisuj¥cy okno edycji sali }
@@ -42,6 +56,17 @@ const
     VmtLink: Ofs(TypeOf(TSalaDialog)^);
     Load   : @TSalaDialog.Load;
     Store  : @TSalaDialog.Store);
+  RNumerValidator: TStreamRec = (
+    ObjType: $4002;
+    VmtLink: Ofs(TypeOf(TNumerValidator)^);
+    Load   : @TNumerValidator.Load;
+    Store  : @TNumerValidator.Store);
+  RNazwaValidator: TStreamRec = (
+    ObjType: $4003;
+    VmtLink: Ofs(TypeOf(TNazwaValidator)^);
+    Load   : @TNazwaValidator.Load;
+    Store  : @TNazwaValidator.Store);
+
 
 var
   Sale: PDataCollection;
@@ -50,7 +75,7 @@ procedure RegisterSala;
 
 implementation
 uses
-  Latin2;
+  Latin2, MsgBox;
 
 { TSala }
 
@@ -108,6 +133,34 @@ begin
   S.WriteStr(Nazwa);
 end;
 
+{ TNumerValidator }
+
+function TNumerValidator.IsValidInput;
+begin
+  IsValidInput:=True;
+  if S='' then Exit;
+  if Pos(S[1], '0123456789')=0 then IsValidInput:=False;
+end;
+
+function TNumerValidator.IsValid;
+begin
+  IsValid:=not (Length(S)=0);
+end;
+
+procedure TNumerValidator.Error;
+begin
+  MessageBox(#3'Nale¾y poda† numer sali (pierwsza cyfra, reszta dowolna)', nil, mfError or mfCancelButton);
+end;
+
+{ TNazwaValidator }
+
+function TNazwaValidator.IsValidInput;
+begin
+  IsValidInput:=True;
+  if S='' then Exit;
+  S[1]:=UpCase(S[1]);
+end;
+
 { TSalaDialog }
 
 constructor TSalaDialog.Load;
@@ -161,6 +214,8 @@ procedure RegisterSala;
 begin
   RegisterType(RSala);
   RegisterType(RSalaDialog);
+  RegisterType(RNumerValidator);
+  RegisterType(RNazwaValidator);
 end;
 
 begin
