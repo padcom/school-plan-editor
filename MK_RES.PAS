@@ -566,16 +566,18 @@ begin
     New(DzwonekListLabel, Init(R, '  Dzwonki', DzwonekListView));
     Insert(DzwonekListLabel);
 
-    DzwonekListView^.NewList(Dzwonki);
-
     R.Assign(31, 3, Size.X-1, Size.Y-7);
     New(LekcjaListView, Init(R, 1, nil));
     Insert(LekcjaListView);
+    LekcjaListView^.GrowMode:=gfGrowHiY;
     R.Assign(31, 1, Size.X-1, 2);
     New(LekcjaListLabel, Init(R, 'Naucz.   Przedmiot   Klasa   Grupy      Sala ', LekcjaListView));
     Insert(LekcjaListLabel);
 
-    LekcjaListView^.NewList(Lekcje[1]);
+    R.Assign(1, Size.Y-6, Size.X-1, Size.Y-1);
+    New(LekcjaDetailView, Init(R, LekcjaListView));
+    Insert(LekcjaDetailView);
+    LekcjaDetailView^.GrowMode:=gfGrowLoY or gfGrowHiY;
   end;
 
   StoreObject(D);

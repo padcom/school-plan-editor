@@ -36,7 +36,11 @@ type { typ opisuj¥cy widok listy lekcji }
 type { typ opisuj¥cy widok detali lekcji }
   PLekcjaDetailView = ^TLekcjaDetailView;
   TLekcjaDetailView = object (TView)
-
+    ListView: PLekcjaListView;
+    constructor Init(var Bounds: TRect; AListView: PLekcjaListView);
+    constructor Load(var S: TStream);
+    procedure Draw; virtual;
+    procedure Store(var S: TStream); virtual;
   end;
 
 type { typ opisuj¥cy gˆ¢wne ramki wewn©trzne okna }
@@ -58,6 +62,8 @@ type { typ opisuj¥cy gˆ¢wne okno programu }
     InsideFrames: PInsideFrames;
     constructor Load(var S: TStream);
     procedure HandleEvent(var Event: TEvent); virtual;
+    procedure SetDzwonekList(List: PDataCollection); virtual;
+    procedure SetLekcjaList(List: PDataCollection); virtual;
     procedure Store(var S: TStream); virtual;
   end;
 
@@ -105,48 +111,53 @@ implementation
 { THighlightedLabel }
 
 function THighlightedLabel.GetPalette;
-var
-  S: PPalette;
+const
+  S: String = CLabel;
 begin
-  S:=inherited GetPalette;
-  S^[1]:=#2; S^[3]:=#3;
-  S^[2]:=#5; S^[4]:=#5;
-  GetPalette:=S;
+  S[1]:=#2; S[2]:=#5;
+  GetPalette:=@S;
 end;
 
 { TDzienTygodniaListView }
 
 function TDzienTygodniaListView.GetPalette;
-var
-  S: PPalette;
+const
+  S: String = CListViewer;
 begin
-  S:=inherited GetPalette;
-  S^[1]:=#2; S^[3]:=#5;
-  S^[2]:=#2; S^[4]:=#5;
-  GetPalette:=S;
+  S[1]:=#2; S[3]:=#4;
+  S[2]:=#2; S[4]:=#4;
+  GetPalette:=@S;
 end;
 
 { TDzwonekListView }
 
 function TDzwonekListView.GetPalette;
-var
-  S: PPalette;
+const
+  S: String = CListViewer;
 begin
-  S:=inherited GetPalette;
-  S^[1]:=#2; S^[3]:=#5;
-  S^[2]:=#2; S^[4]:=#5;
-  GetPalette:=S;
+  S[1]:=#2; S[3]:=#4;
+  S[2]:=#2; S[4]:=#4;
+  GetPalette:=@S;
 end;
 
 procedure TDzwonekListView.HandleEvent;
 var
   L: PCollection;
+  Item: PObject;
+  I: Integer;
 begin
   if (Event.What=evBroadcast) and (Event.Command=cmUpdateLists) then
   begin
+    I:=Focused;
+    if I>=List^.Count then Dec(I);
     L:=List;
     List:=nil;
     NewList(L);
+    if Assigned(List) and (List^.Count>0) then
+    begin
+      FocusItem(I);
+      DrawView;
+    end;
   end;
   inherited HandleEvent(Event);
 end;
@@ -154,13 +165,12 @@ end;
 { TLekcjaListView }
 
 function TLekcjaListView.GetPalette;
-var
-  S: PPalette;
+const
+  S: String = CListViewer;
 begin
-  S:=inherited GetPalette;
-  S^[1]:=#2; S^[3]:=#5;
-  S^[2]:=#2; S^[4]:=#5;
-  GetPalette:=S;
+  S[1]:=#2; S[3]:=#4;
+  S[2]:=#2; S[4]:=#4;
+  GetPalette:=@S;
 end;
 
 procedure TLekcjaListView.Draw;
@@ -175,40 +185,250 @@ var
   K: PKlasa;
   S: PSala;
   St: String;
+  I, W: Word;
 begin
-  Color1:=GetColor(2);
-  Color2:=GetColor(2);
+  Color1:=GetColor(3);
+  Color2:=GetColor(1);
   C:='³';
   for Y:=0 to Size.Y-1 do
   begin
-
-    MoveChar(Buf, ' ', Color1, Size.X);
-{
-    if TopItem+Y=Focused then Color:=2 else Color:=0;
-
-    L:=List^.At(Y+TopItem);
-    if not Assigned(Nauczyciele) then N:=nil
-    else
-    begin
-      N:=PNauczyciel(Nauczyciele^.ItemByIndex(L^.NauczycielIndex));
-      if not Assigned(N) then St:='BRAK!'
-      else if not Assigned(N^.Skrot) then St:='BRAK!'
-      else St:=N^.Skrot^;
-    end;
-    while Length(St)<5 do St:=St+' ';
-
-    WriteStr(0, 0, St, Color);
-}
+    MoveChar(Buf, ' ', Color2, Size.X);
     { narysowanie ramek rozdzielaj¥cych poszczeg¢lne elementy listy }
     MoveChar(Buf[8], C, Color2, 1);
     MoveChar(Buf[20], C, Color2, 1);
     MoveChar(Buf[28], C, Color2, 1);
     MoveChar(Buf[39], C, Color2, 1);
+
+    if TopItem+Y=Focused then Color:=Color1 else Color:=Color2;
+    if not Assigned(List) or (Y+TopItem>=List^.Count) then
+    begin
+      Color:=Color2;
+      L:=nil;
+    end
+    else L:=List^.At(Y+TopItem);
+
+    if not Assigned(L) then
+    begin
+      St:='        '; MoveStr(Buf, St, Color);
+      St:='           '; MoveStr(Buf[9], St, Color);
+      St:='       '; MoveStr(Buf[21], St, Color);
+      St:='          '; MoveStr(Buf[29], St, Color);
+      St:='        '; MoveStr(Buf[40], St, Color);
+    end
+    else
+    begin
+      { nauczyciel }
+      if not Assigned(Nauczyciele) then N:=nil
+      else
+      begin
+        N:=PNauczyciel(Nauczyciele^.ItemByIndex(L^.NauczycielIndex));
+        if not Assigned(N) then St:='BRAK!'
+        else if not Assigned(N^.Skrot) then St:='BRAK!'
+        else St:=N^.Skrot^;
+      end;
+      while Length(St)<7 do St:=St+' ';
+      St:=' '+St;
+      MoveStr(Buf, St, Color);
+
+      { przedmiot }
+      if not Assigned(Przedmioty) then P:=nil
+      else
+      begin
+        P:=PPrzedmiot(Przedmioty^.ItemByIndex(L^.PrzedmiotIndex));
+        if not Assigned(P) then St:='BRAK!'
+        else if not Assigned(P^.Skrot) then St:='BRAK!'
+        else St:=P^.Skrot^;
+      end;
+      while Length(St)<10 do St:=St+' ';
+      St:=' '+St;
+      MoveStr(Buf[9], St, Color);
+
+      { klasa }
+      if not Assigned(Klasy) then K:=nil
+      else
+      begin
+        K:=PKlasa(Klasy^.ItemByIndex(L^.KlasaIndex));
+        if not Assigned(S) then St:='BRAK!'
+        else St:=K^.GetText(5);
+      end;
+      while Length(St)<6 do St:=St+' ';
+      St:=' '+St;
+      MoveStr(Buf[21], St, Color);
+
+      { grupy klasy }
+      if not Assigned(K) then St:='---------'
+      else
+      begin
+        St:='';
+        W:=1;
+        for I:=1 to 8 do
+        begin
+          if (L^.Grupy and W)<>0 then St:=St+'*'
+          else St:=St+'-';
+          W:=W shl 1;
+        end;
+      end;
+      St:=' '+St+' ';
+      MoveStr(Buf[29], St, Color);
+
+      { sala }
+      if not Assigned(Sale) then S:=nil
+      else
+      begin
+        S:=PSala(Sale^.ItemByIndex(L^.SalaIndex));
+        if not Assigned(S) then St:='BRAK!'
+        else if not Assigned(S^.Numer) then St:='BRAK!'
+        else St:=S^.Numer^;
+      end;
+      while Length(St)<7 do St:=St+' ';
+      St:=' '+St;
+      MoveStr(Buf[40], St, Color);
+    end;
     WriteLine(0, Y, Size.X, 1, Buf);
   end;
 end;
 
+procedure TLekcjaListView.HandleEvent;
+begin
+  if (Event.What=evBroadcast) and
+     (Event.Command=cmDataBaseChanged) then DrawView;
+  inherited HandleEvent(Event);
+end;
+
 { TLekcjaDetailView }
+
+constructor TLekcjaDetailView.Init;
+begin
+  inherited Init(Bounds);
+  ListView:=AListView;
+end;
+
+constructor TLekcjaDetailView.Load;
+begin
+  inherited Load(S);
+  GetPeerViewPtr(S, ListView);
+end;
+
+procedure TLekcjaDetailView.Draw;
+var
+  Buf: TDrawBuffer;
+  Color: Word;
+  Y: Integer;
+  L: PLekcja;
+  N: PNauczyciel;
+  P: PPrzedmiot;
+  K: PKlasa;
+  S: PSala;
+  St, Grupa: String;
+  I, W: Word;
+begin
+  Color:=GetColor(1);
+  for Y:=0 to Size.Y-1 do
+  begin
+    MoveChar(Buf, ' ', Color, Size.X);
+
+    { wypisanie nagˆ¢wk¢w }
+    case Y of
+      0: St:=' Nauczyciel :';
+      1: St:=' Przedmiot  :';
+      2: St:=' Klasa      :';
+      3: St:=' Grupy      :';
+      4: St:=' Sala       :'
+      else St:='';
+    end;
+    MoveStr(Buf, St, Color);
+
+    K:=nil;
+    { wypisanie danych zgodnie z danymi wy˜wietlanymi w li˜cie lekcji }
+    if (not Assigned(ListView)) or (not Assigned(ListView^.List)) or (ListView^.List^.Count=0) then St:=''
+    else
+    begin
+      L:=ListView^.List^.At(ListView^.Focused);
+      case Y of
+        0:
+        begin
+          if not Assigned(Nauczyciele) then St:=''
+          else
+          begin
+            N:=PNauczyciel(Nauczyciele^.ItemByIndex(L^.NauczycielIndex));
+            if not Assigned(N) then St:=''
+            else if not Assigned(N^.ImieNazwisko) then St:=''
+            else St:=N^.ImieNazwisko^;
+          end;
+        end;
+        1:
+        begin
+          if not Assigned(Przedmioty) then St:=''
+          else
+          begin
+            P:=PPrzedmiot(Przedmioty^.ItemByIndex(L^.PrzedmiotIndex));
+            if not Assigned(P) then St:=''
+            else if not Assigned(P^.Nazwa) then St:=''
+            else St:=P^.Nazwa^;
+          end;
+        end;
+        2:
+        begin
+          if not Assigned(Klasy) then St:=''
+          else
+          begin
+            K:=PKlasa(Klasy^.ItemByIndex(L^.KlasaIndex));
+            if not Assigned(K) then St:=''
+            else St:=K^.GetText(5);
+          end;
+        end;
+        3:
+        begin
+          if not Assigned(L) then St:=''
+          else
+          begin
+            St:='';
+            W:=1;
+            for I:=1 to 8 do
+            begin
+              if (L^.Grupy and W)<>0 then
+              begin
+                Str(I, Grupa);
+                St:=St+Grupa+', ';
+              end;
+              W:=W shl 1;
+            end;
+            if St<>'' then
+            begin
+              St:=Copy(St, 1, Length(St)-2);
+              St:=St+'.'
+            end;
+          end;
+        end;
+        4:
+        begin
+          if not Assigned(Sale) then St:=''
+          else
+          begin
+            S:=PSala(Sale^.ItemByIndex(L^.SalaIndex));
+            if not Assigned(S) then St:=''
+            else if not Assigned(S^.Numer) then St:=''
+            else
+            begin
+              St:=S^.Numer^;
+              if Assigned(S^.Nazwa) then St:=St+' ('+S^.Nazwa^+')';
+            end;
+          end;
+        end
+        else St:='';
+      end;
+    end;
+    MoveStr(Buf[15], St, Color);
+
+    WriteLine(0, Y, Size.X, 1, Buf);
+  end;
+end;
+
+procedure TLekcjaDetailView.Store;
+begin
+  inherited Store(S);
+  PutPeerViewPtr(S, ListView);
+end;
 
 { TInsideFrames }
 
@@ -294,6 +514,16 @@ begin
     end;
   end;
   inherited HandleEvent(Event);
+end;
+
+procedure TMainWindow.SetLekcjaList;
+begin
+  LekcjaListView^.NewList(List);
+end;
+
+procedure TMainWindow.SetDzwonekList;
+begin
+  DzwonekListView^.NewList(List);
 end;
 
 procedure TMainWindow.Store;
