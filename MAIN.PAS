@@ -4,13 +4,13 @@ uses
   Stale, Resource,
   DataObjects, DataDialogs, DataBase, Help,
   Nauczyciel, Przedmiot, Klasa, Sala, Dzwonek, Lekcja,
-  HostWin, MainWin, SpecWins;
+  HostWin, MainWin{, SpecWins};
 
 
 type { typ opisujcy gˆ¢wn aplikacj© }
   PMainApp = ^TMainApp;
   TMainApp = object (TApplication)
-    MainWindow: PMainWindow;
+    MainEditWindow: PMainEditWindow;
     constructor Init;
     destructor Done; virtual;
     procedure InitStatusLine; virtual;
@@ -26,11 +26,11 @@ begin
   OpenResources('PLAN.RES');
   OpenFiles('DATA');
   inherited Init;
-  MainWindow:=PMainWindow(ResourceFile.Get('MainWindow'));
-  if LoadSuccessful(MainWindow) then
+  MainEditWindow:=PMainEditWindow(ResourceFile.Get('MainEditWindow'));
+  if LoadSuccessful(MainEditWindow) then
   begin
-    MainWindow^.SetDzwonekList(Dzwonki);
-    InsertWindow(MainWindow);
+    MainEditWindow^.UpdateLists;
+    InsertWindow(MainEditWindow);
   end;
   Message(@Self, evCommand, cmAboutBox, nil);
 end;
@@ -89,25 +89,22 @@ begin
       cmLekcjaAdd:
       begin
         HostWindow:=Message(Desktop, evBroadcast, cmFindEditorWindow, nil);
-        if Assigned(HostWindow) then with HostWindow^ do
-          LekcjaAdd(GetCurrentDzien, GetDzwonekIndex);
+        if Assigned(HostWindow) then with HostWindow^ do LekcjaAdd(GetCurrentDzien, GetCurrentDzwonekIndex);
         ClearEvent(Event);
       end;
       cmLekcjaDel:
       begin
         HostWindow:=Message(Desktop, evBroadcast, cmFindEditorWindow, nil);
-        if Assigned(HostWindow) then with HostWindow^ do
-          LekcjaDel(GetCurrentDzien, GetCurrentLekcja);
+        if Assigned(HostWindow) then with HostWindow^ do LekcjaDel(GetCurrentDzien, GetCurrentLekcja);
         ClearEvent(Event);
       end;
       cmLekcjaEdit:
       begin
         HostWindow:=Message(Desktop, evBroadcast, cmFindEditorWindow, nil);
-        if Assigned(HostWindow) then with HostWindow^ do
-          LekcjaEdit(GetCurrentDzien, GetDzwonekIndex, GetCurrentLekcja);
+        if Assigned(HostWindow) then with HostWindow^ do LekcjaEdit(GetCurrentDzien, GetCurrentDzwonekIndex, GetCurrentLekcja);
         ClearEvent(Event);
       end;
-      cmPlanNauczyciela: RunPlanLekcjiNauczyciela;
+{     cmPlanNauczyciela: RunPlanLekcjiNauczyciela;}
     end;
   end;
 end;

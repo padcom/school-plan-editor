@@ -37,9 +37,10 @@ const
   cmUpdateLists            = 1000;
   cmDataBaseChanged        = 1001;
   cmListItemChanged        = 1002;
-  cmRedrawLekcjaListView   = 1003;
-  cmRedrawLekcjaDetailView = 1004;
-  cmFindEditorWindow       = 1005;
+  cmUpdateDzwonekListView  = 1003;
+  cmUpdateLekcjaListView   = 1004;
+  cmUpdateLekcjaDetailView = 1005;
+  cmFindEditorWindow       = 1006;
 
   { konteksty pomocy }
   hcNauczycielAdd   = $1100;

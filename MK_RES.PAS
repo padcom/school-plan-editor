@@ -3,7 +3,7 @@ uses
   App, Objects, Drivers, Views, Dialogs, Menus,
   DataObjects, DataDialogs, Resource, Stale,
   Nauczyciel, Przedmiot, Klasa, Sala, Dzwonek, Lekcja,
-  Help, DataBase, MainWin, SpecWins;
+  Help, DataBase, MainWin{, SpecWins};
 
 { *** procedury tworz¥ce poszczeg¢lne elementy aplikacji *** }
 
@@ -524,20 +524,21 @@ end;
 procedure CreateMainWindow;
 var
   R: TRect;
-  D: PMainWindow;
+  D: PMainEditWindow;
   S: PStringCollection;
   I: Integer;
 begin
-  BeginCreating('MainWindow');
+  BeginCreating('MainEditWindow');
 
   R.Assign(0, 0, 80, 23);
-  D:=New(PMainWindow, Init(R, 'Plan lekcji'));
+  D:=New(PMainEditWindow, Init(R, 'Plan lekcji'));
   with D^ do
   begin
     Palette:=dpBlueDialog;
     Options:=Options or ofCentered;
     Flags:=Flags and (not wfClose);
 
+    { wewn©trzne ramki }
     GetExtent(R);
     R.Grow(-1, -1);
     New(InsideFrames, Init(R));
@@ -556,6 +557,7 @@ begin
     New(DzienTygodniaLabel, Init(R, 'Dni tygodnia', DzienTygodniaListView));
     Insert(DzienTygodniaLabel);
 
+    { lista dzwonk¢w }
     R.Assign(16, 3, 29, Size.Y-7);
     New(DzwonekListView, Init(R, 1, nil, nil));
     Insert(DzwonekListView);
@@ -564,6 +566,7 @@ begin
     New(DzwonekListLabel, Init(R, '  Dzwonki', DzwonekListView));
     Insert(DzwonekListLabel);
 
+    { lista lekcji }
     R.Assign(31, 3, Size.X-1, Size.Y-7);
     New(LekcjaListView, Init(R, 1, nil));
     Insert(LekcjaListView);
@@ -572,8 +575,9 @@ begin
     New(LekcjaListLabel, Init(R, 'Naucz.   Przedmiot   Klasa   Grupy      Sala ', LekcjaListView));
     Insert(LekcjaListLabel);
 
+    { widok szczeg¢ˆowy lekcji }
     R.Assign(1, Size.Y-6, Size.X-1, Size.Y-1);
-    New(LekcjaDetailView, Init(R, LekcjaListView));
+    New(LekcjaDetailView, Init(R));{, LekcjaListView));}
     Insert(LekcjaDetailView);
     LekcjaDetailView^.GrowMode:=gfGrowLoY or gfGrowHiY;
 
@@ -581,9 +585,10 @@ begin
   end;
 
   StoreObject(D);
-{  TestDialog(D);}
+  TestDialog(D);
 end;
 
+(*
 procedure CreatePlanLekcjiNauczycielWindow;
 var
   R: TRect;
@@ -643,7 +648,7 @@ begin
   StoreObject(D);
 {  TestDialog(D);}
 end;
-
+*)
 var
   D: PDzwonek;
   L: PLekcja;
@@ -662,7 +667,7 @@ begin
   CreateChooseDataDialog;
   CreateHints;
   CreateMainWindow;
-  CreatePlanLekcjiNauczycielWindow;
+{  CreatePlanLekcjiNauczycielWindow;}
   DumpNames;
   CloseResources;
 end.

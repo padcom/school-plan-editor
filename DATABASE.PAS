@@ -5,7 +5,7 @@ uses
   App, Objects, Drivers, Views, Dialogs, MsgBox, Resource,
   DataObjects, DataDialogs, Stale,
   Nauczyciel, Przedmiot, Klasa, Sala, Dzwonek, Lekcja,
-  MainWin, Filtr;
+  {MainWin,} Filtr;
 
 function NauczycielAdd: Boolean;
 function NauczycielDel: Boolean;
@@ -683,7 +683,6 @@ begin
     MessageBox(#3'Lista dzwonk¢w jest pusta ! Prosz© j¥ uzupeˆni†.', nil, mfError or mfCancelButton);
     Exit;
   end;
-  Inc(Dzien);
   New(Data, Init);
   Data^.DzwonekIndex:=DzwonekIndex;
   FiltrujDane(Dzien, DzwonekIndex);
@@ -706,7 +705,6 @@ end;
 procedure LekcjaDel;
 begin
   if not Assigned(Data) then Exit;
-  Inc(Dzien);
   if MessageBox(#3'Czy na pewno chcesz usun¥† t¥ lekcj© ?', nil, mfConfirmation or mfYesButton or mfNoButton)=cmYes then
   begin
     Lekcje[Dzien]^.Free(Data);
@@ -719,7 +717,6 @@ end;
 procedure LekcjaEdit;
 begin
   if not Assigned(Data) then Exit;
-  Inc(Dzien);
   Lekcje[Dzien]^.Delete(Data);
   FiltrujDane(Dzien, DzwonekIndex);
   EditLekcja(Data, 'Edycja wpisu lekcji');
@@ -797,6 +794,8 @@ begin
   end
   else for I:=1 to IloscDni do New(Lekcje[I], Load(S));
   S.Done;
+
+  UpdateFiles;
 end;
 
 procedure UpdateFiles;
