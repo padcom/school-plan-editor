@@ -9,6 +9,9 @@ uses
 function NauczycielAdd: Boolean;
 function NauczycielDel: Boolean;
 function NauczycielEdit: Boolean;
+function PrzedmiotAdd: Boolean;
+function PrzedmiotDel: Boolean;
+function PrzedmiotEdit: Boolean;
 
 function ChooseNauczyciel(List: PDataCollection): PNauczyciel;
 function ChoosePrzedmiot(List: PDataCollection): PPrzedmiot;
@@ -47,7 +50,6 @@ begin
 end;
 
 
-
 function NauczycielDel;
 var
   Data: PDataObject;
@@ -66,7 +68,9 @@ begin
     begin
       for I:=1 to IloscDni do if Assigned(Lekcje[I]) then Lekcje[I]^.ForEach(@UsunNauczycielaZLekcji);
       Nauczyciele^.Free(Data);
+      NauczycielDel:=True;
     end;
+    NauczycielDel:=False;
   end;
 end;
 
@@ -103,6 +107,96 @@ begin
   begin
     Nauczyciele^.Insert(Data);
     NauczycielEdit:=False;
+  end;
+  Dispose(Temp, Done);
+end;
+
+function PrzedmiotAdd;
+var
+  Data: PPrzedmiot;
+  Dialog: PDataDialog;
+  I: Integer;
+begin
+  New(Data, Init);
+  Dialog:=PDataDialog(ResourceFile.Get('PrzedmiotEditDialog'));
+  if Application^.ExecuteDialog(Dialog, Data)=cmOK then
+  begin
+    if Przedmioty^.Search(Data, I) then
+    begin
+      MessageBox(#3'Taki przedmiot ju¾ istnieje !', nil, mfError or mfCancelButton);
+      PrzedmiotAdd:=False;
+    end
+    else
+    begin
+      Przedmioty^.Insert(Data);
+      PrzedmiotAdd:=True;
+    end;
+  end
+  else
+  begin
+    Dispose(Data, Done);
+    PrzedmiotAdd:=False;
+  end;
+end;
+
+
+function PrzedmiotDel;
+var
+  Data: PDataObject;
+  I: Integer;
+
+procedure UsunPrzedmiotZLekcji(Item: Pointer); far;
+begin
+  if PLekcja(Item)^.PrzedmiotIndex=Data^.Index then PLekcja(Item)^.PrzedmiotIndex:=-1;
+end;
+
+begin
+  Data:=ChoosePrzedmiot(Przedmioty);
+  if Assigned(Data) then
+  begin
+    if MessageBox(#3'Czy na pewno chcesz usun¥† ten przedmiot ?',nil,mfConfirmation or mfYesButton or mfNoButton)=cmYes then
+    begin
+      for I:=1 to IloscDni do if Assigned(Lekcje[I]) then Lekcje[I]^.ForEach(@UsunPrzedmiotZLekcji);
+      Przedmioty^.Free(Data);
+      PrzedmiotDel:=True;
+    end;
+    PrzedmiotDel:=False;
+  end;
+end;
+
+function PrzedmiotEdit;
+var
+  Data, Temp: PPrzedmiot;
+  Dialog: PDataDialog;
+  I: Integer;
+begin
+  Data:=ChoosePrzedmiot(Przedmioty);
+  if not Assigned(Data) then Exit;
+
+  New(Temp, Init);
+  Temp^.Assign(Data);
+  Przedmioty^.Delete(Data);
+
+  Dialog:=PDataDialog(ResourceFile.Get('PrzedmiotEditDialog'));
+  if Application^.ExecuteDialog(Dialog, Temp)=cmOK then
+  begin
+    if Przedmioty^.Search(Temp, I) then
+    begin
+      MessageBox(#3'Taki przedmiot ju¾ istnieje !', nil, mfError or mfCancelButton);
+      Przedmioty^.Insert(Data);
+      PrzedmiotEdit:=False;
+    end
+    else
+    begin
+      Data^.Assign(Temp);
+      Przedmioty^.Insert(Data);
+      PrzedmiotEdit:=True;
+    end;
+  end
+  else
+  begin
+    Przedmioty^.Insert(Data);
+    PrzedmiotEdit:=False;
   end;
   Dispose(Temp, Done);
 end;

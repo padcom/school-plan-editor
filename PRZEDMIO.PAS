@@ -13,6 +13,7 @@ type { typ opisuj¥cy przedmiot }
     constructor Load(var S: TStream);
     function Compare(Data: PDataObject): Integer; virtual;
     function GetText(MaxLen: Integer): String; virtual;
+    procedure Assign(Data: PDataObject); virtual;
     procedure Clear; virtual;
     procedure Store(var S: TStream); virtual;
   end;
@@ -82,6 +83,13 @@ begin
   GetText:=Copy(S, 1, MaxLen);
 end;
 
+procedure TPrzedmiot.Assign;
+begin
+  inherited Assign(Data);
+  Nazwa:=NewStr(PPrzedmiot(Data)^.Nazwa^);
+  Skrot:=NewStr(PPrzedmiot(Data)^.Skrot^);
+end;
+
 procedure TPrzedmiot.Clear;
 begin
   inherited Clear;
@@ -110,11 +118,31 @@ begin
 end;
 
 procedure TPrzedmiotDialog.GetData;
+var
+  S: String;
 begin
+  with TPrzedmiot(Rec) do
+  begin
+    NazwaInputLine^.GetData(S);
+    if Assigned(Nazwa) then DisposeStr(Nazwa);
+    Nazwa:=NewStr(S);
+    SkrotInputLine^.GetData(S);
+    if Assigned(Skrot) then DisposeStr(Skrot);
+    Skrot:=NewStr(S);
+  end;
 end;
 
 procedure TPrzedmiotDialog.SetData;
+var
+  S: String;
 begin
+  with TPrzedmiot(Rec) do
+  begin
+    if Assigned(Nazwa) then S:=Nazwa^ else S:='';
+    NazwaInputLine^.SetData(S);
+    if Assigned(Skrot) then S:=Skrot^ else S:='';
+    SkrotInputLine^.SetData(S);
+  end;
 end;
 
 procedure TPrzedmiotDialog.Store;
