@@ -171,6 +171,7 @@ procedure TLekcjaDialog.SetTexts;
 var
   Data: PDataObject;
   S: String;
+  L, I: LongInt;
 begin
   Data:=nil;
   if Assigned(Nauczyciele) then Data:=Nauczyciele^.ItemByIndex(NauczycielIndex);
@@ -189,7 +190,25 @@ begin
 
   Data:=nil;
   if Assigned(Klasy) then Data:=Klasy^.ItemByIndex(KlasaIndex);
-  if Assigned(Data) then S:=Data^.GetText(255) else S:='(BRAK)';
+  if Assigned(Data) then
+  begin
+    S:=Data^.GetText(255);
+    L:=1;
+    for I:=1 to PKlasa(Data)^.IloscGrup do
+    begin
+      if L and PKlasa(Data)^.FiltrowaneGrupy<>0 then Break;
+      L:=L shl 1;
+    end;
+    GrupyCheckBoxes^.Value:=L;
+    GrupyCheckBoxes^.EnableMask:=PKlasa(Data)^.FiltrowaneGrupy;
+    GrupyCheckBoxes^.DrawView;
+  end
+  else
+  begin
+    S:='(BRAK)';
+    GrupyCheckBoxes^.EnableMask:=0;
+    GrupyCheckBoxes^.DrawView;
+  end;
   KlasaActiveText^.SetText(S);
 end;
 

@@ -416,6 +416,7 @@ begin
   if not Assigned(LekcjaListView) then GetCurrentLekcja:=nil
   else if not Assigned(LekcjaListView^.List) then GetCurrentLekcja:=nil
   else if LekcjaListView^.List^.Count=0 then GetCurrentLekcja:=nil
+  else if LekcjaListView^.List^.Count<=LekcjaListView^.Focused then GetCurrentLekcja:=nil
   else GetCurrentLekcja:=LekcjaListView^.List^.At(LekcjaListView^.Focused);
 end;
 
@@ -430,11 +431,12 @@ begin
   if Item>DzwonekListView^.List^.Count then Item:=DzwonekListView^.List^.Count;
   if Item<0 then Item:=0;
   DzwonekListView^.FocusItem(Item);
+  DzwonekListView^.DrawView;
 end;
 
 procedure TMainEditWindow.UpdateLekcjaListView;
 var
-  I, Item: Integer;
+  I, Item, Position: Integer;
   Temp: PLekcja;
   List: PDataCollection;
 begin
@@ -443,6 +445,7 @@ begin
   begin
     New(List, Init(10, 5));
     Item:=DzwonekListView^.Focused;
+    Position:=LekcjaListView^.Focused;
     if Assigned(LekcjaListView^.List) then
     begin
       LekcjaListView^.List^.DeleteAll;
@@ -459,9 +462,10 @@ begin
     end;
 
     LekcjaListView^.NewList(List);
-    if Item>LekcjaListView^.List^.Count then Item:=LekcjaListView^.List^.Count;
-    if Item<0 then Item:=0;
-    LekcjaListView^.FocusItem(Item);
+    while Position>LekcjaListView^.List^.Count do Dec(Position);
+    if Position<0 then Position:=0;
+    LekcjaListView^.FocusItem(Position);
+    LekcjaListView^.DrawView;
   end;
 end;
 

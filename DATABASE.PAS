@@ -400,8 +400,13 @@ procedure UaktualnijKlaseNaPlanieZajec(Item: Pointer); far;
 var
   Mask, I: Word;
 begin
-  for I:=1 to Data^.IloscGrup do I:=I shl 1;
-  if PLekcja(Item)^.KlasaIndex=Data^.Index then PLekcja(Item)^.Grupy:=PLekcja(Item)^.Grupy and Mask;
+  Mask:=0;
+  for I:=1 to Data^.IloscGrup do Mask:=Mask shl 1+1;
+  if PLekcja(Item)^.KlasaIndex=Data^.Index then
+  begin
+    PLekcja(Item)^.Grupy:=PLekcja(Item)^.Grupy and Mask;
+    if PLekcja(Item)^.Grupy=0 then PLekcja(Item)^.KlasaIndex:=-1;
+  end;
 end;
 
 begin
@@ -424,10 +429,11 @@ begin
     end
     else
     begin
-      for I:=1 to IloscDni do if Assigned(Lekcje[I]) then Lekcje[I]^.ForEach(@UaktualnijKlaseNaPlanieZajec);
       Data^.Assign(Temp);
       Klasy^.Insert(Data);
-      Message(Desktop^.Current, evBroadcast, cmDataBaseChanged, nil);
+      for I:=1 to IloscDni do if Assigned(Lekcje[I]) then Lekcje[I]^.ForEach(@UaktualnijKlaseNaPlanieZajec);
+      Message(Desktop, evBroadcast, cmDataBaseChanged, nil);
+      Message(Desktop, evBroadcast, cmUpdateLekcjaListView, nil);
       KlasaEdit:=True;
     end;
   end
@@ -631,16 +637,19 @@ end;
 
 function ChooseKlasa;
 var
-  D: PDialog;
+  D: PChooseGrupaKlasyDialog;
   L, I, Grupa: LongInt;
   Data: PKlasa;
 begin
   Data:=PKlasa(ChooseFromList(List, 'Lista dost©pnych klas jest pusta !', '~L~ista klas'));
-  if ChooseGroup then
+  if ChooseGroup and (Data^.IloscGrup>1) then
   begin
-    D:=PDialog(ResourceFile.Get('ChooseGrupaKlasyDialog'));
+    D:=PChooseGrupaKlasyDialog(ResourceFile.Get('ChooseGrupaKlasyDialog'));
     if Loadsuccessful(D) then
     begin
+      L:=0;
+      for I:=1 to Data^.IloscGrup do L:=(L shl 1)+1;
+      D^.GrupaRadioButtons^.EnableMask:=L;
       L:=0;
       if Application^.ExecuteDialog(D, @L)=cmOK then
       begin
@@ -651,7 +660,8 @@ begin
       end
       else Data:=nil;
     end;
-  end;
+  end
+  else Data^.Grupy:=0;
   ChooseKlasa:=Data;
 end;
 

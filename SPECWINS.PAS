@@ -17,10 +17,10 @@ type { typ opisuj¥cy list box dzwonk¢w }
 type { typ opisuj¥cy widok listy lekcji dla poszczeg¢lnego dnia }
   PLekcjaListView = ^TLekcjaListView;
   TLekcjaListView = object (TListBox)
-    DisableUpdates: Boolean;
     function GetPalette: PPalette; virtual;
     function GetText(Item: Integer; MaxLen: Integer): String; virtual;
     procedure FocusItem(Item: Integer); virtual;
+    procedure NewList(AList: PCollection); virtual;
   end;
 
 type { typ opisuj¥cy widok ramek w ˜rodku okna edycji planu lekcji }
@@ -143,6 +143,9 @@ begin
   GetText:=PIndividualEditWindow(Owner)^.GetText(Item, MaxLen, @Self);
 end;
 
+const
+  DisableUpdates: Boolean = False;
+
 procedure TLekcjaListView.FocusItem;
 var
   Event: TEvent;
@@ -153,18 +156,29 @@ begin
   begin
     DzwonekListView^.FocusItem(Item);
     DzwonekListView^.DrawView;
-    if not DisableUpdates then for I:=1 to 4 do with LekcjaListView[I]^ do
+    if not DisableUpdates then
     begin
-      DisableUpdates:=True;
-      FocusItem(Item);
-      DrawView;
-      DisableUpdates:=False;
+      for I:=1 to 4 do with LekcjaListView[I]^ do
+      begin
+        DisableUpdates:=True;
+        FocusItem(Item);
+        DrawView;
+        DisableUpdates:=False;
+      end;
     end;
   end;
   Event.What:=evBroadcast;
   Event.Command:=cmUpdateLekcjaDetailView;
   Event.InfoPtr:=nil;
   Owner^.HandleEvent(Event);
+end;
+
+procedure TLekcjaListView.NewList;
+begin
+  if List <> nil then Dispose(List, Done);
+  List := AList;
+  SetRange(Dzwonki^.Count);
+  if Range > 0 then FocusItem(0);
 end;
 
 { TInsideFrames }
@@ -373,7 +387,6 @@ begin
     Position:=LekcjaListView[I]^.Focused;
     LekcjaListView[I]^.List:=nil;
     LekcjaListView[I]^.NewList(Lekcje[FirstDzien+I-1]);
-    LekcjaListView[I]^.SetRange(Dzwonki^.Count);
     LekcjaListView[I]^.FocusItem(Position);
     LekcjaListView[I]^.DrawView;
   end;
@@ -499,16 +512,19 @@ procedure RunPlanLekcjiKlasy;
 var
   Win: PKlasaEditWindow;
   Data: PKlasa;
-  S: String;
+  S, S2: String;
+  I, W: Word;
 begin
   Data:=ChooseKlasa(Klasy, True);
   if not Assigned(Data) then Exit;
   Win:=PKlasaEditWindow(ResourceFile.Get('KlasaEditWindow'));
   if LoadSuccessful(Win) then
   begin
-{    Data^.Grupy:=0;}
+    W:=Data^.Grupy;
+    Str(W, S2);
     Str(Data^.Numer, S);
-    S:='Klasa '+S+Data^.Litera+', grupa: 1';
+    S:='Klasa '+S+Data^.Litera;
+    if Data^.Grupy>0 then S:=S+', grupa: '+S2;
     Win^.SetTitle('Edycja planu lekcji dla: '+S);
     Win^.SetEditorData(Data);
     Win^.UpdateLists;

@@ -62,9 +62,6 @@ var
   Data: PKlasa;
   L: PLekcja;
 begin
-  New(TempKlasy, Init(10, 5));
-  if not Assigned(Lekcje[Dzien]) or (Lekcje[Dzien]^.Count=0) then Exit;
-
   { inicjalizacja filtr¢w klasy }
   I:=0; while I<Klasy^.Count do
   begin
@@ -74,6 +71,9 @@ begin
     Data^.FiltrowaneGrupy:=W;
     Inc(I);
   end;
+
+  New(TempKlasy, Init(10, 5));
+  if not Assigned(Lekcje[Dzien]) or (Lekcje[Dzien]^.Count=0) then Exit;
 
   I:=0;
   while I<Lekcje[Dzien]^.Count do
