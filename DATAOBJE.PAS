@@ -120,7 +120,7 @@ end;
 
 function TDataCollection.Empty;
 begin
-  Empty:=Count=0;
+  Empty:=(Count=0);
 end;
 
 function TDataCollection.ItemByIndex;

@@ -84,6 +84,7 @@ constructor TNauczyciel.Load;
 begin
   inherited Load(S);
   ImieNazwisko:=S.ReadStr;
+  Skrot:=S.ReadStr;
 end;
 
 function TNauczyciel.Compare;
@@ -111,8 +112,10 @@ end;
 procedure TNauczyciel.Assign;
 begin
   inherited Assign(Data);
-  ImieNazwisko:=NewStr(PNauczyciel(Data)^.ImieNazwisko^);
-  Skrot:=NewStr(PNauczyciel(Data)^.Skrot^);
+  if Assigned(PNauczyciel(Data)^.ImieNazwisko) then ImieNazwisko:=NewStr(PNauczyciel(Data)^.ImieNazwisko^)
+  else ImieNazwisko:=nil;
+  if Assigned(PNauczyciel(Data)^.Skrot) then Skrot:=NewStr(PNauczyciel(Data)^.Skrot^)
+  else Skrot:=nil;
 end;
 
 procedure TNauczyciel.Clear;

@@ -90,8 +90,8 @@ end;
 function TDzwonek.Compare;
 begin
   if inherited Compare(Data)=0 then Compare:=0
-  else if Poczatek<PDzwonek(Data)^.Poczatek then Compare:=1
-  else if Poczatek>PDzwonek(Data)^.Poczatek then Compare:=-1
+  else if Poczatek<PDzwonek(Data)^.Poczatek then Compare:=-1
+  else if Poczatek>PDzwonek(Data)^.Poczatek then Compare:=1
   else Compare:=0
 end;
 

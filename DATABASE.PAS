@@ -55,6 +55,7 @@ begin
     end
     else
     begin
+      Data^.Index:=Nauczyciele^.GetFirstFreeIndex;
       Nauczyciele^.Insert(Data);
       NauczycielAdd:=True;
     end;
@@ -85,8 +86,8 @@ begin
       for I:=1 to IloscDni do if Assigned(Lekcje[I]) then Lekcje[I]^.ForEach(@UsunNauczycielaZLekcji);
       Nauczyciele^.Free(Data);
       NauczycielDel:=True;
-    end;
-    NauczycielDel:=False;
+    end
+    else NauczycielDel:=False;
   end;
 end;
 
@@ -146,6 +147,7 @@ begin
     end
     else
     begin
+      Data^.Index:=Przedmioty^.GetFirstFreeIndex;
       Przedmioty^.Insert(Data);
       PrzedmiotAdd:=True;
     end;
@@ -176,8 +178,8 @@ begin
       for I:=1 to IloscDni do if Assigned(Lekcje[I]) then Lekcje[I]^.ForEach(@UsunPrzedmiotZLekcji);
       Przedmioty^.Free(Data);
       PrzedmiotDel:=True;
-    end;
-    PrzedmiotDel:=False;
+    end
+    else PrzedmiotDel:=False;
   end;
 end;
 
@@ -237,6 +239,7 @@ begin
     end
     else
     begin
+      Data^.Index:=Sale^.GetFirstFreeIndex;
       Sale^.Insert(Data);
       SalaAdd:=True;
     end;
@@ -267,8 +270,8 @@ begin
       for I:=1 to IloscDni do if Assigned(Lekcje[I]) then Lekcje[I]^.ForEach(@UsunSaleZLekcji);
       Sale^.Free(Data);
       SalaDel:=True;
-    end;
-    SalaDel:=False;
+    end
+    else SalaDel:=False;
   end;
 end;
 
@@ -331,6 +334,7 @@ begin
     end
     else
     begin
+      Data^.Index:=Klasy^.GetFirstFreeIndex;
       Klasy^.Insert(Data);
       KlasaAdd:=True;
     end;
@@ -365,8 +369,8 @@ begin
       for I:=1 to IloscDni do if Assigned(Lekcje[I]) then Lekcje[I]^.ForEach(@UsunKlaseZLekcji);
       Klasy^.Free(Data);
       KlasaDel:=True;
-    end;
-    KlasaDel:=False;
+    end
+    else KlasaDel:=False;
   end;
 end;
 
@@ -418,6 +422,42 @@ begin
   Dispose(Temp, Done);
 end;
 
+function CheckTime(Data: PDzwonek): Boolean;
+var
+  Temp: PDzwonek;
+  I: Integer;
+begin
+  CheckTime:=False;
+  if Dzwonki^.Count=0 then Exit;
+  I:=0;
+  while I<Dzwonki^.Count do
+  begin
+    Temp:=Dzwonki^.At(I);
+    if Data^.Poczatek<Temp^.Poczatek then
+    begin
+      if Data^.Poczatek+Data^.Dlugosc+5>Temp^.Poczatek then
+      begin
+        CheckTime:=True;
+        Exit;
+      end;
+    end
+    else if Data^.Poczatek>Temp^.Poczatek then
+    begin
+      if Temp^.Poczatek+Temp^.Dlugosc+5>Data^.Poczatek then
+      begin
+        CheckTime:=True;
+        Exit;
+      end;
+    end
+    else if Data^.Poczatek=Temp^.Poczatek then
+    begin
+      CheckTime:=True;
+      Exit;
+    end;
+    Inc(I);
+  end;
+end;
+
 function DzwonekAdd;
 var
   Data: PDzwonek;
@@ -429,13 +469,14 @@ begin
   Dialog^.SetTitle('Dodawanie nowego dzwonka');
   if LoadSuccessful(Dialog) and (Application^.ExecuteDialog(Dialog, Data)=cmOK) then
   begin
-    if Dzwonki^.Search(Data, I) then
+    if Dzwonki^.Search(Data, I) or CheckTime(Data) then
     begin
-      MessageBox(#3'Taki dzwonek ju¾ istnieje !', nil, mfError or mfCancelButton);
+      MessageBox(#3'Taki dzwonek ju¾ istnieje lub dzwonki pokrywaj¥ si© !', nil, mfError or mfCancelButton);
       DzwonekAdd:=False;
     end
     else
     begin
+      Data^.Index:=Dzwonki^.GetFirstFreeIndex;
       Dzwonki^.Insert(Data);
       DzwonekAdd:=True;
     end;
@@ -466,11 +507,12 @@ begin
   begin
     if MessageBox(#3'Czy na pewno chcesz usun¥† ten dzwonek ?',nil,mfConfirmation or mfYesButton or mfNoButton)=cmYes then
     begin
-      for I:=1 to IloscDni do if Assigned(Lekcje[I]) then Lekcje[I]^.ForEach(@UsunDzwonekZLekcji);
+      for I:=1 to IloscDni do if Assigned(Lekcje[I]) then
+        Lekcje[I]^.ForEach(@UsunDzwonekZLekcji);
       Dzwonki^.Free(Data);
       DzwonekDel:=True;
-    end;
-    DzwonekDel:=False;
+    end
+    else DzwonekDel:=False;
   end;
 end;
 
@@ -491,9 +533,9 @@ begin
   Dialog^.SetTitle('Poprawianie wpisu dzwonka');
   if LoadSuccessful(Dialog) and (Application^.ExecuteDialog(Dialog, Temp)=cmOK) then
   begin
-    if Dzwonki^.Search(Temp, I) then
+    if Dzwonki^.Search(Temp, I) or CheckTime(Temp) then
     begin
-      MessageBox(#3'Taki dzwonek ju¾ istnieje !', nil, mfError or mfCancelButton);
+      MessageBox(#3'Taki dzwonek ju¾ istnieje lub dzwonki pokrywaj© si© !', nil, mfError or mfCancelButton);
       Dzwonki^.Insert(Data);
       DzwonekEdit:=False;
     end
@@ -512,6 +554,7 @@ begin
   Dispose(Temp, Done);
 end;
 
+{ *** }
 
 function ChooseFromList(List: PDataCollection; EmptyListMsg: String; DataListLabel: String): PDataObject;
 var

@@ -107,15 +107,21 @@ begin
   else S1:='';
   if Assigned(Nazwa) then S2:=Nazwa^
   else S2:='';
-  if Length(S1)<5 then S1:=S1+SpaceStr(5-Length(S1));
-  GetText:=Copy(S1+' - '+S2, 1, MaxLen);
+  if (S2<>'') and (Length(S1)<5) then
+  begin
+    S1:=S1+SpaceStr(5-Length(S1));
+    S1:=S1+' - '+S2;
+  end;
+  GetText:=Copy(S1, 1, MaxLen);
 end;
 
 procedure TSala.Assign;
 begin
   inherited Assign(Data);
-  Numer:=NewStr(PSala(Data)^.Numer^);
-  Nazwa:=NewStr(PSala(Data)^.Nazwa^);
+  if Assigned(PSala(Data)^.Numer) then Numer:=NewStr(PSala(Data)^.Numer^)
+  else Numer:=nil;
+  if Assigned(PSala(Data)^.Nazwa) then Nazwa:=NewStr(PSala(Data)^.Nazwa^)
+  else Nazwa:=nil;
 end;
 
 procedure TSala.Clear;

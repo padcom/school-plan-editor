@@ -112,8 +112,10 @@ end;
 procedure TPrzedmiot.Assign;
 begin
   inherited Assign(Data);
-  Nazwa:=NewStr(PPrzedmiot(Data)^.Nazwa^);
-  Skrot:=NewStr(PPrzedmiot(Data)^.Skrot^);
+  if Assigned(PPrzedmiot(Data)^.Nazwa) then Nazwa:=NewStr(PPrzedmiot(Data)^.Nazwa^)
+  else Nazwa:=nil;
+  if Assigned(PPrzedmiot(Data)^.Skrot) then Skrot:=NewStr(PPrzedmiot(Data)^.Skrot^)
+  else Skrot:=nil;
 end;
 
 procedure TPrzedmiot.Clear;
