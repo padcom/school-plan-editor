@@ -62,24 +62,54 @@ const
   hcLekcjaDel       = $1151;
   hcLekcjaEdit      = $1152;
 
-  hcSlownikiMenu    = $2000;
-  hcNauczycieleMenu = $2001;
-  hcPrzedmiotyMenu  = $2002;
-  hcKlasyMenu       = $2003;
-  hcSaleMenu        = $2004;
-  hcDzwonkiMenu     = $2005;
+  hcSlownikiMenu    = $1200;
+  hcNauczycieleMenu = $1201;
+  hcPrzedmiotyMenu  = $1202;
+  hcKlasyMenu       = $1203;
+  hcSaleMenu        = $1204;
+  hcDzwonkiMenu     = $1205;
 
-  hcPlanLekcjiMenu  = $2006;
-  hcSystemMenu      = $2007;
-  hcPomocMenu       = $2008;
-  hcAboutBox        = $2009;
-  hcPlanKlasy       = $2010;
-  hcClickActiveText = $2011;
-  hcPlanNauczyciela = $2012;
-  hcArchiwizacja    = $2013;
-  hcOdzysk          = $2014;
-  hcQuit            = $2015;
-  hcHelp            = $2016;
+  hcPlanLekcjiMenu  = $1206;
+  hcSystemMenu      = $1207;
+  hcPomocMenu       = $1208;
+  hcAboutBox        = $1209;
+  hcPlanKlasy       = $1210;
+  hcPlanNauczyciela = $1212;
+  hcArchiwizacja    = $1213;
+  hcOdzysk          = $1214;
+  hcQuit            = $1215;
+  hcHelp            = $1216;
+  hcClickActiveText = $2000;
+
+  { staˆe identyfikuj¥ce kontekst pomocy dla okienek dialogowych }
+  hcEditDialogStart        = $2001;
+  hcNauczycielDialogNew    = $2011;
+  hcNauczycielDialogEdit   = $2012;
+  hcPrzedmiotDialogNew     = $2021;
+  hcPrzedmiotDialogEdit    = $2022;
+  hcKlasaDialogNew         = $2031;
+  hcKlasaDialogEdit        = $2032;
+  hcSalaDialogNew          = $2041;
+  hcSalaDialogEdit         = $2042;
+  hcDzwonekDialogNew       = $2051;
+  hcDzwonekDialogEdit      = $2052;
+  hcLekcjaDialogNew        = $2061;
+  hcLekcjaDialogEdit       = $2062;
+  hcEditDialogEnd          = $2099;
+
+  hcChooseDialogStart      = $2100;
+  hcNauczycielDialogChoose = $2111;
+  hcNauczycielDialogEnd    = $2119;
+  hcPrzedmiotDialogChoose  = $2121;
+  hcPrzedmiotDialogEnd     = $2129;
+  hcKlasaDialogChoose      = $2131;
+  hcKlasaDialogChooseGrupa = $2132;
+  hcKlasaDialogEnd         = $2139;
+  hcSalaDialogChoose       = $2141;
+  hcSalaDialogEnd          = $2149;
+  hcDzwonekDialogChoose    = $2151;
+  hcDzwonekDialogEnd       = $2159;
+  hcChooseDialogEnd        = $2199;
 
 implementation
 

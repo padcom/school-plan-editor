@@ -30,7 +30,7 @@ function ChooseKlasa(List: PDataCollection; ChooseGroup: Boolean): PKlasa;
 function ChooseDzwonek(List: PDataCollection): PDzwonek;
 
 function DelLekcja(List: PDataCollection; Data: PLekcja): Boolean;
-function EditLekcja(var Data: PLekcja; ATitle: TTitleStr): Boolean;
+function EditLekcja(var Data: PLekcja; ATitle: TTitleStr; HelpCtx: Word): Boolean;
 
 procedure LekcjaAdd(Dzien: Integer; DzwonekIndex: LongInt);
 procedure LekcjaDel(Dzien: Integer; Data: PLekcja);
@@ -51,6 +51,7 @@ begin
   New(Data, Init);
   Dialog:=PDataDialog(ResourceFile.Get('NauczycielEditDialog'));
   Dialog^.SetTitle('Dodawanie nowego nauczyciela');
+  Dialog^.HelpCtx:=hcNauczycielDialogNew;
   if LoadSuccessful(Dialog) and (Application^.ExecuteDialog(Dialog, Data)=cmOK) then
   begin
     if Nauczyciele^.Search(Data, I) then
@@ -113,6 +114,7 @@ begin
 
   Dialog:=PDataDialog(ResourceFile.Get('NauczycielEditDialog'));
   Dialog^.SetTitle('Poprawianie wpisu nauczyciela');
+  Dialog^.HelpCtx:=hcNauczycielDialogEdit;
   if LoadSuccessful(Dialog) and (Application^.ExecuteDialog(Dialog, Temp)=cmOK) then
   begin
     if Nauczyciele^.Search(Temp, I) then
@@ -146,6 +148,7 @@ begin
   New(Data, Init);
   Dialog:=PDataDialog(ResourceFile.Get('PrzedmiotEditDialog'));
   Dialog^.SetTitle('Dodawanie nowego przedmiotu');
+  Dialog^.HelpCtx:=hcPrzedmiotDialogNew;
   if LoadSuccessful(Dialog) and (Application^.ExecuteDialog(Dialog, Data)=cmOK) then
   begin
     if Przedmioty^.Search(Data, I) then
@@ -208,6 +211,7 @@ begin
 
   Dialog:=PDataDialog(ResourceFile.Get('PrzedmiotEditDialog'));
   Dialog^.SetTitle('Poprawianie wpisu przedmiotu');
+  Dialog^.HelpCtx:=hcPrzedmiotDialogEdit;
   if LoadSuccessful(Dialog) and (Application^.ExecuteDialog(Dialog, Temp)=cmOK) then
   begin
     if Przedmioty^.Search(Temp, I) then
@@ -241,6 +245,7 @@ begin
   New(Data, Init);
   Dialog:=PDataDialog(ResourceFile.Get('SalaEditDialog'));
   Dialog^.SetTitle('Dodawanie nowej sali');
+  Dialog^.HelpCtx:=hcSalaDialogNew;
   if LoadSuccessful(Dialog) and (Application^.ExecuteDialog(Dialog, Data)=cmOK) then
   begin
     if Sale^.Search(Data, I) then
@@ -303,6 +308,7 @@ begin
 
   Dialog:=PDataDialog(ResourceFile.Get('SalaEditDialog'));
   Dialog^.SetTitle('Poprawianie wpisu sali');
+  Dialog^.HelpCtx:=hcSalaDialogEdit;
   if LoadSuccessful(Dialog) and (Application^.ExecuteDialog(Dialog, Temp)=cmOK) then
   begin
     if Sale^.Search(Temp, I) then
@@ -339,6 +345,7 @@ begin
   Data^.IloscGrup:=1;
   Dialog:=PDataDialog(ResourceFile.Get('KlasaEditDialog'));
   Dialog^.SetTitle('Dodawanie nowej klasy');
+  Dialog^.HelpCtx:=hcKlasaDialogNew;
   if LoadSuccessful(Dialog) and (Application^.ExecuteDialog(Dialog, Data)=cmOK) then
   begin
     if Klasy^.Search(Data, I) then
@@ -419,6 +426,7 @@ begin
 
   Dialog:=PDataDialog(ResourceFile.Get('KlasaEditDialog'));
   Dialog^.SetTitle('Poprawianie wpisu klasy');
+  Dialog^.HelpCtx:=hcKlasaDialogEdit;
   if LoadSuccessful(Dialog) and (Application^.ExecuteDialog(Dialog, Temp)=cmOK) then
   begin
     if Klasy^.Search(Temp, I) then
@@ -490,6 +498,7 @@ begin
   New(Data, Init);
   Dialog:=PDataDialog(ResourceFile.Get('DzwonekEditDialog'));
   Dialog^.SetTitle('Dodawanie nowego dzwonka');
+  Dialog^.HelpCtx:=hcDzwonekDialogNew;
   if LoadSuccessful(Dialog) and (Application^.ExecuteDialog(Dialog, Data)=cmOK) then
   begin
     if Dzwonki^.Search(Data, I) or CheckTime(Data) then
@@ -558,6 +567,7 @@ begin
 
   Dialog:=PDataDialog(ResourceFile.Get('DzwonekEditDialog'));
   Dialog^.SetTitle('Poprawianie wpisu dzwonka');
+  Dialog^.HelpCtx:=hcDzwonekDialogEdit;
   if LoadSuccessful(Dialog) and (Application^.ExecuteDialog(Dialog, Temp)=cmOK) then
   begin
     if Dzwonki^.Search(Temp, I) or CheckTime(Temp) then
@@ -585,7 +595,7 @@ end;
 
 { *** }
 
-function ChooseFromList(List: PDataCollection; EmptyListMsg: String; DataListLabel: String): PDataObject;
+function ChooseFromList(List: PDataCollection; EmptyListMsg: String; DataListLabel: String; HelpCtx: Word): PDataObject;
 var
   D: PChooseDataDialog;
   Data: record
@@ -603,6 +613,7 @@ begin
     D:=PChooseDataDialog(ResourceFile.Get('ChooseDataDialog'));
     if LoadSuccessful(D) then
     begin
+      D^.HelpCtx:=HelpCtx;
       with D^.DataLabel^ do
       begin
         if Assigned(Text) then DisposeStr(Text);
@@ -622,17 +633,25 @@ end;
 
 function ChooseNauczyciel;
 begin
-  ChooseNauczyciel:=PNauczyciel(ChooseFromList(List, 'Lista dost©pnych nauczycieli jest pusta !', '~L~ista nauczycieli'));
+  ChooseNauczyciel:=PNauczyciel(ChooseFromList(List,
+                    'Lista dost©pnych nauczycieli jest pusta !',
+                    '~L~ista nauczycieli', hcNauczycielDialogChoose));
 end;
 
 function ChoosePrzedmiot;
 begin
-  ChoosePrzedmiot:=PPrzedmiot(ChooseFromList(List, 'Lista dost©pnych przedmiot¢w jest pusta !', '~L~ista przedmiot¢w'));
+  ChoosePrzedmiot:=PPrzedmiot(ChooseFromList(List,
+                   'Lista dost©pnych przedmiot¢w jest pusta !',
+                   '~L~ista przedmiot¢w',
+                   hcPrzedmiotDialogChoose));
 end;
 
 function ChooseSala;
 begin
-  ChooseSala:=PSala(ChooseFromList(List, 'Lista dost©pnych sal jest pusta !', '~L~ista sal'));
+  ChooseSala:=PSala(ChooseFromList(List,
+              'Lista dost©pnych sal jest pusta !',
+              '~L~ista sal',
+              hcSalaDialogChoose));
 end;
 
 function ChooseKlasa;
@@ -641,12 +660,16 @@ var
   L, I, Grupa: LongInt;
   Data: PKlasa;
 begin
-  Data:=PKlasa(ChooseFromList(List, 'Lista dost©pnych klas jest pusta !', '~L~ista klas'));
+  Data:=PKlasa(ChooseFromList(List,
+               'Lista dost©pnych klas jest pusta !',
+               '~L~ista klas',
+              hcKlasaDialogChoose));
   if ChooseGroup and (Data^.IloscGrup>1) then
   begin
     D:=PChooseGrupaKlasyDialog(ResourceFile.Get('ChooseGrupaKlasyDialog'));
     if Loadsuccessful(D) then
     begin
+      D^.HelpCtx:=hcKlasaDialogChooseGrupa;
       L:=0;
       for I:=1 to Data^.IloscGrup do L:=(L shl 1)+1;
       D^.GrupaRadioButtons^.EnableMask:=L;
@@ -667,7 +690,10 @@ end;
 
 function ChooseDzwonek;
 begin
-  ChooseDzwonek:=PDzwonek(ChooseFromList(List, 'Lista dost©pnych dzwonk¢w jest pusta !', '~L~ista dzwonk¢w'));
+  ChooseDzwonek:=PDzwonek(ChooseFromList(List,
+                 'Lista dost©pnych dzwonk¢w jest pusta !',
+                 '~L~ista dzwonk¢w',
+                 hcDzwonekdialogChoose));
 end;
 
 function DelLekcja;
@@ -699,6 +725,7 @@ begin
   D:=PLekcjaDialog(ResourceFile.Get('LekcjaEditDialog'));
   if LoadSuccessful(D) then
   begin
+    D^.HelpCtx:=HelpCtx;
     D^.SetTitle(ATitle);
     if Application^.ExecuteDialog(D, Data)=cmOK then EditLekcja:=True
     else EditLekcja:=False;
@@ -717,7 +744,7 @@ begin
   New(Data, Init);
   Data^.DzwonekIndex:=DzwonekIndex;
   FiltrujDane(Dzien, DzwonekIndex);
-  if EditLekcja(Data, 'Tworzenie nowej lekcji') then
+  if EditLekcja(Data, 'Tworzenie nowej lekcji', hcLekcjaDialogNew) then
   begin
     PrzywrocDane;
     Data^.Index:=Lekcje[Dzien]^.GetFirstFreeIndex;
@@ -750,7 +777,7 @@ begin
   if not Assigned(Data) then Exit;
   Lekcje[Dzien]^.Delete(Data);
   FiltrujDane(Dzien, DzwonekIndex);
-  EditLekcja(Data, 'Edycja wpisu lekcji');
+  EditLekcja(Data, 'Edycja wpisu lekcji', hcLekcjaDialogEdit);
   Lekcje[Dzien]^.Insert(Data);
   PrzywrocDane;
   Message(Desktop, evBroadcast, cmUpdateLists, nil);

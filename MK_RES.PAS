@@ -15,7 +15,7 @@ begin
 
   R.Assign(0, 24, 80, 25);
   StatusLine:=New(PHintStatusLine, Init(R,
-    NewStatusDef(0, $FFFF,
+    NewStatusDef(10, $1000,
       NewStatusKey('~Alt+X~ Koniec', kbAltX, cmQuit,
       NewStatusKey('~F1~ Pomoc', kbF1, cmHelp,
       NewStatusKey('~Ins~ Nowa', kbIns, cmLekcjaAdd,
@@ -26,7 +26,24 @@ begin
       NewStatusKey('', kbCtrlF6, cmNext,
       NewStatusKey('', kbCtrlF1, cmAboutBox,
     nil))))))))),
-  nil)));
+    NewStatusDef($1000, $1500,
+      NewStatusKey('~Enter~ Wybierz', kbNoKey, $FFFE,
+      NewStatusKey('~Esc~ Anuluj', kbEsc, cmCancel,
+    nil)),
+    NewStatusDef(hcEditDialogStart, hcEditDialogEnd,
+      NewStatusKey('~Esc~ Anuluj', kbEsc, cmCancel,
+      NewStatusKey('~Enter~ Dalej', kbNoKey, $FFFE,
+      NewStatusKey('~G¢ra~ Poprzednia kontrolka', kbNoKey, $FFFE,
+      NewStatusKey('~D¢ˆ~ Nast©pna kontrolka', kbNoKey, $FFFE,
+    nil)))),
+    NewStatusDef(hcChooseDialogStart, hcChooseDialogEnd,
+      NewStatusKey('~Esc~ Anuluj', kbEsc, cmCancel,
+      NewStatusKey('~Enter~ Wybierz', kbEnter, cmOK,
+      NewStatusKey('~F1~ Pomoc', kbF1, cmHelp,
+    nil))),
+    NewStatusDef($1500, $FFFF,
+    nil,
+  nil)))))));
 
   StoreObject(StatusLine);
 end;
@@ -508,7 +525,7 @@ begin
     GrupaRadioButtons^.Select;
   end;
   StoreObject(D);
-  TestDialog(D);
+{  TestDialog(D);}
 end;
 
 procedure CreateHints;
@@ -571,6 +588,7 @@ begin
   D:=New(PMainEditWindow, Init(R, 'Plan lekcji'));
   with D^ do
   begin
+    HelpCtx:=10;
     Palette:=dpBlueDialog;
     Options:=Options or ofCentered;
     Flags:=Flags and (not wfClose);
@@ -637,6 +655,7 @@ begin
   New(D, Init(R, 'Plan lekcji nauczyciela'));
   with D^ do
   begin
+    HelpCtx:=10;
     Options:=Options or ofCentered;
     Palette:=dpBlueDialog;
     Flags:=Flags{ and (not wfClose) }or wfGrow or wfZoom;
@@ -696,6 +715,7 @@ begin
   New(D, Init(R, 'Plan lekcji klasy'));
   with D^ do
   begin
+    HelpCtx:=10;
     Options:=Options or ofCentered;
     Palette:=dpBlueDialog;
     Flags:=Flags{ and (not wfClose) }or wfGrow or wfZoom;
