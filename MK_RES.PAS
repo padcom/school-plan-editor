@@ -71,7 +71,7 @@ begin
         NewItem('~U~suä', 'Ctrl+F9', KbCtrlF9, cmDzwonekDel, hcDzwonekDel,
       nil)))),
     nil))))))),
-    NewSubMenu('~P~lan lekcji', hcPlanLekcjiMenu, NewMenu(
+    NewSubMenu('P~l~an lekcji', hcPlanLekcjiMenu, NewMenu(
       NewItem('~N~owa lekcja', 'Ins', kbIns, cmLekcjaAdd, hcLekcjaAdd,
       NewItem('~U~suä lekcje', 'Del', kbDel, cmLekcjaDel, hcLekcjaDel,
       NewItem('~P~opraw lekcje', 'Ctrl+Enter', kbCtrlEnter, cmLekcjaEdit, hcLekcjaEdit,
@@ -79,7 +79,11 @@ begin
       NewItem('Plan lekcji n~a~uczyciela', 'F3', kbF3, cmPlanNauczyciela, hcPlanNauczyciela,
       NewItem('Plan lekcji grupy k~l~asy', 'F4', kbF4, cmPlanKlasy, hcPlanKlasy,
     nil))))))),
-  nil))))));
+    NewSubMenu('~P~omoc', hcPomocMenu, NewMenu(
+      NewItem('~E~lektroniczny sufler', 'F1', kbF1, cmHelp, hcHelp,
+      NewItem('~O~ programie ...', '', kbNoKey, cmAboutBox, hcAboutBox,
+    nil))),
+  nil)))))));
   StoreObject(MenuBar);
   Dispose(MenuBar); MenuBar:=nil;
 end;
@@ -458,6 +462,36 @@ begin
 { TestDialog(D);}
 end;
 
+procedure CreateHints;
+var
+  List: PStrListMaker;
+begin
+  BeginCreating('HintList');
+  New(List, Init(16384, 256));
+
+{  List^.Put(hc, '');}
+  List^.Put(hcNauczycielAdd, 'Dodawanie nowego nauczyciela');
+  List^.Put(hcNauczycielDel, 'Usuwanie istniej¥cego nauczyciela');
+  List^.Put(hcNauczycielEdit, 'Poprawanie wpisu nauczyciela');
+  List^.Put(hcPrzedmiotAdd, 'Dodawanie nowego przedmiotu');
+  List^.Put(hcPrzedmiotDel, 'Usuwanie istniej¥cego przedmiotu');
+  List^.Put(hcPrzedmiotEdit, 'Poprawanie wpisu przedmotu');
+  List^.Put(hcSalaAdd, 'Dodawanie nowej sali');
+  List^.Put(hcSalaDel, 'Usuwanie istniej¥cej sali');
+  List^.Put(hcSalaEdit, 'Poprawanie wpisu sali');
+  List^.Put(hcKlasaAdd, 'Dodawanie nowej klasy');
+  List^.Put(hcKlasaDel, 'Usuwanie istniej¥cej klasy');
+  List^.Put(hcKlasaEdit, 'Poprawanie wpisu klasy');
+  List^.Put(hcDzwonekAdd, 'Dodawanie nowego dzwonka');
+  List^.Put(hcDzwonekDel, 'Usuwanie istniej¥cego dzwonka');
+  List^.Put(hcDzwonekEdit, 'Poprawanie wpisu dzwonka');
+  List^.Put(hcLekcjaAdd, 'Dodawanie nowej lekcji');
+  List^.Put(hcLekcjaDel, 'Usuwanie istniej¥cej lekcji');
+  List^.Put(hcLekcjaEdit, 'Poprawanie lekcji');
+  List^.Put(hcAboutBox, 'Informacje o programie');
+
+  StoreObject(List);
+end;
 
 var
   I: Integer;
@@ -473,6 +507,7 @@ begin
   CreateDzwonekDialog;
   CreateLekcjaDialog;
   CreateChooseDataDialog;
+  CreateHints;
   DumpNames;
   CloseResources;
 end.

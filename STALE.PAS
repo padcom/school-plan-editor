@@ -71,6 +71,7 @@ const
   hcArchiwizacja    = $2013;
   hcOdzysk          = $2014;
   hcQuit            = $2015;
+  hcHelp            = $2016;
 
 implementation
 

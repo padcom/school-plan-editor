@@ -63,6 +63,7 @@ procedure CreateResources;
 begin
   asm mov ax, 3; int $10; end;
   RegisterTypes;
+  RegisterType(RStrListMaker);
 
   Write('Creating and initializing resource file ... ');
   ResourceFile.Init(New(PBufStream, Init(FileName, stCreate, 1024)));
@@ -79,6 +80,8 @@ procedure OpenResources;
 begin
   asm mov ax, 3; int $10; end;
   RegisterTypes;
+  RegisterType(RStringList);
+
   Write('Opening and initializing resource file ... ');
   ResourceFile.Init(New(PBufStream, Init(FileName, stOpenRead, 1024)));
   if ResourceFile.Stream^.Status<>stOK then
