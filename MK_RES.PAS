@@ -474,6 +474,43 @@ begin
 { TestDialog(D);}
 end;
 
+procedure CreateChooseGrupaKlasyDialog;
+var
+  R: TRect;
+  D: PChooseGrupaKlasyDialog;
+  Groups: PRadioButtons;
+begin
+  BeginCreating('ChooseGrupaKlasyDialog');
+
+  R.Assign(0, 0, 63, 10);
+  New(D, Init(R, 'Wybierz grup© klasy'));
+  with D^ do
+  begin
+    Options:=Options or ofCentered;
+
+    InsertStandardButtons(D);
+
+    { grupy klasy }
+    R.Assign(18, 3, Size.X-3, 4);
+    New(GrupaRadioButtons, Init(R,
+      NewSItem('~1~',
+      NewSItem('~2~',
+      NewSItem('~3~',
+      NewSItem('~4~',
+      NewSItem('~5~',
+      NewSItem('~6~',
+    nil))))))));
+    Insert(GrupaRadioButtons);
+    R.Assign(3, 3, 16, 4);
+    New(GrupaLabel, Init(R, '~G~rupy   :', GrupaRadioButtons));
+    Insert(GrupaLabel);
+
+    GrupaRadioButtons^.Select;
+  end;
+  StoreObject(D);
+  TestDialog(D);
+end;
+
 procedure CreateHints;
 var
   List: PStrListMaker;
@@ -636,17 +673,74 @@ begin
 
     R.Assign(1, Size.Y-6, Size.X-1, Size.Y-1);
     New(LekcjaDetailView, Init(R));
-{    for I:=1 to 4 do LekcjaDetailView^.ListView[I]:=LekcjaListView[I];}
     Insert(LekcjaDetailView);
     LekcjaDetailView^.GrowMode:=gfGrowLoY or gfGrowHiY;
 
     FirstDzien:=1; SelectedDzien:=1;
     LekcjaListView[1]^.Select;
-
   end;
 
   StoreObject(D);
-  TestDialog(D);
+{  TestDialog(D);}
+end;
+
+procedure CreatePlanLekcjiKlasaWindow;
+var
+  R: TRect;
+  D: PKlasaEditWindow;
+  I: Integer;
+begin
+  BeginCreating('KlasaEditWindow');
+
+  R.Assign(0, 0, 72, 18);
+  New(D, Init(R, 'Plan lekcji klasy'));
+  with D^ do
+  begin
+    Options:=Options or ofCentered;
+    Palette:=dpBlueDialog;
+    Flags:=Flags{ and (not wfClose) }or wfGrow or wfZoom;
+
+    GetExtent(R);
+    R.Grow(-1, -1);
+    New(InsideFrames, Init(R));
+    Insert(InsideFrames);
+    InsideFrames^.GrowMode:=gfGrowHiX or gfGrowHiY;
+
+    R.Assign(1, 3, 10, Size.Y-7);
+    New(DzwonekListView, Init(R, 1, nil, nil));
+    Insert(DzwonekListView);
+    R.Assign(1, 1, 10, 2);
+    New(DzwonekLabel, Init(R, 'Dzwonki', DzwonekListView));
+    Insert(DzwonekLabel);
+    with DzwonekListView^ do
+    begin
+      Options:=Options and (not ofSelectable);
+      GrowMode:=gfGrowHiY;
+    end;
+
+    for I:=0 to 3 do
+    begin
+      R.Assign(I*15+12, 3, I*15+12+14, Size.Y-7);
+      New(LekcjaListView[I+1], Init(R, 1, nil));
+      Insert(LekcjaListView[I+1]);
+      LekcjaListView[I+1]^.GrowMode:=gfGrowHiY;
+
+      R.Assign(I*15+12, 1, I*15+12+14, 2);
+      New(LekcjaLabel[I+1], Init(R, NazwyDniTygodnia[I+1], LekcjaListView[I+1]));
+      Insert(LekcjaLabel[I+1]);
+    end;
+
+    R.Assign(1, Size.Y-6, Size.X-1, Size.Y-1);
+    New(LekcjaDetailView, Init(R));
+    Insert(LekcjaDetailView);
+    LekcjaDetailView^.GrowMode:=gfGrowLoY or gfGrowHiY;
+
+    FirstDzien:=1; SelectedDzien:=1;
+    LekcjaListView[1]^.Select;
+  end;
+
+  StoreObject(D);
+{  TestDialog(D);}
 end;
 
 var
@@ -665,9 +759,11 @@ begin
   CreateDzwonekDialog;
   CreateLekcjaDialog;
   CreateChooseDataDialog;
+  CreateChooseGrupaKlasyDialog;
   CreateHints;
   CreateMainWindow;
   CreatePlanLekcjiNauczycielWindow;
+  CreatePlanLekcjiKlasaWindow;
   DumpNames;
   CloseResources;
 end.

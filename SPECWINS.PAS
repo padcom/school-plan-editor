@@ -63,7 +63,15 @@ type { typ opisuj¥cy okno edycji planu lekcji nauczyciela }
     function GetText(Item: Integer; MaxLen: Integer; ListView: PLekcjaListView): String; virtual;
   end;
 
+type { typ opisuj¥cy okno edycji planu lekcji nauczyciela }
+  PKlasaEditWindow = ^TKlasaEditWindow;
+  TKlasaEditWindow = object (TIndividualEditWindow)
+    function CompareData(LekcjaData: PLekcja; DzwonekPos: Integer): Boolean; virtual;
+    function GetText(Item: Integer; MaxLen: Integer; ListView: PLekcjaListView): String; virtual;
+  end;
+
 procedure RunPlanLekcjiNauczyciela;
+procedure RunPlanLekcjiKlasy;
 
 const
   RDzwonekListView: TStreamRec = (
@@ -91,6 +99,11 @@ const
     VmtLink: Ofs(TypeOf(TNauczycielEditWindow)^);
     Load   : @TNauczycielEditWindow.Load;
     Store  : @TNauczycielEditWindow.Store);
+  RKlasaEditWindow: TStreamRec = (
+    ObjType: $B005;
+    VmtLink: Ofs(TypeOf(TKlasaEditWindow)^);
+    Load   : @TKlasaEditWindow.Load;
+    Store  : @TKlasaEditWindow.Store);
 
 procedure RegisterSpecWins;
 
@@ -396,7 +409,6 @@ end;
 function TNauczycielEditWindow.GetText;
 var
   L: PLekcja;
-  N: PNauczyciel;
   P: PPrzedmiot;
   K: PKlasa;
   S: PSala;
@@ -406,7 +418,6 @@ begin
   if not Assigned(L) then GetText:=''
   else
   begin
-    N:=PNauczyciel(Nauczyciele^.ItemByIndex(L^.NauczycielIndex));
     P:=PPrzedmiot(Przedmioty^.ItemByIndex(L^.PrzedmiotIndex));
     K:=PKlasa(Klasy^.ItemByIndex(L^.KlasaIndex));
     S:=PSala(Sale^.ItemByIndex(L^.SalaIndex));
@@ -418,6 +429,43 @@ begin
       Str(K^.Numer, S2);
       St:=St+'\'+S2+K^.Litera;
     end
+    else St:=St+'\BRAK';
+    if Assigned(S) and Assigned(S^.Numer) then St:=St+'\'+S^.Numer^
+    else St:=St+'\BRAK';
+    GetText:=St;
+  end;
+end;
+
+{ TKlasaEditWindow }
+
+function TKlasaEditWindow.CompareData;
+begin
+  if not inherited CompareData(LekcjaData, DzwonekPos) then CompareData:=False
+  else if not Assigned(Data) then CompareData:=False
+  else if Data^.Index<>LekcjaData^.KlasaIndex then CompareData:=False
+  else if PKlasa(Data)^.Grupy and LekcjaData^.Grupy=0 then CompareData:=False
+  else CompareData:=True;
+end;
+
+function TKlasaEditWindow.GetText;
+var
+  L: PLekcja;
+  N: PNauczyciel;
+  P: PPrzedmiot;
+  S: PSala;
+  St, S2: String;
+begin
+  L:=GetLekcja(ListView^.List, Item);
+  if not Assigned(L) then GetText:=''
+  else
+  begin
+    N:=PNauczyciel(Nauczyciele^.ItemByIndex(L^.NauczycielIndex));
+    P:=PPrzedmiot(Przedmioty^.ItemByIndex(L^.PrzedmiotIndex));
+    S:=PSala(Sale^.ItemByIndex(L^.SalaIndex));
+    St:='';
+    if Assigned(P) and Assigned(P^.Skrot) then St:=St+P^.Skrot^
+    else St:=St+'BRAK';
+    if Assigned(N) then St:=St+'\'+N^.Skrot^
     else St:=St+'\BRAK';
     if Assigned(S) and Assigned(S^.Numer) then St:=St+'\'+S^.Numer^
     else St:=St+'\BRAK';
@@ -447,6 +495,27 @@ begin
   end;
 end;
 
+procedure RunPlanLekcjiKlasy;
+var
+  Win: PKlasaEditWindow;
+  Data: PKlasa;
+  S: String;
+begin
+  Data:=ChooseKlasa(Klasy, True);
+  if not Assigned(Data) then Exit;
+  Win:=PKlasaEditWindow(ResourceFile.Get('KlasaEditWindow'));
+  if LoadSuccessful(Win) then
+  begin
+{    Data^.Grupy:=0;}
+    Str(Data^.Numer, S);
+    S:='Klasa '+S+Data^.Litera+', grupa: 1';
+    Win^.SetTitle('Edycja planu lekcji dla: '+S);
+    Win^.SetEditorData(Data);
+    Win^.UpdateLists;
+    Application^.InsertWindow(Win);
+  end;
+end;
+
 { *** }
 
 procedure RegisterSpecWins;
@@ -456,6 +525,7 @@ begin
   RegisterType(RInsideFrames);
   RegisterType(RIndividualEditWindow);
   RegisterType(RNauczycielEditWindow);
+  RegisterType(RKlasaEditWindow);
 end;
 
 begin

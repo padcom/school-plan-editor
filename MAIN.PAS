@@ -104,6 +104,7 @@ begin
         ClearEvent(Event);
       end;
       cmPlanNauczyciela: RunPlanLekcjiNauczyciela;
+      cmPlanKlasy: RunPlanLekcjiKlasy;
     end;
   end;
 end;

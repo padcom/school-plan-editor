@@ -26,7 +26,7 @@ function DzwonekEdit: Boolean;
 function ChooseNauczyciel(List: PDataCollection): PNauczyciel;
 function ChoosePrzedmiot(List: PDataCollection): PPrzedmiot;
 function ChooseSala(List: PDataCollection): PSala;
-function ChooseKlasa(List: PDataCollection): PKlasa;
+function ChooseKlasa(List: PDataCollection; ChooseGroup: Boolean): PKlasa;
 function ChooseDzwonek(List: PDataCollection): PDzwonek;
 
 function DelLekcja(List: PDataCollection; Data: PLekcja): Boolean;
@@ -376,7 +376,7 @@ begin
 end;
 
 begin
-  Data:=ChooseKlasa(Klasy);
+  Data:=ChooseKlasa(Klasy, False);
   if Assigned(Data) then
   begin
     if MessageBox(#3'Czy na pewno chcesz usun¥† t¥ klas© ?',nil,mfConfirmation or mfYesButton or mfNoButton)=cmYes then
@@ -405,7 +405,7 @@ begin
 end;
 
 begin
-  Data:=ChooseKlasa(Klasy);
+  Data:=ChooseKlasa(Klasy, False);
   if not Assigned(Data) then Exit;
 
   New(Temp, Init);
@@ -630,8 +630,29 @@ begin
 end;
 
 function ChooseKlasa;
+var
+  D: PDialog;
+  L, I, Grupa: LongInt;
+  Data: PKlasa;
 begin
-  ChooseKlasa:=PKlasa(ChooseFromList(List, 'Lista dost©pnych klas jest pusta !', '~L~ista klas'));
+  Data:=PKlasa(ChooseFromList(List, 'Lista dost©pnych klas jest pusta !', '~L~ista klas'));
+  if ChooseGroup then
+  begin
+    D:=PDialog(ResourceFile.Get('ChooseGrupaKlasyDialog'));
+    if Loadsuccessful(D) then
+    begin
+      L:=0;
+      if Application^.ExecuteDialog(D, @L)=cmOK then
+      begin
+        Inc(L);
+        Grupa:=1;
+        for I:=1 to L do Grupa:=Grupa shl 1;
+        Data^.Grupy:=L;
+      end
+      else Data:=nil;
+    end;
+  end;
+  ChooseKlasa:=Data;
 end;
 
 function ChooseDzwonek;

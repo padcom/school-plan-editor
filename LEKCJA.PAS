@@ -228,7 +228,7 @@ var
   Data: PDataObject;
 begin
   Data:=nil;
-  Data:=ChooseKlasa(Klasy);
+  Data:=ChooseKlasa(Klasy, False);
   if Assigned(Data) then KlasaIndex:=Data^.Index;
   SetTexts;
 end;

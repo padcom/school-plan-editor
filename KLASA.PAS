@@ -52,6 +52,15 @@ type { typ opisuj¥cy okno edycji danych klasy }
     procedure Store(var S: TStream); virtual;
   end;
 
+type { typ opisuj¥cy dialog wyboru grupy klasy }
+  PChooseGrupaKlasyDialog = ^TChooseGrupaKlasyDialog;
+  TChooseGrupaKlasyDialog = object (TDataDialog)
+    GrupaRadioButtons: PRadioButtons;
+    GrupaLabel: PLabel;
+    constructor Load(var S: TStream);
+    procedure Store(var S: TStream); virtual;
+  end;
+
 const
   RKlasa: TStreamRec = (
     ObjType: $5001;
@@ -73,6 +82,11 @@ const
     VmtLink: Ofs(TypeOf(TLiteraValidator)^);
     Load   : @TLiteraValidator.Load;
     Store  : @TLiteraValidator.Store);
+  RChooseGrupaKlasyDialog: TStreamRec = (
+    ObjType: $5005;
+    VmtLink: Ofs(TypeOf(TChooseGrupaKlasyDialog)^);
+    Load   : @TChooseGrupaKlasyDialog.Load;
+    Store  : @TChooseGrupaKlasyDialog.Store);
 
 var
   Klasy: PDataCollection;
@@ -267,6 +281,23 @@ begin
   PutSubViewPtr(S, IloscGrupLabel);
 end;
 
+{ TChooseGrupaKlasyDialog }
+
+constructor TChooseGrupaKlasyDialog.Load;
+begin
+  inherited Load(S);
+  GetSubViewPtr(S, GrupaRadioButtons);
+  GetSubViewPtr(S, GrupaLabel);
+end;
+
+procedure TChooseGrupaKlasyDialog.Store;
+begin
+  inherited Store(S);
+  PutSubViewPtr(S, GrupaRadioButtons);
+  PutSubViewPtr(S, GrupaLabel);
+end;
+
+
 { *** }
 
 procedure RegisterKlasa;
@@ -275,6 +306,7 @@ begin
   RegisterType(RKlasaDialog);
   RegisterType(RNumerValidator);
   RegisterType(RLiteraValidator);
+  RegisterType(RChooseGrupaKlasyDialog);
 end;
 
 begin
