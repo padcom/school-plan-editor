@@ -32,6 +32,7 @@ type { typ opisuj¥cy widok listy lekcji }
   TLekcjaListView = object (TListBox)
     function GetPalette: PPalette; virtual;
     procedure Draw; virtual;
+    procedure FocusItem(Item: Integer); virtual;
     procedure HandleEvent(var Event: TEvent); virtual;
   end;
 
@@ -142,7 +143,7 @@ end;
 procedure TDzienTygodniaListView.FocusItem;
 begin
   inherited FocusItem(Item);
-  if Assigned(Owner) then Message(Owner, evBroadcast, cmListItemChanged, nil);
+  if Assigned(Owner) then Message(Owner, evBroadcast, cmRedrawLekcjaListView, nil);
 end;
 
 { TDzwonekListView }
@@ -159,7 +160,7 @@ end;
 procedure TDzwonekListView.FocusItem;
 begin
   inherited FocusItem(Item);
-  Message(Owner, evBroadcast, cmListItemChanged, nil);
+  Message(Owner, evBroadcast, cmRedrawLekcjaListView, nil);
 end;
 
 procedure TDzwonekListView.HandleEvent;
@@ -308,6 +309,13 @@ begin
     end;
     WriteLine(0, Y, Size.X, 1, Buf);
   end;
+end;
+
+procedure TLekcjaListView.FocusItem;
+begin
+  inherited FocusItem(Item);
+  if CreatingResources then Exit;
+  Message(Owner, evBroadcast, cmRedrawLekcjaDetailView, nil);
 end;
 
 procedure TLekcjaListView.HandleEvent;
@@ -580,7 +588,8 @@ begin
     if Data^.DzwonekIndex=DzwonekIndex then List^.Insert(Data);
     Inc(I);
   end;
-  LekcjaListView^.NewList(List);
+  SetLekcjaList(List);
+  LekcjaDetailView^.DrawView;
 end;
 
 procedure TMainWindow.HandleEvent;
@@ -600,9 +609,20 @@ begin
       end;
     end;
   end
-  else if (Event.What=evBroadcast) and (Event.Command=cmListItemChanged) then
+  else if (Event.What=evBroadcast) then
   begin
-    PrepareLekcjaList;
+    case Event.Command of
+      cmRedrawLekcjaListView:
+      begin
+        PrepareLekcjaList;
+        ClearEvent(Event);
+      end;
+      cmRedrawLekcjaDetailView:
+      begin
+        LekcjaDetailView^.DrawView;
+        ClearEvent(Event);
+      end;
+    end;
   end;
   inherited HandleEvent(Event);
 end;

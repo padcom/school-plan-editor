@@ -578,6 +578,8 @@ begin
     New(LekcjaDetailView, Init(R, LekcjaListView));
     Insert(LekcjaDetailView);
     LekcjaDetailView^.GrowMode:=gfGrowLoY or gfGrowHiY;
+
+    DzwonekListView^.Select;
   end;
 
   StoreObject(D);

@@ -678,6 +678,11 @@ procedure LekcjaAdd;
 var
   Data: PLekcja;
 begin
+  if DzwonekIndex=-1 then
+  begin
+    MessageBox(#3'Lista dzwonk¢w jest pusta ! Prosz© j¥ uzupeˆni†.', nil, mfError or mfCancelButton);
+    Exit;
+  end;
   Inc(Dzien);
   New(Data, Init);
   Data^.DzwonekIndex:=DzwonekIndex;
@@ -713,9 +718,9 @@ procedure LekcjaEdit;
 begin
   if not Assigned(Data) then Exit;
   Inc(Dzien);
-  FiltrujDane(Dzien, DzwonekIndex);
   Lekcje[Dzien]^.Delete(Data);
-  if EditLekcja(Data, 'Edycja wpisu lekcji') then
+  FiltrujDane(Dzien, DzwonekIndex);
+  EditLekcja(Data, 'Edycja wpisu lekcji');
   Lekcje[Dzien]^.Insert(Data);
   PrzywrocDane;
   Message(Desktop^.Current, evBroadcast, cmUpdateLists, nil);

@@ -25,25 +25,11 @@ var
 begin
   OpenResources('PLAN.RES');
   OpenFiles('DATA');
-{
-  New(L, Init);
-  with L^ do
-  begin
-    NauczycielIndex:=0;
-    PrzedmiotIndex:=0;
-    SalaIndex:=0;
-    KlasaIndex:=0;
-    DzwonekIndex:=0;
-    Grupy:=$35;
-  end;
-  Lekcje[1]^.Insert(L);
-}
   inherited Init;
   MainWindow:=PMainWindow(ResourceFile.Get('MainWindow'));
   if LoadSuccessful(MainWindow) then
   begin
     MainWindow^.SetDzwonekList(Dzwonki);
-{    MainWindow^.SetLekcjaList(Lekcje[1]);}
     InsertWindow(MainWindow);
   end;
   Message(@Self, evCommand, cmAboutBox, nil);

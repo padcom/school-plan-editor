@@ -32,9 +32,11 @@ const
   cmPlanKlasy       = 181;
   cmClickActiveText = 250;
   cmChooseFromList  = 251;
-  cmUpdateLists     = 1000;
-  cmDataBaseChanged = 1001;
-  cmListItemChanged = 1002;
+  cmUpdateLists            = 1000;
+  cmDataBaseChanged        = 1001;
+  cmListItemChanged        = 1002;
+  cmRedrawLekcjaListView   = 1002;
+  cmRedrawLekcjaDetailView = 1003;
 
   { konteksty pomocy }
   hcNauczycielAdd   = $1100;
