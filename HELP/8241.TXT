@@ -1,0 +1,23 @@
+
+     Ü Dodawanie nowej klasy
+     ßßßßßßßßßßßßßßßßßßßßßßßß
+
+  Dodawanie nowego przedmiotu wymaga od u¾ytkownika podania dw¢ch
+  danych opisuj¥cych jednoznacznie wprowadz¥ klas©:
+
+    Numer
+    Litera
+    Ilo˜† grup
+
+  Dane nie mog¥ si© powtarza† ze wzgl©du na konieczno˜† jednoznacznej
+  identyfikacji wprowadzanej klasy
+
+  Wprowadzanie danych odbywa si© za pomoc¥ nast©puj¥cych klawiszy:
+
+    [ENTER]       - zatwierdzenie wprowadzanych dnych
+    [ESC]         - zaniechanie wprowadzania danych
+    [TAB]         - przej˜cie do nast©pnej linii
+    [Shift]+[TAB] - przej˜cie do poprzedniej linii
+
+  oraz klawiszy alfanumerycznych. Nie istnieje konieczno˜† u¾ywania
+  du¾ych i maˆych liter, gdy¾ program sam o to zadba.

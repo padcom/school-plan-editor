@@ -1,0 +1,71 @@
+
+     Ü Pomoc dla programu "Plan Lekcji" - Edycja planu lekcji grupy klasy.
+     ßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßß
+
+  1. Dost©pne klawisze.
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+    Do edycji planu lekcji sˆu¾y nast©puj¥cy zestaw klawiszy:
+
+    [INS]   - Dodawanie nowej lekcji.
+    [DEL]   - Usuwanie istniej¥cej lekcji.
+    [ENTER] - Edycja (poprawianie) aktualnej lekcji.
+
+    Klawisze kursora [Lewo]/[Prawo] odpowiadaj¥ za zmian© aktualnej
+    kolumny (Dzieä tygodnia, Dzwonek, Lista lekcji), natomiast klawisze
+    [G¢ra]/[D¢ˆ] za zmian© pionowej pozycji w wybranej kolumnie.
+
+    Inne operacje dost©pne w gˆ¢wnym module programu to:
+
+    [F1]      - Pomoc.
+    [F2]      - Podgl¥d statystyk dla danej grupy klasy
+    [Ctrl+F2] - Wydruk planu lekcji
+    [F3]      - Podgl¥d planu lekcji nauczyciela.
+    [F4]      - Podgl¥d planu lekcji wybranej grupy klasy.
+    [F10]     - G¢rne-rozwijane menu (zawiera zestaw opcji niedost©pnych
+                z dolnej listwy programu).
+    [Alt+X]   - Koniec programu.
+
+  2. Obsˆuga bazy danych i zwi¥zane z ni¥ klawisze.
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+    Program posiada wbudowan¥ baz© danych wszystkich element¢w, z kt¢rych
+  skˆadany b©dzie plan zaj©† lekcyjnych. Aby usprawni† dopisywanie nowych
+  element¢w oraz poprawianie istniej¥cyh element¢w dost©pne s¥ nast©puj¥ce
+  skr¢ty klawiszowe:
+
+  od [F5] do [F9]            - klawisze podstawowe oraz dodawanie nowego
+                               elementu do sˆownika
+  [Shift]+klawisz podstawowy - poprawianie wpisu
+  [Ctrl]+klawisz podstawowy  - usuwaie wybranego wpisu ze sˆownika
+
+    I tak dla spisu nauczycieli:
+
+    [F5]         - dodawanie nowego
+    [Shift]+[F5] - poprawianie wpisu
+    [Ctrl]+[F5]  - usuwanie wybranego
+
+      dla spisu przedmiot¢w:
+
+    [F6]         - dodawanie nowego
+    [Shift]+[F6] - poprawianie wpisu
+    [Ctrl]+[F6]  - usuwanie wybranego
+
+      dla spisu klas:
+
+    [F7]         - dodawanie nowej
+    [Shift]+[F6] - poprawianie wpisu
+    [Ctrl]+[F6]  - usuwanie wybranej
+
+      dla spisu sal lekcyjnych:
+
+    [F8]         - dodawanie nowej
+    [Shift]+[F6] - poprawianie wpisu
+    [Ctrl]+[F6]  - usuwanie wybranej
+
+      dla spisu dzwonk¢w:
+
+    [F9]         - dodawanie nowego
+    [Shift]+[F6] - poprawianie wpisu
+    [Ctrl]+[F6]  - usuwanie wybranego
+
