@@ -3,7 +3,8 @@ uses
   App, Objects, Drivers, Views, Dialogs, Menus,
   Stale, Resource,
   DataObjects, DataDialogs, DataBase, Help,
-  Nauczyciel, Przedmiot, Klasa, Sala, Dzwonek, Lekcja;
+  Nauczyciel, Przedmiot, Klasa, Sala, Dzwonek, Lekcja,
+  MainWin;
 
 type { typ opisujcy gˆ¢wn aplikacj© }
   PMainApp = ^TMainApp;
@@ -18,10 +19,15 @@ type { typ opisujcy gˆ¢wn aplikacj© }
   end;
 
 constructor TMainApp.Init;
+var
+  D: PMainWindow;
 begin
   OpenResources('PLAN.RES');
   OpenFiles('DATA');
   inherited Init;
+  D:=PMainWindow(ResourceFile.Get('MainWindow'));
+  if LoadSuccessful(D) then InsertWindow(D);
+  Message(@Self, evCommand, cmAboutBox, nil);
 end;
 
 destructor TMainApp.Done;

@@ -3,7 +3,7 @@ uses
   App, Objects, Drivers, Views, Dialogs, Menus,
   DataObjects, DataDialogs, Resource, Stale,
   Nauczyciel, Przedmiot, Klasa, Sala, Dzwonek, Lekcja,
-  Help, DataBase;
+  Help, DataBase, MainWin;
 
 { *** procedury tworz¥ce poszczeg¢lne elementy aplikacji *** }
 
@@ -519,6 +519,61 @@ begin
   StoreObject(List);
 end;
 
+procedure CreateMainWindow;
+var
+  R: TRect;
+  D: PMainWindow;
+  S: PStringCollection;
+begin
+  BeginCreating('MainWindow');
+
+  R.Assign(0, 0, 80, 23);
+  D:=New(PMainWindow, Init(R, 'Plan lekcji'));
+  with D^ do
+  begin
+    Palette:=dpBlueDialog;
+    Options:=Options or ofCentered;
+    Flags:=Flags{ and (not wfClose) }or wfGrow;
+
+    GetExtent(R);
+    R.Grow(-1, -1);
+    New(InsideFrames, Init(R));
+    Insert(InsideFrames);
+    InsideFrames^.GrowMode:=gfGrowHiX or gfGrowHiY;
+
+    { lista dni tygodnia }
+    R.Assign(1, 3, 15, Size.Y-7);
+    New(DzienTygodniaListView, Init(R, 1, nil));
+    Insert(DzienTygodniaListView);
+    DzienTygodniaListView^.GrowMode:=gfGrowHiY;
+    New(S, Init(10, 5));
+    S^.AtInsert(0, NewStr('Poniedziaˆek'));
+    S^.AtInsert(1, NewStr('Wtorek'));
+    S^.AtInsert(2, NewStr('—roda'));
+    S^.AtInsert(3, NewStr('Czwartek'));
+    S^.AtInsert(4, NewStr('Pi¥tek'));
+    DzienTygodniaListView^.NewList(S);
+    R.Assign(1, 1, 15, 2);
+    New(DzienTygodniaLabel, Init(R, 'Dni ~t~ygodnia', DzienTygodniaListView));
+    Insert(DzienTygodniaLabel);
+
+    R.Assign(16, 3, 29, Size.Y-7);
+    New(DzwonekListView, Init(R, 1, nil)){, nil))};
+    Insert(DzwonekListView);
+    R.Assign(16, 1, 29, 2);
+    New(DzwonekListLabel, Init(R, '  ~D~zwonki', DzwonekListView));
+    Insert(DzwonekListLabel);
+
+    New(S, Init(10, 5));
+    S^.AtInsert(0, NewStr('08:00-08:45'));
+    S^.AtInsert(0, NewStr('08:50-09:40'));
+    DzwonekListView^.NewList(S);
+  end;
+
+  StoreObject(D);
+  TestDialog(D);
+end;
+
 var
   I: Integer;
 begin
@@ -534,6 +589,7 @@ begin
   CreateLekcjaDialog;
   CreateChooseDataDialog;
   CreateHints;
+  CreateMainWindow;
   DumpNames;
   CloseResources;
 end.
