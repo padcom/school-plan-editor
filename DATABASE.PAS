@@ -538,14 +538,15 @@ end;
 function DzwonekDel;
 var
   Data: PDataObject;
-  I: Integer;
+  I, J: Integer;
+  L: PLekcja;
 
 procedure UsunDzwonekZLekcji(Item: Pointer); far;
 begin
   if PLekcja(Item)^.DzwonekIndex=Data^.Index then
   begin
-    Dispose(PLekcja(Item), Done);
-  end;
+    Lekcje[I]^.Free(Item);
+  end
 end;
 
 begin
@@ -555,7 +556,15 @@ begin
     if MessageBox(#3'Czy na pewno chcesz usun¥† ten dzwonek ?',nil,mfConfirmation or mfYesButton or mfNoButton)=cmYes then
     begin
       for I:=1 to IloscDni do if Assigned(Lekcje[I]) then
-        Lekcje[I]^.ForEach(@UsunDzwonekZLekcji);
+      begin
+        J:=0;
+        while J<Lekcje[I]^.Count do
+        begin
+          L:=Lekcje[I]^.At(J);
+          if L^.DzwonekIndex=Data^.Index then Lekcje[I]^.AtDelete(J)
+          else Inc(J);
+        end;
+      end;
       Dzwonki^.Free(Data);
       Message(Desktop^.Current, evBroadcast, cmUpdateLists, nil);
       Message(Desktop^.Current, evBroadcast, cmDataBaseChanged, nil);

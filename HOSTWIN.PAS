@@ -287,7 +287,22 @@ end;
 
 procedure THostEditWindow.SetEditorData;
 begin
-  Data:=EditorData;
+  if Assigned(Data) then Dispose(Data, Done);
+  if TypeOf(EditorData^)=TypeOf(TNauczyciel) then
+  begin
+    Data:=New(PNauczyciel, Init);
+    PNauczyciel(Data)^.Assign(EditorData);
+  end
+  else if TypeOf(EditorData^)=TypeOf(TKlasa) then
+  begin
+    Data:=New(PKlasa, Init);
+    PKlasa(Data)^.Assign(EditorData);
+  end
+  else if TypeOf(EditorData^)=TypeOf(TSala) then
+  begin
+    Data:=New(PSala, Init);
+    PSala(Data)^.Assign(EditorData);
+  end
 end;
 
 procedure THostEditWindow.SetTitle;

@@ -19,6 +19,7 @@ type { typ opisuj¥cy widok listy dzwonk¢w }
   TDzwonekListView = object (TDataListBox)
     function GetPalette: PPalette; virtual;
     procedure FocusItem(Item: Integer); virtual;
+    procedure NewList(AList: PCollection); virtual;
   end;
 
 type { typ opisuj¥cy widok listy lekcji }
@@ -143,6 +144,14 @@ begin
     Owner^.HandleEvent(Event);
     DisableUpdates:=False;
   end;
+end;
+
+procedure TDzwonekListView.NewList;
+begin
+  if List <> nil then Dispose(List, Done);
+  List := AList;
+  SetRange(Dzwonki^.Count);
+  if Range > 0 then FocusItem(0);
 end;
 
 { TLekcjaListView }
@@ -428,7 +437,7 @@ begin
   Item:=DzwonekListView^.Focused;
   DzwonekListView^.List:=nil;
   DzwonekListView^.NewList(Dzwonki);
-  if Item>DzwonekListView^.List^.Count then Item:=DzwonekListView^.List^.Count;
+  if Item>=DzwonekListView^.List^.Count then Item:=DzwonekListView^.List^.Count-1;
   if Item<0 then Item:=0;
   DzwonekListView^.FocusItem(Item);
   DzwonekListView^.DrawView;
@@ -457,7 +466,7 @@ begin
     while I<Lekcje[GetCurrentDzien]^.Count do
     begin
       Temp:=Lekcje[GetCurrentDzien]^.At(I);
-      if CompareData(Temp, GetCurrentDzwonekIndex) then List^.Insert(Temp);
+      if CompareData(Temp, GetCurrentDzwonekPos) then List^.Insert(Temp);
       Inc(I);
     end;
 

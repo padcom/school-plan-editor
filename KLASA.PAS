@@ -136,6 +136,7 @@ begin
   Numer:=PKlasa(Data)^.Numer;
   Litera:=PKlasa(Data)^.Litera;
   IloscGrup:=PKlasa(Data)^.IloscGrup;
+  Grupy:=PKlasa(Data)^.Grupy;
 end;
 
 procedure TKlasa.Clear;

@@ -103,7 +103,7 @@ begin
   Str(Poczatek mod 60, S2); while Length(S2)<2 do S2:='0'+S2;
   S:=S1+':'+S2;
   Str((Poczatek+Dlugosc) div 60, S1); while Length(S1)<2 do S1:='0'+S1;
-  Str((Poczatek+Dlugosc) mod 60, S2); while Length(S1)<2 do S1:='0'+S1;
+  Str((Poczatek+Dlugosc) mod 60, S2); while Length(S2)<2 do S2:='0'+S2;
   S:=S+'-'+S1+':'+S2;
   GetText:=Copy(S, 1, MaxLen);
 end;
