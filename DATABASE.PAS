@@ -31,6 +31,10 @@ function ChooseDzwonek(List: PDataCollection): PDzwonek;
 function LekcjaDel(List: PDataCollection; Data: PLekcja): Boolean;
 function LekcjaEdit(var Data: PLekcja): Boolean;
 
+procedure OpenFiles(Dir: String);
+procedure UpdateFiles;
+procedure CloseFiles;
+
 implementation
 
 function NauczycielAdd;
@@ -592,6 +596,129 @@ begin
     else LekcjaEdit:=False;
   end;
 end;
+
+{ *** }
+
+var
+  DataDir: String;
+  S: TBufStream;
+  I: Integer;
+
+procedure OpenFiles(Dir: String);
+begin
+  DataDir:=Dir;
+  {$I-} MkDir(DataDir); {$I-}
+  if IOResult<>0 then ;
+  if DataDir[Length(Dir)]<>'\' then DataDir:=DataDir+'\';
+
+  S.Init(DataDir+'NAUCZ.DAT', stOpenRead, 1024);
+  if S.Status<>stOK then
+  begin
+    S.Init(DataDir+'NAUCZ.DAT', stCreate, 1024);
+    New(Nauczyciele, Init(10, 5));
+  end
+  else New(Nauczyciele, Load(S));
+  S.Done;
+
+  S.Init(DataDir+'PRZEDM.DAT', stOpenRead, 1024);
+  if S.Status<>stOK then
+  begin
+    S.Init(DataDir+'PRZEDM.DAT', stCreate, 1024);
+    New(Przedmioty, Init(10, 5));
+  end
+  else New(Przedmioty, Load(S));
+  S.Done;
+
+  S.Init(DataDir+'SALE.DAT', stOpenRead, 1024);
+  if S.Status<>stOK then
+  begin
+    S.Init(DataDir+'SALE.DAT', stCreate, 1024);
+    New(Sale, Init(10, 5));
+  end
+  else New(Sale, Load(S));
+  S.Done;
+
+  S.Init(DataDir+'KLASY.DAT', stOpenRead, 1024);
+  if S.Status<>stOK then
+  begin
+    S.Init(DataDir+'KLASY.DAT', stCreate, 1024);
+    New(Klasy, Init(10, 5));
+  end
+  else New(Klasy, Load(S));
+  S.Done;
+
+  S.Init(DataDir+'DZWONKI.DAT', stOpenRead, 1024);
+  if S.Status<>stOK then
+  begin
+    S.Init(DataDir+'DZWONKI.DAT', stCreate, 1024);
+    New(Dzwonki, Init(10, 5));
+  end
+  else New(Dzwonki, Load(S));
+  S.Done;
+
+  S.Init(DataDir+'LEKCJE.DAT', stOpenRead, 1024);
+  if S.Status<>stOK then
+  begin
+    S.Init(DataDir+'LEKCJE.DAT', stCreate, 1024);
+    for I:=1 to IloscDni do New(Lekcje[I], Init(10, 5));
+  end
+  else for I:=1 to IloscDni do New(Lekcje[I], Load(S));
+  S.Done;
+end;
+
+procedure UpdateFiles;
+begin
+  S.Init(DataDir+'NAUCZ.DAT', stOpenWrite, 1024);
+  Nauczyciele^.Store(S);
+  S.Truncate;
+  S.Done;
+
+  S.Init(DataDir+'PRZEDM.DAT', stOpenWrite, 1024);
+  Przedmioty^.Store(S);
+  S.Truncate;
+  S.Done;
+
+  S.Init(DataDir+'KLASY.DAT', stOpenWrite, 1024);
+  Klasy^.Store(S);
+  S.Truncate;
+  S.Done;
+
+  S.Init(DataDir+'SALE.DAT', stOpenWrite, 1024);
+  Sale^.Store(S);
+  S.Truncate;
+  S.Done;
+
+  S.Init(DataDir+'DZWONKI.DAT', stOpenWrite, 1024);
+  Dzwonki^.Store(S);
+  S.Truncate;
+  S.Done;
+
+  S.Init(DataDir+'LEKCJE.DAT', stOpenWrite, 1024);
+  for I:=1 to IloscDni do Lekcje[I]^.Store(S);
+  S.Truncate;
+  S.Done;
+end;
+
+procedure CloseFiles;
+begin
+  UpdateFiles;
+  Dispose(Nauczyciele, Done);
+  Nauczyciele:=nil;
+  Dispose(Przedmioty, Done);
+  Przedmioty:=nil;
+  Dispose(Klasy, Done);
+  Klasy:=nil;
+  Dispose(Sale, Done);
+  Sale:=nil;
+  Dispose(Dzwonki, Done);
+  Dzwonki:=nil;
+  for I:=1 to 5 do
+  begin
+    Dispose(Lekcje[I], Done);
+    Lekcje[I]:=nil;
+  end;
+end;
+
 
 begin
 end.

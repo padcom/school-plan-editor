@@ -20,11 +20,13 @@ type { typ opisujcy gˆ¢wn aplikacj© }
 constructor TMainApp.Init;
 begin
   OpenResources('PLAN.RES');
+  OpenFiles('DATA');
   inherited Init;
 end;
 
 destructor TMainApp.Done;
 begin
+  CloseFiles;
   CloseResources;
   inherited Done;
 end;
@@ -80,18 +82,6 @@ var
   N: PNauczyciel;
 
 begin
-  New(Dzwonki, Init(10, 5));
-  New(Klasy, Init(10, 5));
-  New(Sale, Init(10, 5));
-  New(Przedmioty, Init(10, 5));
-  New(Nauczyciele, Init(10, 5));
-  New(N, Init); N^.ImieNazwisko:=NewStr('Maciej Hryniszak'); N^.Skrot:=NewStr('MACIE');
-  N^.Index:=Nauczyciele^.GetFirstFreeIndex;
-  Nauczyciele^.Insert(N);
-  New(N, Init); N^.ImieNazwisko:=NewStr('Marzena Hanarz'); N^.Skrot:=NewStr('MARZE');
-  N^.Index:=Nauczyciele^.GetFirstFreeIndex;
-  Nauczyciele^.Insert(N);
-
   Main.Init;
   Main.Run;
   Main.Done;
