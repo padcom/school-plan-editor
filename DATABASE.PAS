@@ -4,7 +4,8 @@ interface
 uses
   App, Objects, Drivers, Views, Dialogs, MsgBox, Resource,
   DataObjects, DataDialogs, Stale,
-  Nauczyciel, Przedmiot, Klasa, Sala, Dzwonek, Lekcja;
+  Nauczyciel, Przedmiot, Klasa, Sala, Dzwonek, Lekcja,
+  MainWin;
 
 function NauczycielAdd: Boolean;
 function NauczycielDel: Boolean;
@@ -57,6 +58,7 @@ begin
     begin
       Data^.Index:=Nauczyciele^.GetFirstFreeIndex;
       Nauczyciele^.Insert(Data);
+      Message(Desktop^.Current, evBroadcast, cmDataBaseChanged, nil);
       NauczycielAdd:=True;
     end;
   end
@@ -85,6 +87,7 @@ begin
     begin
       for I:=1 to IloscDni do if Assigned(Lekcje[I]) then Lekcje[I]^.ForEach(@UsunNauczycielaZLekcji);
       Nauczyciele^.Free(Data);
+      Message(Desktop^.Current, evBroadcast, cmDataBaseChanged, nil);
       NauczycielDel:=True;
     end
     else NauczycielDel:=False;
@@ -118,6 +121,7 @@ begin
     begin
       Data^.Assign(Temp);
       Nauczyciele^.Insert(Data);
+      Message(Desktop^.Current, evBroadcast, cmDataBaseChanged, nil);
       NauczycielEdit:=True;
     end;
   end
@@ -149,6 +153,7 @@ begin
     begin
       Data^.Index:=Przedmioty^.GetFirstFreeIndex;
       Przedmioty^.Insert(Data);
+      Message(Desktop^.Current, evBroadcast, cmDataBaseChanged, nil);
       PrzedmiotAdd:=True;
     end;
   end
@@ -177,6 +182,7 @@ begin
     begin
       for I:=1 to IloscDni do if Assigned(Lekcje[I]) then Lekcje[I]^.ForEach(@UsunPrzedmiotZLekcji);
       Przedmioty^.Free(Data);
+      Message(Desktop^.Current, evBroadcast, cmDataBaseChanged, nil);
       PrzedmiotDel:=True;
     end
     else PrzedmiotDel:=False;
@@ -210,6 +216,7 @@ begin
     begin
       Data^.Assign(Temp);
       Przedmioty^.Insert(Data);
+      Message(Desktop^.Current, evBroadcast, cmDataBaseChanged, nil);
       PrzedmiotEdit:=True;
     end;
   end
@@ -241,6 +248,7 @@ begin
     begin
       Data^.Index:=Sale^.GetFirstFreeIndex;
       Sale^.Insert(Data);
+      Message(Desktop^.Current, evBroadcast, cmDataBaseChanged, nil);
       SalaAdd:=True;
     end;
   end
@@ -269,6 +277,7 @@ begin
     begin
       for I:=1 to IloscDni do if Assigned(Lekcje[I]) then Lekcje[I]^.ForEach(@UsunSaleZLekcji);
       Sale^.Free(Data);
+      Message(Desktop^.Current, evBroadcast, cmDataBaseChanged, nil);
       SalaDel:=True;
     end
     else SalaDel:=False;
@@ -302,6 +311,7 @@ begin
     begin
       Data^.Assign(Temp);
       Sale^.Insert(Data);
+      Message(Desktop^.Current, evBroadcast, cmDataBaseChanged, nil);
       SalaEdit:=True;
     end;
   end
@@ -336,6 +346,7 @@ begin
     begin
       Data^.Index:=Klasy^.GetFirstFreeIndex;
       Klasy^.Insert(Data);
+      Message(Desktop^.Current, evBroadcast, cmDataBaseChanged, nil);
       KlasaAdd:=True;
     end;
   end
@@ -368,6 +379,7 @@ begin
     begin
       for I:=1 to IloscDni do if Assigned(Lekcje[I]) then Lekcje[I]^.ForEach(@UsunKlaseZLekcji);
       Klasy^.Free(Data);
+      Message(Desktop^.Current, evBroadcast, cmDataBaseChanged, nil);
       KlasaDel:=True;
     end
     else KlasaDel:=False;
@@ -411,6 +423,7 @@ begin
       for I:=1 to IloscDni do if Assigned(Lekcje[I]) then Lekcje[I]^.ForEach(@UaktualnijKlaseNaPlanieZajec);
       Data^.Assign(Temp);
       Klasy^.Insert(Data);
+      Message(Desktop^.Current, evBroadcast, cmDataBaseChanged, nil);
       KlasaEdit:=True;
     end;
   end
@@ -478,6 +491,8 @@ begin
     begin
       Data^.Index:=Dzwonki^.GetFirstFreeIndex;
       Dzwonki^.Insert(Data);
+      Message(Desktop^.Current, evBroadcast, cmUpdateLists, nil);
+      Message(Desktop^.Current, evBroadcast, cmDataBaseChanged, nil);
       DzwonekAdd:=True;
     end;
   end
@@ -510,6 +525,8 @@ begin
       for I:=1 to IloscDni do if Assigned(Lekcje[I]) then
         Lekcje[I]^.ForEach(@UsunDzwonekZLekcji);
       Dzwonki^.Free(Data);
+      Message(Desktop^.Current, evBroadcast, cmUpdateLists, nil);
+      Message(Desktop^.Current, evBroadcast, cmDataBaseChanged, nil);
       DzwonekDel:=True;
     end
     else DzwonekDel:=False;
@@ -543,6 +560,8 @@ begin
     begin
       Data^.Assign(Temp);
       Dzwonki^.Insert(Data);
+      Message(Desktop^.Current, evBroadcast, cmUpdateLists, nil);
+      Message(Desktop^.Current, evBroadcast, cmDataBaseChanged, nil);
       DzwonekEdit:=True;
     end;
   end

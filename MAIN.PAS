@@ -9,6 +9,7 @@ uses
 type { typ opisujcy gˆ¢wn aplikacj© }
   PMainApp = ^TMainApp;
   TMainApp = object (TApplication)
+    MainWindow: PMainWindow;
     constructor Init;
     destructor Done; virtual;
     procedure InitStatusLine; virtual;
@@ -19,14 +20,16 @@ type { typ opisujcy gˆ¢wn aplikacj© }
   end;
 
 constructor TMainApp.Init;
-var
-  D: PMainWindow;
 begin
   OpenResources('PLAN.RES');
   OpenFiles('DATA');
   inherited Init;
-  D:=PMainWindow(ResourceFile.Get('MainWindow'));
-  if LoadSuccessful(D) then InsertWindow(D);
+  MainWindow:=PMainWindow(ResourceFile.Get('MainWindow'));
+  if LoadSuccessful(MainWindow) then
+  begin
+    MainWindow^.DzwonekListView^.NewList(Dzwonki);
+    InsertWindow(MainWindow);
+  end;
   Message(@Self, evCommand, cmAboutBox, nil);
 end;
 

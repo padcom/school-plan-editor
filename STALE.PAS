@@ -32,7 +32,8 @@ const
   cmPlanKlasy       = 181;
   cmClickActiveText = 250;
   cmChooseFromList  = 251;
-
+  cmUpdateLists     = 1000;
+  cmDataBaseChanged = 1001;
 
   { konteksty pomocy }
   hcNauczycielAdd   = $1100;

@@ -552,22 +552,30 @@ begin
     S^.AtInsert(2, NewStr('—roda'));
     S^.AtInsert(3, NewStr('Czwartek'));
     S^.AtInsert(4, NewStr('Pi¥tek'));
+    S^.AtInsert(5, NewStr('Sobota'));
     DzienTygodniaListView^.NewList(S);
     R.Assign(1, 1, 15, 2);
-    New(DzienTygodniaLabel, Init(R, 'Dni ~t~ygodnia', DzienTygodniaListView));
+    New(DzienTygodniaLabel, Init(R, 'Dni tygodnia', DzienTygodniaListView));
     Insert(DzienTygodniaLabel);
 
     R.Assign(16, 3, 29, Size.Y-7);
-    New(DzwonekListView, Init(R, 1, nil)){, nil))};
+    New(DzwonekListView, Init(R, 1, nil, nil));
     Insert(DzwonekListView);
+    DzwonekListView^.GrowMode:=gfGrowHiY;
     R.Assign(16, 1, 29, 2);
-    New(DzwonekListLabel, Init(R, '  ~D~zwonki', DzwonekListView));
+    New(DzwonekListLabel, Init(R, '  Dzwonki', DzwonekListView));
     Insert(DzwonekListLabel);
 
-    New(S, Init(10, 5));
-    S^.AtInsert(0, NewStr('08:00-08:45'));
-    S^.AtInsert(0, NewStr('08:50-09:40'));
-    DzwonekListView^.NewList(S);
+    DzwonekListView^.NewList(Dzwonki);
+
+    R.Assign(31, 3, Size.X-1, Size.Y-7);
+    New(LekcjaListView, Init(R, 1, nil));
+    Insert(LekcjaListView);
+    R.Assign(31, 1, Size.X-1, 2);
+    New(LekcjaListLabel, Init(R, 'Naucz.   Przedmiot   Klasa   Grupy      Sala ', LekcjaListView));
+    Insert(LekcjaListLabel);
+
+    LekcjaListView^.NewList(Lekcje[1]);
   end;
 
   StoreObject(D);
@@ -575,9 +583,21 @@ begin
 end;
 
 var
-  I: Integer;
+  D: PDzwonek;
+  L: PLekcja;
+
 begin
   CreateResources('PLAN.RES');
+{  OpenFiles('DATA');}
+{
+  New(L, Init);
+  L^.NauczycielIndex:=0;
+  L^.PrzedmiotIndex:=0;
+  L^.SalaIndex:=0;
+  L^.KlasaIndex:=0;
+  L^.Grupy:=12;
+  Lekcje[1]^.Insert(L);
+}
   CreateStatusLine;
   CreateMenuBar;
   CreateAboutBox;
@@ -592,4 +612,5 @@ begin
   CreateMainWindow;
   DumpNames;
   CloseResources;
+{  CloseFiles;}
 end.
