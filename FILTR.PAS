@@ -57,23 +57,39 @@ end;
 
 procedure FiltrujKlasy(Dzien: Integer; DzwonekIndex: LongInt);
 var
-  I: Integer;
-  Data: PDataObject;
+  W: Word;
+  I, J: Integer;
+  Data: PKlasa;
   L: PLekcja;
 begin
   New(TempKlasy, Init(10, 5));
   if not Assigned(Lekcje[Dzien]) or (Lekcje[Dzien]^.Count=0) then Exit;
+
+  { inicjalizacja filtr¢w klasy }
+  I:=0; while I<Klasy^.Count do
+  begin
+    Data:=PKlasa(Klasy^.At(I));
+    W:=0;
+    for J:=1 to Data^.IloscGrup do W:=(W shl 1)+1;
+    Data^.FiltrowaneGrupy:=W;
+    Inc(I);
+  end;
+
   I:=0;
   while I<Lekcje[Dzien]^.Count do
   begin
     L:=PLekcja(Lekcje[Dzien]^.At(I));
     if L^.DzwonekIndex=DzwonekIndex then
     begin
-      Data:=Klasy^.ItemByIndex(L^.KlasaIndex);
+      Data:=PKlasa(Klasy^.ItemByIndex(L^.KlasaIndex));
       if Assigned(Data) then
       begin
-        Klasy^.Delete(Data);
-        TempKlasy^.Insert(Data);
+        Data^.FiltrowaneGrupy:=Data^.FiltrowaneGrupy and (not L^.Grupy);
+        if Data^.FiltrowaneGrupy=0 then
+        begin
+          Klasy^.Delete(Data);
+          TempKlasy^.Insert(Data);
+        end;
       end;
     end;
     Inc(I);

@@ -12,6 +12,7 @@ type { typ opisuj¥cy klas© }
     Litera: Char;
     IloscGrup: Byte;
     Grupy: Word;
+    FiltrowaneGrupy: Word;
     constructor Load(var S: TStream);
     function Compare(Data: PDataObject): Integer; virtual;
     function GetText(MaxLen: Integer): String; virtual;
