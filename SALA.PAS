@@ -1,0 +1,137 @@
+Unit Sala;
+
+interface
+uses
+  Objects, Drivers, Views, Dialogs, Menus,
+  DataObjects, DataDialogs, Stale;
+
+type { typ opisuj¥cy sal© }
+  PSala = ^TSala;
+  TSala = object (TDataObject)
+    Numer: PString;
+    Nazwa: PString;
+    constructor Load(var S: TStream);
+    function Compare(Data: PDataObject): Integer; virtual;
+    function GetText(MaxLen: Integer): String; virtual;
+    procedure Clear; virtual;
+    procedure Store(var S: TStream); virtual;
+  end;
+
+type { typ opisuj¥cy okno edycji sali }
+  PSalaDialog = ^TSalaDialog;
+  TSalaDialog = object (TDataDialog)
+    NumerInputLine: PInputLine;
+    NumerLabel: PLabel;
+    NazwaInputLine: PInputLine;
+    NazwaLabel: PLabel;
+    constructor Load(var S: TStream);
+    procedure GetData(var Rec); virtual;
+    procedure SetData(var Rec); virtual;
+    procedure Store(var S: TStream); virtual;
+  end;
+
+const
+  RSala: TStreamRec = (
+    ObjType: $4000;
+    VmtLink: Ofs(TypeOf(TSala)^);
+    Load   : @TSala.Load;
+    Store  : @TSala.Store);
+  RSalaDialog: TStreamRec = (
+    ObjType: $4001;
+    VmtLink: Ofs(TypeOf(TSalaDialog)^);
+    Load   : @TSalaDialog.Load;
+    Store  : @TSalaDialog.Store);
+
+procedure RegisterSala;
+
+implementation
+uses
+  Latin2;
+
+{ TSala }
+
+constructor TSala.Load;
+begin
+  inherited Load(S);
+  Numer:=S.ReadStr;
+  Nazwa:=S.ReadStr;
+end;
+
+function TSala.Compare;
+var
+  S1, S2: String;
+begin
+  if inherited Compare(Data)=0 then Compare:=0
+  else
+  begin
+    S1:=GetText(255);
+    S2:=Data^.GetText(255);
+    Compare:=CompareStr(S1, S2, False);
+  end;
+end;
+
+function TSala.GetText;
+var
+  S1, S2: String;
+begin
+  if Assigned(Numer) then S1:=Numer^
+  else S1:='';
+  if Assigned(Nazwa) then S2:=Nazwa^
+  else S2:='';
+  if Length(S1)<5 then S1:=SpaceStr(5-Length(S1));
+  GetText:=Copy(S1+' - '+S2, 1, MaxLen);
+end;
+
+procedure TSala.Clear;
+begin
+  if Assigned(Numer) then DisposeStr(Numer);
+  Numer:=nil;
+  if Assigned(Nazwa) then DisposeStr(Nazwa);
+  Nazwa:=nil;
+end;
+
+procedure TSala.Store;
+begin
+  inherited Store(S);
+  S.WriteStr(Numer);
+  S.WriteStr(Nazwa);
+end;
+
+{ TSalaDialog }
+
+constructor TSalaDialog.Load;
+begin
+  inherited Load(S);
+  GetSubViewPtr(S, NumerInputLine);
+  GetSubViewPtr(S, NumerLabel);
+  GetSubViewPtr(S, NazwaInputLine);
+  GetSubViewPtr(S, NazwaLabel);
+end;
+
+procedure TSalaDialog.GetData;
+begin
+end;
+
+procedure TSalaDialog.SetData;
+begin
+end;
+
+procedure TSalaDialog.Store;
+begin
+  inherited Store(S);
+  PutSubViewPtr(S, NumerInputLine);
+  PutSubViewPtr(S, NumerLabel);
+  PutSubViewPtr(S, NazwaInputLine);
+  PutSubViewPtr(S, NazwaLabel);
+end;
+
+{ *** }
+
+procedure RegisterSala;
+begin
+  RegisterType(RSala);
+  RegisterType(RSalaDialog);
+end;
+
+begin
+end.
