@@ -10,6 +10,7 @@ uses
 type { typ opisuj¥cy list box dzwonk¢w }
   PDzwonekListView = ^TDzwonekListView;
   TDzwonekListView = object (TDataListBox)
+    constructor Load(var S: TStream);
     function GetPalette: PPalette; virtual;
     function GetText(Item: Integer; MaxLen: Integer): String; virtual;
   end;
@@ -20,6 +21,7 @@ type { typ opisuj¥cy widok listy lekcji dla poszczeg¢lnego dnia }
     function GetPalette: PPalette; virtual;
     function GetText(Item: Integer; MaxLen: Integer): String; virtual;
     procedure FocusItem(Item: Integer); virtual;
+    procedure HandleEvent(var Event: TEvent); virtual;
     procedure NewList(AList: PCollection); virtual;
   end;
 
@@ -117,6 +119,12 @@ uses
 
 { TDzwonekListView }
 
+constructor TDzwonekListView.Load;
+begin
+  inherited Load(S);
+  EventMask:=EventMask and (not evMouse);
+end;
+
 function TDzwonekListView.GetText;
 begin
   GetText:=PDataObject(List^.At(Item))^.GetText(5);
@@ -175,6 +183,20 @@ begin
   Event.Command:=cmUpdateLekcjaDetailView;
   Event.InfoPtr:=nil;
   Owner^.HandleEvent(Event);
+end;
+
+procedure TLekcjaListView.HandleEvent;
+var
+  I: Integer;
+begin
+  if Event.What=evMouseDown then
+  begin
+    for I:=1 to 4 do if PIndividualEditWindow(Owner)^.LekcjaListView[I]=@Self then
+    begin
+      PIndividualEditWindow(Owner)^.SelectedDzien:=PIndividualEditWindow(Owner)^.FirstDzien+I-1;
+    end;
+  end;
+  inherited HandleEvent(Event);
 end;
 
 procedure TLekcjaListView.NewList;
@@ -704,6 +726,7 @@ begin
     S:='Klasa '+S+Data^.Litera;
     if Data^.Grupy>0 then S:=S+', grupa: '+S2;
     Win^.SetTitle('Edycja planu lekcji dla: '+S);
+    if Data^.Grupy=0 then Data^.Grupy:=1;
     Win^.SetEditorData(Data);
     Win^.UpdateLists;
     Win^.HelpCtx:=Win^.HelpCtx+2;

@@ -9,6 +9,7 @@ uses
 type { typ opisuj¥cy pod˜wietlany Label }
   PHighlightedLabel = ^THighlightedLabel;
   THighlightedLabel = object (TLabel)
+    constructor Load(var S: TStream);
     function GetPalette: PPalette; virtual;
   end;
 
@@ -65,6 +66,12 @@ procedure RegisterHostWin;
 implementation
 
 { THighlightedLabel }
+
+constructor THighlightedLabel.Load;
+begin
+  inherited Load(S);
+  EventMask:=EventMask and (not evMouse);
+end;
 
 function THighlightedLabel.GetPalette;
 const
