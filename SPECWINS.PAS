@@ -52,24 +52,25 @@ type { typ opisuj¥cy okno edycji planu lekcji dla wybranego elementu planu }
     procedure UpdateDzwonekListView; virtual;
     procedure UpdateLekcjaListView; virtual;
 
-    function GetText(Item: Integer; MaxLen: Integer; ListView: PLekcjaListView): String; virtual;
+    function GetText(Item: Integer; MaxLen: Integer; List: PDataCollection): String; virtual;
     procedure UpdateLabels; virtual;
 
     procedure ViewStatistics; virtual;
+    procedure Print; virtual;
   end;
 
 type { typ opisuj¥cy okno edycji planu lekcji nauczyciela }
   PNauczycielEditWindow = ^TNauczycielEditWindow;
   TNauczycielEditWindow = object (TIndividualEditWindow)
     function CompareData(LekcjaData: PLekcja; DzwonekPos: Integer): Boolean; virtual;
-    function GetText(Item: Integer; MaxLen: Integer; ListView: PLekcjaListView): String; virtual;
+    function GetText(Item: Integer; MaxLen: Integer; List: PDataCollection): String; virtual;
   end;
 
 type { typ opisuj¥cy okno edycji planu lekcji nauczyciela }
   PKlasaEditWindow = ^TKlasaEditWindow;
   TKlasaEditWindow = object (TIndividualEditWindow)
     function CompareData(LekcjaData: PLekcja; DzwonekPos: Integer): Boolean; virtual;
-    function GetText(Item: Integer; MaxLen: Integer; ListView: PLekcjaListView): String; virtual;
+    function GetText(Item: Integer; MaxLen: Integer; List: PDataCollection): String; virtual;
     procedure ViewStatistics; virtual;
   end;
 
@@ -112,7 +113,7 @@ procedure RegisterSpecWins;
 
 implementation
 uses
-  Resource, DataBase, Statystyka;
+  Resource, DataBase, Statystyka, Latin2, Crt, Drukowanie;
 
 { TDzwonekListView }
 
@@ -143,7 +144,7 @@ end;
 
 function TLekcjaListView.GetText;
 begin
-  GetText:=PIndividualEditWindow(Owner)^.GetText(Item, MaxLen, @Self);
+  GetText:=PIndividualEditWindow(Owner)^.GetText(Item, MaxLen, PDataCollection(List));
 end;
 
 const
@@ -300,6 +301,11 @@ begin
         ViewStatistics;
         ClearEvent(Event);
       end;
+      kbCtrlF2:
+      begin
+        Print;
+        ClearEvent(Event);
+      end;
     end;
   end;
   inherited HandleEvent(Event);
@@ -421,6 +427,107 @@ procedure TIndividualEditWindow.ViewStatistics;
 begin
 end;
 
+procedure TIndividualEditWindow.Print;
+var
+  F: Text;
+  S, T: String;
+  I, J, D: Integer;
+  C1, C2, C3, C4, C5, C6, C7, C8, C9, C10, C11, C12: Char;
+  ColWidth: Word;
+  R: TRect;
+  Dialog: PDialog;
+  TempFile: String;
+begin
+  TempFile:='C:\WYDRUK.TMP';
+
+  R.Assign(0, 0, 50, 7);
+  New(Dialog, Init(R, 'Informacja'));
+  with Dialog^ do Options:=Options or ofCentered;
+  R.Assign(1, 3, Dialog^.Size.X-1, 5);
+  Dialog^.Insert(New(PStaticText, Init(R, #3'Przygotowanie wydruku - Prosz© czeka†')));
+  Application^.InsertWindow(Dialog);
+
+  ColWidth:=18;
+  C1:='Ä'; C2:='³'; C3:='Å'; C4:='Â'; C5:='Á'; C6:='Ã'; C7:='´'; C9:='Ú'; C10:='¿'; C11:='Ù'; C12:='À';
+
+  if (not Assigned(Dzwonki)) or Dzwonki^.Empty then Exit;
+
+  I:=Pos(':', Title^);
+  if I=0 then Exit;
+
+  S:=Copy(Title^, I+2, Length(Title^)-I);
+  Assign(F, TempFile);
+  Rewrite(F);
+
+  Writeln(F, '\FONT:FINE');
+  Writeln(F, '\DPI:75');
+  Writeln(F);
+  Writeln(F, 'Plan lekcji dla: ', S);
+  Writeln(F);
+  Writeln(F);
+  Writeln(F, '\DPI:150');
+
+  S:=RepeatStr(C1, IloscDni*ColWidth+11);
+  S[10]:=C4; S[11]:=C4; for I:=1 to IloscDni-1 do S[(I*ColWidth)+11]:=C4;
+  Writeln(F, S);
+
+  S:=RepeatStr(' ', IloscDni*ColWidth+11);
+  S[10]:=C2; S[11]:=C2; for I:=1 to IloscDni-1 do S[(I*ColWidth)+11]:=C2;
+  T:='Dzwonek';
+  for I:=1 to Length(T) do S[I+1]:=T[I];
+  for I:=1 to IloscDni do for J:=1 to Length(NazwyDniTygodnia[I]) do S[(I-1)*ColWidth+12+J]:=NazwyDniTygodnia[I, J];
+  Writeln(F, S);
+
+  S:=RepeatStr(C1, IloscDni*ColWidth+11);
+  S[10]:=C3; S[11]:=C3; for I:=1 to IloscDni-1 do S[(I*ColWidth)+11]:=C3;
+  Writeln(F, S);
+
+  for I:=0 to Dzwonki^.Count-1 do
+  begin
+    S:=RepeatStr(' ', IloscDni*ColWidth+11);
+    S[10]:=C2; S[11]:=C2; for J:=1 to IloscDni-1 do S[(J*ColWidth)+11]:=C2;
+
+    T:=DzwonekListView^.GetText(I, 9);
+    for J:=1 to Length(T) do S[J+2]:=T[J];
+
+    for D:=1 to IloscDni do
+    begin
+      T:=GetText(I, ColWidth-2, Lekcje[D]);
+      if T<>'' then for J:=1 to Length(T) do S[(D-1)*ColWidth+12+J]:=T[J];
+    end;
+
+    Writeln(F, S);
+  end;
+
+  S:=RepeatStr(C1, IloscDni*ColWidth+11);
+  S[10]:=C5; S[11]:=C5; for I:=1 to IloscDni-1 do S[(I*ColWidth)+11]:=C5;
+  Writeln(F, S);
+
+  Writeln(F);
+  Writeln(F, '\DPI:300');
+  Writeln(F, 'Plan lekcji wesja 1.3.54');
+  Writeln(F, '(C) by Grand s.c.');
+
+  Writeln(F);
+  Writeln(F);
+
+  System.Close(F);
+  Delay(1000);
+  Dialog^.Close;
+
+  R.Assign(0, 0, 50, 7);
+  New(Dialog, Init(R, 'Informacja'));
+  with Dialog^ do Options:=Options or ofCentered;
+  R.Assign(1, 3, Dialog^.Size.X-1, 5);
+  Dialog^.Insert(New(PStaticText, Init(R, #3'Trwa wydruk - Prosz© czeka†')));
+  Application^.InsertWindow(Dialog);
+
+  Drukowanie.PrintFile(TempFile);
+  Delay(1000);
+
+  Dialog^.Close;
+end;
+
 { TNauczycielEditWindow }
 
 function TNauczycielEditWindow.CompareData;
@@ -439,7 +546,7 @@ var
   S: PSala;
   St, S2: String;
 begin
-  L:=GetLekcja(ListView^.List, Item);
+  L:=GetLekcja(List, Item);
   if not Assigned(L) then GetText:=''
   else
   begin
@@ -449,14 +556,20 @@ begin
     St:='';
     if Assigned(P) and Assigned(P^.Skrot) then St:=St+P^.Skrot^
     else St:=St+'BRAK';
+    St:=Copy(St, 1, 4); while Length(St)<4 do St:=St+' ';
+
     if Assigned(K) then
     begin
       Str(K^.Numer, S2);
       St:=St+'\'+S2+K^.Litera;
     end
     else St:=St+'\BRAK';
+    St:=Copy(St, 1, 9); while Length(St)<9 do St:=St+' ';
+
     if Assigned(S) and Assigned(S^.Numer) then St:=St+'\'+S^.Numer^
     else St:=St+'\BRAK';
+
+{    St:=Copy(St, 1, 14); while Length(St)<14 do St:=St+' ';}
     GetText:=St;
   end;
 end;
@@ -480,7 +593,7 @@ var
   S: PSala;
   St, S2: String;
 begin
-  L:=GetLekcja(ListView^.List, Item);
+  L:=GetLekcja(List, Item);
   if not Assigned(L) then GetText:=''
   else
   begin
@@ -490,10 +603,16 @@ begin
     St:='';
     if Assigned(P) and Assigned(P^.Skrot) then St:=St+P^.Skrot^
     else St:=St+'BRAK';
+    St:=Copy(St, 1, 4); while Length(St)<4 do St:=St+' ';
+
     if Assigned(N) then St:=St+'\'+N^.Skrot^
     else St:=St+'\BRAK';
+    St:=Copy(St, 1, 9); while Length(St)<9 do St:=St+' ';
+
     if Assigned(S) and Assigned(S^.Numer) then St:=St+'\'+S^.Numer^
     else St:=St+'\BRAK';
+    St:=Copy(St, 1, 14); while Length(St)<14 do St:=St+' ';
+
     GetText:=St;
   end;
 end;

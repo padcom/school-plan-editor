@@ -47,6 +47,7 @@ const
   cmUpdateLekcjaListView   = 1004;
   cmUpdateLekcjaDetailView = 1005;
   cmFindEditorWindow       = 1006;
+  cmPrint                  = 1007;
 
   { konteksty pomocy }
   hcNauczycielAdd   = $1100;

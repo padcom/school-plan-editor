@@ -23,7 +23,7 @@ begin
       NewStatusKey('~Ctrl+Enter~ Popraw', kbCtrlEnter, cmLekcjaEdit,
       NewStatusKey('~F10~ Menu', kbF10, cmMenu,
       NewStatusKey('', kbAltF3, cmClose,
-      NewStatusKey('', kbCtrlF2, cmNext,
+      NewStatusKey('', kbCtrlF3, cmNext,
       NewStatusKey('', kbCtrlF1, cmAboutBox,
     nil))))))))),
     NewStatusDef($FF0, $FFF,
@@ -822,7 +822,7 @@ begin
     ListBox^.Select;
   end;
   StoreObject(D);
-  TestDialog(D);
+{  TestDialog(D);}
 end;
 
 var
