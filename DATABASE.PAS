@@ -10,10 +10,10 @@ function NauczycielAdd: Boolean;
 function NauczycielDel: Boolean;
 function NauczycielEdit: Boolean;
 
-function ChooseNauczyciel(List: PDataCollection): PDataObject;
-function ChoosePrzedmiot(List: PDataCollection): PDataObject;
-function ChooseSala(List: PDataCollection): PDataObject;
-function ChooseKlasa(List: PDataCollection): PDataObject;
+function ChooseNauczyciel(List: PDataCollection): PNauczyciel;
+function ChoosePrzedmiot(List: PDataCollection): PPrzedmiot;
+function ChooseSala(List: PDataCollection): PSala;
+function ChooseKlasa(List: PDataCollection): PKlasa;
 function EditLekcja(var Data: PLekcja): Boolean;
 
 implementation
@@ -51,8 +51,7 @@ end;
 function NauczycielDel;
 var
   Data: PDataObject;
-  I, J: Integer;
-  L: PLekcja;
+  I: Integer;
 
 procedure UsunNauczycielaZLekcji(Item: Pointer); far;
 begin
@@ -72,8 +71,40 @@ begin
 end;
 
 function NauczycielEdit;
+var
+  Data, Temp: PNauczyciel;
+  Dialog: PDataDialog;
+  I: Integer;
 begin
+  Data:=ChooseNauczyciel(Nauczyciele);
+  if not Assigned(Data) then Exit;
 
+  New(Temp, Init);
+  Temp^.Assign(Data);
+  Nauczyciele^.Delete(Data);
+
+  Dialog:=PDataDialog(ResourceFile.Get('NauczycielEditDialog'));
+  if Application^.ExecuteDialog(Dialog, Temp)=cmOK then
+  begin
+    if Nauczyciele^.Search(Temp, I) then
+    begin
+      MessageBox(#3'Taki nauczyciel ju¾ istnieje !', nil, mfError or mfCancelButton);
+      Nauczyciele^.Insert(Data);
+      NauczycielEdit:=False;
+    end
+    else
+    begin
+      Data^.Assign(Temp);
+      Nauczyciele^.Insert(Data);
+      NauczycielEdit:=True;
+    end;
+  end
+  else
+  begin
+    Nauczyciele^.Insert(Data);
+    NauczycielEdit:=False;
+  end;
+  Dispose(Temp, Done);
 end;
 
 
@@ -114,22 +145,22 @@ end;
 
 function ChooseNauczyciel;
 begin
-  ChooseNauczyciel:=ChooseFromList(List, 'Lista dost©pnych nauczycieli jest pusta !', '~L~ista nauczycieli');
+  ChooseNauczyciel:=PNauczyciel(ChooseFromList(List, 'Lista dost©pnych nauczycieli jest pusta !', '~L~ista nauczycieli'));
 end;
 
 function ChoosePrzedmiot;
 begin
-  ChoosePrzedmiot:=ChooseFromList(List, 'Lista dost©pnych przedmiot¢w jest pusta !', '~L~ista przedmiot¢w');
+  ChoosePrzedmiot:=PPrzedmiot(ChooseFromList(List, 'Lista dost©pnych przedmiot¢w jest pusta !', '~L~ista przedmiot¢w'));
 end;
 
 function ChooseSala;
 begin
-  ChooseSala:=ChooseFromList(List, 'Lista dost©pnych sal jest pusta !', '~L~ista sal');
+  ChooseSala:=PSala(ChooseFromList(List, 'Lista dost©pnych sal jest pusta !', '~L~ista sal'));
 end;
 
 function ChooseKlasa;
 begin
-  ChooseKlasa:=ChooseFromList(List, 'Lista dost©pnych klas jest pusta !', '~L~ista klas');
+  ChooseKlasa:=PKlasa(ChooseFromList(List, 'Lista dost©pnych klas jest pusta !', '~L~ista klas'));
 end;
 
 function EditLekcja;

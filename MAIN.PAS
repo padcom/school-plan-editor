@@ -58,6 +58,7 @@ begin
       cmAboutBox: ShowAboutBox;
       cmNauczycielAdd: NauczycielAdd;
       cmNauczycielDel: NauczycielDel;
+      cmNauczycielEdit: NauczycielEdit;
     end;
   end;
 end;
@@ -65,7 +66,6 @@ end;
 var
   Main: TMainApp;
   N: PNauczyciel;
-  L: PLekcja;
 
 begin
   New(Nauczyciele, Init(10, 5));
@@ -77,7 +77,6 @@ begin
   Nauczyciele^.Insert(N);
 
   Main.Init;
-  EditLekcja(L);
   Main.Run;
   Main.Done;
 end.

@@ -13,6 +13,7 @@ type { typ opisuj¥cy bazowy typ danych }
     destructor Done; virtual;
     function Compare(Data: PDataObject): Integer; virtual;
     function GetText(MaxLen: Integer): String; virtual;
+    procedure Assign(Data: PDataObject); virtual;
     procedure Clear; virtual;
     procedure Store(var S: TStream); virtual;
   end;
@@ -74,6 +75,12 @@ end;
 function TDataObject.GetText;
 begin
   GetText:='';
+end;
+
+procedure TDataObject.Assign;
+begin
+  Clear;
+  Index:=Data^.Index;
 end;
 
 procedure TDataObject.Clear;

@@ -13,6 +13,7 @@ type { typ opisuj¥cy nauczyciela }
     constructor Load(var S: TStream);
     function Compare(Data: PDataObject): Integer; virtual;
     function GetText(MaxLen: Integer): String; virtual;
+    procedure Assign(Data: PDataObject); virtual;
     procedure Clear; virtual;
     procedure Store(var S: TStream); virtual;
   end;
@@ -79,6 +80,13 @@ begin
   if Assigned(ImieNazwisko) then S:=ImieNazwisko^
   else S:='';
   GetText:=Copy(S, 1, MaxLen);
+end;
+
+procedure TNauczyciel.Assign;
+begin
+  inherited Assign(Data);
+  ImieNazwisko:=NewStr(PNauczyciel(Data)^.ImieNazwisko^);
+  Skrot:=NewStr(PNauczyciel(Data)^.Skrot^);
 end;
 
 procedure TNauczyciel.Clear;
