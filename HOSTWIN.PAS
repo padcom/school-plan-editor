@@ -25,6 +25,7 @@ type { typ opisuj¥cy nadrz©dne ze wzgl©du na dziedziczenie okno edycji planu zaj
     Data: PDataObject;
     LekcjaDetailView: PLekcjaDetailView;
     constructor Load(var S: TStream);
+    destructor Done; virtual;
     procedure HandleEvent(var Event: TEvent); virtual;
     procedure Store(var S: TStream); virtual;
 
@@ -204,6 +205,11 @@ begin
   GetSubViewPtr(S, LekcjaDetailView);
 end;
 
+destructor THostEditWindow.Done;
+begin
+  if Assigned(Data) then Dispose(Data, Done);
+  inherited Done;
+end;
 procedure THostEditWindow.HandleEvent;
 begin
   inherited HandleEvent(Event);

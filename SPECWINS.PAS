@@ -54,6 +54,8 @@ type { typ opisuj¥cy okno edycji planu lekcji dla wybranego elementu planu }
 
     function GetText(Item: Integer; MaxLen: Integer; ListView: PLekcjaListView): String; virtual;
     procedure UpdateLabels; virtual;
+
+    procedure ViewStatistics; virtual;
   end;
 
 type { typ opisuj¥cy okno edycji planu lekcji nauczyciela }
@@ -68,6 +70,7 @@ type { typ opisuj¥cy okno edycji planu lekcji nauczyciela }
   TKlasaEditWindow = object (TIndividualEditWindow)
     function CompareData(LekcjaData: PLekcja; DzwonekPos: Integer): Boolean; virtual;
     function GetText(Item: Integer; MaxLen: Integer; ListView: PLekcjaListView): String; virtual;
+    procedure ViewStatistics; virtual;
   end;
 
 procedure RunPlanLekcjiNauczyciela;
@@ -109,7 +112,7 @@ procedure RegisterSpecWins;
 
 implementation
 uses
-  Resource, DataBase;
+  Resource, DataBase, Statystyka;
 
 { TDzwonekListView }
 
@@ -292,6 +295,11 @@ begin
         Close;
         ClearEvent(Event);
       end;
+      kbF2:
+      begin
+        ViewStatistics;
+        ClearEvent(Event);
+      end;
     end;
   end;
   inherited HandleEvent(Event);
@@ -409,6 +417,10 @@ begin
   end;
 end;
 
+procedure TIndividualEditWindow.ViewStatistics;
+begin
+end;
+
 { TNauczycielEditWindow }
 
 function TNauczycielEditWindow.CompareData;
@@ -484,6 +496,80 @@ begin
     else St:=St+'\BRAK';
     GetText:=St;
   end;
+end;
+
+procedure TKlasaEditWindow.ViewStatistics;
+var
+  R: TRect;
+  D: PDialog;
+  Rec: record
+    List: PStatisticList;
+    Item: Integer;
+  end;
+  Item: PStatisticListItem;
+  ScrollBar: PScrollBar;
+  ListBox: PStatisticListBox;
+  ListBoxLabel: PLabel;
+  Button: PButton;
+  I, J, Position: Integer;
+  L: PLekcja;
+  P: PPrzedmiot;
+begin
+  New(Rec.List, Init(10, 5));
+  Rec.Item:=0;
+
+  if Assigned(Dzwonki) and (not Dzwonki^.Empty) then for I:=1 to IloscDni do
+  begin
+    for J:=0 to Dzwonki^.Count-1 do
+    begin
+      L:=nil;
+      if Assigned(Lekcje[I]) then L:=GetLekcja(Lekcje[I], J);
+      if Assigned(L) then
+      begin
+        P:=PPrzedmiot(Przedmioty^.ItemByIndex(L^.PrzedmiotIndex));
+        if Assigned(P) then
+        begin
+          New(Item, Init(P^.Nazwa^));
+          if not Rec.List^.Search(Item, Position) then Rec.List^.Insert(Item)
+          else
+          begin
+            Dispose(Item, Done);
+            Item:=Rec.List^.At(Position);
+            Inc(Item^.Count);
+          end;
+        end;
+      end;
+    end;
+  end;
+
+  R.Assign(0, 0, 60, 20);
+  New(D, Init(R, 'Statystyka przedmiot¢w'));
+  with D^ do
+  begin
+    Options:=Options or ofCentered;
+
+    R.Assign(Size.X-4, 3, Size.X-3, Size.Y-4);
+    New(ScrollBar, Init(R));
+    Insert(ScrollBar);
+
+    R.Assign(3, 3, Size.X-4, Size.Y-4);
+    New(ListBox, Init(R, 1, ScrollBar));
+    D^.Insert(ListBox);
+
+    R.Assign(2, 2, Size.X-4, 3);
+    New(ListBoxLabel, Init(R, '~L~ista statystyczna', ListBox));
+    Insert(ListBoxLabel);
+
+    R.Assign((Size.X div 2)-7, Size.Y-3, (Size.X div 2)+6, Size.Y-1);
+    New(Button, Init(R, '~Z~amknij', cmOK, bfDefault));
+    Insert(Button);
+
+    ListBox^.Select;
+  end;
+
+  Application^.ExecuteDialog(D, @Rec);
+
+  Dispose(Rec.List, Done);
 end;
 
 { procedury uruchamiaj¥ce edycj© planu zaj©† wybranego elementu skˆadowego }
