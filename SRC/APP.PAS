@@ -191,6 +191,7 @@ type
     destructor Done; virtual;
     procedure Cascade;
     procedure DosShell;
+    procedure GetEvent(var Event: TEvent); virtual;
     procedure GetTileRect(var R: TRect); virtual;
     procedure HandleEvent(var Event: TEvent); virtual;
     procedure Tile;
@@ -237,7 +238,7 @@ const
 
 implementation
 
-uses Dos;
+uses Dos, MsgBox;
 
 const
 
@@ -378,14 +379,14 @@ end;
 
 function ISqr(X: Integer): Integer; assembler;
 asm
-	MOV	CX,X
-        MOV	BX,0
+        MOV     CX,X
+        MOV     BX,0
 @@1:    INC     BX
-	MOV	AX,BX
-	IMUL	AX
-        CMP	AX,CX
-        JLE	@@1
-	MOV	AX,BX
+        MOV     AX,BX
+        IMUL    AX
+        CMP     AX,CX
+        JLE     @@1
+        MOV     AX,BX
         DEC     AX
 end;
 
@@ -773,6 +774,19 @@ begin
   Redraw;
 end;
 
+procedure TApplication.GetEvent(var Event: TEvent);
+var
+  S: String;
+begin
+  inherited GetEvent(Event);
+  case Event.What of
+    evKeyboard: if Event.KeyCode=kbCtrlF10 then
+    begin
+      Str(MemAvail, S);
+      MessageBox(#3'Ilo˜† wolnej pami©ci: '+S, nil, mfInformation or mfOkButton);
+    end;
+  end;
+end;
 procedure TApplication.GetTileRect(var R: TRect);
 begin
   Desktop^.GetExtent(R);
