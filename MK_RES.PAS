@@ -3,7 +3,7 @@ uses
   App, Objects, Drivers, Views, Dialogs, Menus,
   DataObjects, DataDialogs, Resource, Stale,
   Nauczyciel, Przedmiot, Klasa, Sala, Dzwonek, Lekcja,
-  DataBase;
+  Help, DataBase;
 
 { *** procedury tworz¥ce poszczeg¢lne elementy aplikacji *** }
 
@@ -14,7 +14,7 @@ begin
   BeginCreating('StatusLine');
 
   R.Assign(0, 24, 80, 25);
-  StatusLine:=New(PStatusLine, Init(R,
+  StatusLine:=New(PHintStatusLine, Init(R,
     NewStatusDef(0, $FFFF,
       NewStatusKey('~Alt+X~ Koniec', kbAltX, cmQuit,
       NewStatusKey('~F1~ Pomoc', kbF1, cmHelp,
@@ -470,6 +470,22 @@ begin
   New(List, Init(16384, 256));
 
 {  List^.Put(hc, '');}
+  List^.Put(hcSlownikiMenu, 'Zbi¢r danych');
+  List^.Put(hcNauczycieleMenu, 'Lista nauczycieli');
+  List^.Put(hcPrzedmiotyMenu, 'Lista przedmiot¢w');
+  List^.Put(hcKlasyMenu, 'Lista klas');
+  List^.Put(hcSaleMenu, 'Lista sal');
+  List^.Put(hcDzwonkiMenu, 'Lista dzwonk¢w');
+
+  List^.Put(hcPlanLekcjiMenu, 'Operacje zwi¥zane z edycj¥ plau lekcji');
+  List^.Put(hcSystemMenu, 'Operacje systemowe');
+  List^.Put(hcPlanKlasy, 'Podgl¥d/edycja planu lekcji grupy klasy');
+  List^.Put(hcPlanNauczyciela, 'Podgl¥d/edycja planu lekcji nauczyciela');
+  List^.Put(hcArchiwizacja, 'Archiwizacja danych na dyskietk©');
+  List^.Put(hcOdzysk, 'Odzysk danych z dyskietki');
+  List^.Put(hcQuit, 'Koniec programu');
+  List^.Put(hcHelp, 'Elektroniczny sufler');
+
   List^.Put(hcNauczycielAdd, 'Dodawanie nowego nauczyciela');
   List^.Put(hcNauczycielDel, 'Usuwanie istniej¥cego nauczyciela');
   List^.Put(hcNauczycielEdit, 'Poprawanie wpisu nauczyciela');

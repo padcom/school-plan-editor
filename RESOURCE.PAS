@@ -5,7 +5,8 @@ uses
   Strings, Objects, Drivers, Memory, Views, Menus, Dialogs, StdDlg, MsgBox,
   TextView, Colorsel, Editors, App, Validate, Outline,
   DataObjects, DataDialogs,
-  Nauczyciel, Przedmiot, Klasa, Sala, Dzwonek, Lekcja;
+  Nauczyciel, Przedmiot, Klasa, Sala, Dzwonek, Lekcja,
+  Help;
 
 var
   ResourceFile: TResourceFile;
@@ -56,6 +57,7 @@ begin
   RegisterSala;
   RegisterDzwonek;
   RegisterLekcja;
+  RegisterHelp;
   Writeln('OK.');
 end;
 

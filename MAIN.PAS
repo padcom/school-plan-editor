@@ -2,7 +2,7 @@ Program PlanLekcji;
 uses
   App, Objects, Drivers, Views, Dialogs, Menus,
   Stale, Resource,
-  DataObjects, DataDialogs, DataBase,
+  DataObjects, DataDialogs, DataBase, Help,
   Nauczyciel, Przedmiot, Klasa, Sala, Dzwonek, Lekcja;
 
 type { typ opisujcy gˆ¢wn aplikacj© }
@@ -33,7 +33,7 @@ end;
 
 procedure TMainApp.InitStatusLine;
 begin
-  StatusLine:=PStatusLine(ResourceFile.Get('StatusLine'));
+  StatusLine:=PHintStatusLine(ResourceFile.Get('StatusLine'));
 end;
 
 procedure TMainApp.InitMenuBar;
