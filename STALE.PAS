@@ -5,6 +5,8 @@ interface
 const
   { ilo˜† dni w tygodniu }
   IloscDni = 5;
+  NazwyDniTygodnia: array[1..IloscDni] of String =
+    ('Poniedziaˆek','Wtorek','—roda','Czwartek','Pi¥tek');
 
   { komendy programu }
   cmNauczycielAdd   = 100;
@@ -35,8 +37,9 @@ const
   cmUpdateLists            = 1000;
   cmDataBaseChanged        = 1001;
   cmListItemChanged        = 1002;
-  cmRedrawLekcjaListView   = 1002;
-  cmRedrawLekcjaDetailView = 1003;
+  cmRedrawLekcjaListView   = 1003;
+  cmRedrawLekcjaDetailView = 1004;
+  cmFindEditorWindow       = 1005;
 
   { konteksty pomocy }
   hcNauczycielAdd   = $1100;

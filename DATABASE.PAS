@@ -692,8 +692,9 @@ begin
     PrzywrocDane;
     Data^.Index:=Lekcje[Dzien]^.GetFirstFreeIndex;
     Lekcje[Dzien]^.Insert(Data);
-    Message(Desktop^.Current, evBroadcast, cmUpdateLists, nil);
-    Message(Desktop^.Current, evBroadcast, cmListItemChanged, nil);
+    Message(Desktop, evBroadcast, cmUpdateLists, nil);
+    Message(Desktop, evBroadcast, cmListItemChanged, nil);
+    Message(Desktop, evBroadcast, cmDataBaseChanged, nil);
   end
   else
   begin
@@ -709,8 +710,9 @@ begin
   if MessageBox(#3'Czy na pewno chcesz usun¥† t¥ lekcj© ?', nil, mfConfirmation or mfYesButton or mfNoButton)=cmYes then
   begin
     Lekcje[Dzien]^.Free(Data);
-    Message(Desktop^.Current, evBroadcast, cmUpdateLists, nil);
-    Message(Desktop^.Current, evBroadcast, cmListItemChanged, nil);
+    Message(Desktop, evBroadcast, cmUpdateLists, nil);
+    Message(Desktop, evBroadcast, cmListItemChanged, nil);
+    Message(Desktop, evBroadcast, cmDataBaseChanged, nil);
   end;
 end;
 
@@ -723,8 +725,9 @@ begin
   EditLekcja(Data, 'Edycja wpisu lekcji');
   Lekcje[Dzien]^.Insert(Data);
   PrzywrocDane;
-  Message(Desktop^.Current, evBroadcast, cmUpdateLists, nil);
-  Message(Desktop^.Current, evBroadcast, cmListItemChanged, nil);
+  Message(Desktop, evBroadcast, cmUpdateLists, nil);
+  Message(Desktop, evBroadcast, cmListItemChanged, nil);
+  Message(Desktop, evBroadcast, cmDataBaseChanged, nil);
 end;
 
 { *** }

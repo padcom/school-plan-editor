@@ -4,7 +4,8 @@ interface
 uses
   App, Objects, Drivers, Views, Dialogs,
   DataObjects, DataDialogs, Stale,
-  Nauczyciel, Przedmiot, Klasa, Sala, Dzwonek, Lekcja;
+  Nauczyciel, Przedmiot, Klasa, Sala, Dzwonek, Lekcja,
+  HostWin;
 
 type { typ opisuj¥cy pod˜wietlany Label }
   PHighlightedLabel = ^THighlightedLabel;
@@ -55,7 +56,7 @@ type { typ opisuj¥cy gˆ¢wne ramki wewn©trzne okna }
 
 type { typ opisuj¥cy gˆ¢wne okno programu }
   PMainWindow = ^TMainWindow;
-  TMainWindow = object (TDialog)
+  TMainWindow = object (THostEditWindow)
     DzienTygodniaListView: PDzienTygodniaListView;
     DzienTygodniaLabel: PHighlightedLabel;
     DzwonekListView: PDzwonekListView;
@@ -473,7 +474,6 @@ begin
       end;
     end;
     MoveStr(Buf[15], St, Color);
-
     WriteLine(0, Y, Size.X, 1, Buf);
   end;
 end;
@@ -612,6 +612,7 @@ begin
   else if (Event.What=evBroadcast) then
   begin
     case Event.Command of
+      cmUpdateLists: PrepareLekcjaList;
       cmRedrawLekcjaListView:
       begin
         PrepareLekcjaList;

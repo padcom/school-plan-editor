@@ -22,8 +22,10 @@ begin
       NewStatusKey('~Del~ Usuä', kbDel, cmLekcjaDel,
       NewStatusKey('~Ctrl+Enter~ Popraw', kbCtrlEnter, cmLekcjaEdit,
       NewStatusKey('~F10~ Menu', kbF10, cmMenu,
+      NewStatusKey('', kbAltF3, cmClose,
+      NewStatusKey('', kbCtrlF6, cmNext,
       NewStatusKey('', kbCtrlF1, cmAboutBox,
-    nil))))))),
+    nil))))))))),
   nil)));
 
   StoreObject(StatusLine);
@@ -524,6 +526,7 @@ var
   R: TRect;
   D: PMainWindow;
   S: PStringCollection;
+  I: Integer;
 begin
   BeginCreating('MainWindow');
 
@@ -533,7 +536,7 @@ begin
   begin
     Palette:=dpBlueDialog;
     Options:=Options or ofCentered;
-    Flags:=Flags{ and (not wfClose) }or wfGrow;
+    Flags:=Flags and (not wfClose);
 
     GetExtent(R);
     R.Grow(-1, -1);
@@ -547,12 +550,7 @@ begin
     Insert(DzienTygodniaListView);
     DzienTygodniaListView^.GrowMode:=gfGrowHiY;
     New(S, Init(10, 5));
-    S^.AtInsert(0, NewStr('Poniedziaˆek'));
-    S^.AtInsert(1, NewStr('Wtorek'));
-    S^.AtInsert(2, NewStr('—roda'));
-    S^.AtInsert(3, NewStr('Czwartek'));
-    S^.AtInsert(4, NewStr('Pi¥tek'));
-{    S^.AtInsert(5, NewStr('Sobota'));}
+    for I:=0 to 4 do S^.AtInsert(I, NewStr(NazwyDniTygodnia[I+1]));
     DzienTygodniaListView^.NewList(S);
     R.Assign(1, 1, 15, 2);
     New(DzienTygodniaLabel, Init(R, 'Dni tygodnia', DzienTygodniaListView));
@@ -590,19 +588,60 @@ procedure CreatePlanLekcjiNauczycielWindow;
 var
   R: TRect;
   D: PPlanLekcjiNauczycielWindow;
+  I: Integer;
 begin
   BeginCreating('PlanLekcjiNauczycielWindow');
 
-  R.Assign(0, 0, 78, 21);
-  New(D, Init(R, ''));
+  R.Assign(0, 0, 72, 18);
+  New(D, Init(R, 'Plan lekcji nauczyciela'));
   with D^ do
   begin
     Options:=Options or ofCentered;
     Palette:=dpBlueDialog;
+    Flags:=Flags{ and (not wfClose) }or wfGrow or wfZoom;
+
+    GetExtent(R);
+    R.Grow(-1, -1);
+    New(InsideFrames, Init(R));
+    Insert(InsideFrames);
+    InsideFrames^.GrowMode:=gfGrowHiX or gfGrowHiY;
+
+    R.Assign(1, 3, 10, Size.Y-7);
+    New(DzwonekListView, Init(R, 1, nil));
+    Insert(DzwonekListView);
+    R.Assign(1, 1, 10, 2);
+    New(DzwonekLabel, Init(R, 'Dzwonki', DzwonekListView));
+    Insert(DzwonekLabel);
+    with DzwonekListView^ do
+    begin
+      Options:=Options and (not ofSelectable);
+      GrowMode:=gfGrowHiY;
+    end;
+
+    for I:=0 to 3 do
+    begin
+      R.Assign(I*15+12, 3, I*15+12+14, Size.Y-7);
+      New(LekcjaListView[I+1], Init(R, 1, nil));
+      Insert(LekcjaListView[I+1]);
+      LekcjaListView[I+1]^.GrowMode:=gfGrowHiY;
+
+      R.Assign(I*15+12, 1, I*15+12+14, 2);
+      New(LekcjaLabel[I+1], Init(R, NazwyDniTygodnia[I+1], LekcjaListView[I+1]));
+      Insert(LekcjaLabel[I+1]);
+    end;
+
+    R.Assign(1, Size.Y-6, Size.X-1, Size.Y-1);
+    New(LekcjaDetailView, Init(R));
+    for I:=1 to 4 do LekcjaDetailView^.ListView[I]:=LekcjaListView[I];
+    Insert(LekcjaDetailView);
+    LekcjaDetailView^.GrowMode:=gfGrowLoY or gfGrowHiY;
+
+    FirstDzien:=1; SelectedDzien:=1;
+    LekcjaListView[1]^.Select;
   end;
 
   StoreObject(D);
-  TestDialog(D);
+{  TestDialog(D);}
 end;
 
 var

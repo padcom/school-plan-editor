@@ -4,7 +4,7 @@ uses
   Stale, Resource,
   DataObjects, DataDialogs, DataBase, Help,
   Nauczyciel, Przedmiot, Klasa, Sala, Dzwonek, Lekcja,
-  MainWin, SpecWins;
+  HostWin, MainWin, SpecWins;
 
 
 type { typ opisujcy gˆ¢wn aplikacj© }
@@ -63,6 +63,8 @@ begin
 end;
 
 procedure TMainApp.HandleEvent;
+var
+  HostWindow: PHostEditWindow;
 begin
   inherited HandleEvent(Event);
   if Event.What=evCommand then
@@ -84,9 +86,28 @@ begin
       cmDzwonekAdd: DzwonekAdd;
       cmDzwonekDel: DzwonekDel;
       cmDzwonekEdit: DzwonekEdit;
-      cmLekcjaAdd: with MainWindow^ do LekcjaAdd(GetCurrentDzien, GetDzwonekIndex);
-      cmLekcjaDel: with MainWindow^ do LekcjaDel(GetCurrentDzien, GetCurrentLekcja);
-      cmLekcjaEdit: with MainWindow^ do LekcjaEdit(GetCurrentDzien, GetDzwonekIndex, GetCurrentLekcja);
+      cmLekcjaAdd:
+      begin
+        HostWindow:=Message(Desktop, evBroadcast, cmFindEditorWindow, nil);
+        if Assigned(HostWindow) then with HostWindow^ do
+          LekcjaAdd(GetCurrentDzien, GetDzwonekIndex);
+        ClearEvent(Event);
+      end;
+      cmLekcjaDel:
+      begin
+        HostWindow:=Message(Desktop, evBroadcast, cmFindEditorWindow, nil);
+        if Assigned(HostWindow) then with HostWindow^ do
+          LekcjaDel(GetCurrentDzien, GetCurrentLekcja);
+        ClearEvent(Event);
+      end;
+      cmLekcjaEdit:
+      begin
+        HostWindow:=Message(Desktop, evBroadcast, cmFindEditorWindow, nil);
+        if Assigned(HostWindow) then with HostWindow^ do
+          LekcjaEdit(GetCurrentDzien, GetDzwonekIndex, GetCurrentLekcja);
+        ClearEvent(Event);
+      end;
+      cmPlanNauczyciela: RunPlanLekcjiNauczyciela;
     end;
   end;
 end;
