@@ -320,8 +320,7 @@ var
   D: PWelcomeBox;
 begin
   New(D, Init);
-  if ExecuteDialog(D, nil)=cmCancel then InstallData.CancelInstall:=True
-  else InstallData.CancelInstall:=False;
+  ExecuteDialog(D, nil);
 end;
 
 procedure TMainApp.ExecuteDataEntryBox;
@@ -329,7 +328,8 @@ var
   D: PDataEntryBox;
 begin
   New(D, Init);
-  ExecuteDialog(D, @InstallData);
+  if ExecuteDialog(D, @InstallData)=cmCancel then InstallData.CancelInstall:=True
+  else InstallData.CancelInstall:=False;
 end;
 
 function TMainApp.CopyFile;
@@ -419,6 +419,7 @@ end;
 
 var
   Main: TMainApp;
+  S: String;
 
 begin
   with InstallData do
@@ -427,7 +428,8 @@ begin
     Failed:=False;
     CancelInstall:=False;
 
-    Source.Drive:='C';
+    GetDir(0, S);
+    Source.Drive:=S[1];
     Source.Path:='';
     Destionation.Drive:='C';
     Destionation.Path:='\PLAN';

@@ -56,6 +56,7 @@ begin
       int $10
     end;
     GraphicsInitialized:=True;
+    Clear;
   end;
 end;
 
@@ -108,8 +109,8 @@ end;
 procedure TScreenObject.WaitVR;
 begin
   if SpeedTest then begin Port[$3c8]:=0; Port[$3c9]:=0;Port[$3c9]:=0;Port[$3c9]:=0; End;
-  repeat until Port[$3DA] and 8<>0;
   repeat until Port[$3DA] and 8=0;
+  repeat until Port[$3DA] and 8<>0;
   if SpeedTest then begin Port[$3c8]:=0; Port[$3c9]:=63;Port[$3c9]:=63;Port[$3c9]:=63; End;
 end;
 

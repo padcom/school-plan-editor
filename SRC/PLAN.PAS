@@ -123,6 +123,7 @@ end;
 procedure TMainApp.GetEvent(var Event: TEvent);
 var
   W: PWindow;
+  S: String;
 begin
   inherited GetEvent(Event);
   case Event.What of
@@ -135,6 +136,11 @@ begin
       end;
     end;
     evMouseDown: if Event.Buttons<>1 then Event.What := evNothing;
+    evKeyboard: if Event.KeyCode=kbCtrlF10 then
+    begin
+      Str(MemAvail, S);
+      MessageBox(#3'Ilo˜† wolnej pami©ci: '+S, nil, mfInformation or mfOkButton);
+    end;
   end;
 end;
 

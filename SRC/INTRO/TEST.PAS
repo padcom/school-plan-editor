@@ -1,5 +1,5 @@
 Program Test;
-uses Crt, Graphics, Pictures;
+uses Graphics, Pictures;
 
 var
   MorphCounter, MorphOffset: Integer;
@@ -223,7 +223,7 @@ begin
     Screen.WaitVR;
     Screen.Redraw;
     Inc(C);
-  until (Port[$60] and 127=1) or (C>250);
+  until (Port[$60] and 127=1) or (C>200);
   FadeOut2;
 
   Screen.Done;
@@ -231,6 +231,4 @@ begin
   Dispose(P2, Done);
   Dispose(P3, Done);
   Dispose(P4, Done);
-
-  while KeyPressed do ReadKey;
 end.

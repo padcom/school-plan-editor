@@ -16,3 +16,8 @@
 
   Istnieje r¢wnie¾ mo¾liwo˜† wydruku podgl¥danego planu. Sˆu¾y do tego
   klawisz [F4].
+
+  Istnieje r¢wnie¾ mo¾liwo˜† zsumowania ilo˜ci przedmiot¢w dla danej klasy.
+  Po naci˜ni©ciu klawisza [F2] ukazuje si© na ekranie okno z list¥
+  przedmiot¢w oraz ilo˜ci¥ ich wyst©pieä w planie zaj©† aktualnie
+  podgl¥danej klasy.

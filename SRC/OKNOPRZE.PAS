@@ -824,6 +824,7 @@ end;
 
 destructor TZliczaczPrzedmiotow.Done;
 begin
+  Dispose(FPrzedmiotyListBox^.List, Done);
   inherited Done;
 end;
 
