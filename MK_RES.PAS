@@ -3,7 +3,7 @@ uses
   App, Objects, Drivers, Views, Dialogs, Menus,
   DataObjects, DataDialogs, Resource, Stale,
   Nauczyciel, Przedmiot, Klasa, Sala, Dzwonek, Lekcja,
-  Help, DataBase, MainWin, SpecWins;
+  Help, DataBase, MainWin, SpecWins, Statystyka;
 
 { *** procedury tworz¥ce poszczeg¢lne elementy aplikacji *** }
 
@@ -787,6 +787,44 @@ begin
 {  TestDialog(D);}
 end;
 
+procedure CreateStatisticDialog;
+var
+  R: TRect;
+  D: PDialog;
+  ScrollBar: PScrollBar;
+  ListBox: PStatisticListBox;
+  ListBoxLabel: PLabel;
+  Button: PButton;
+begin
+  BeginCreating('StatisticDialog');
+  R.Assign(0, 0, 60, 20);
+  New(D, Init(R, 'Statystyka przedmiot¢w'));
+  with D^ do
+  begin
+    Options:=Options or ofCentered;
+
+    R.Assign(Size.X-4, 3, Size.X-3, Size.Y-4);
+    New(ScrollBar, Init(R));
+    Insert(ScrollBar);
+
+    R.Assign(3, 3, Size.X-4, Size.Y-4);
+    New(ListBox, Init(R, 1, ScrollBar));
+    D^.Insert(ListBox);
+
+    R.Assign(2, 2, Size.X-4, 3);
+    New(ListBoxLabel, Init(R, '~L~ista statystyczna', ListBox));
+    Insert(ListBoxLabel);
+
+    R.Assign((Size.X div 2)-7, Size.Y-3, (Size.X div 2)+6, Size.Y-1);
+    New(Button, Init(R, '~Z~amknij', cmOK, bfDefault));
+    Insert(Button);
+
+    ListBox^.Select;
+  end;
+  StoreObject(D);
+  TestDialog(D);
+end;
+
 var
   D: PDzwonek;
   L: PLekcja;
@@ -808,6 +846,7 @@ begin
   CreateMainWindow;
   CreatePlanLekcjiNauczycielWindow;
   CreatePlanLekcjiKlasaWindow;
+  CreateStatisticDialog;
   DumpNames;
   CloseResources;
 end.

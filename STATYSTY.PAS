@@ -10,9 +10,11 @@ type { typ opisuj¥cy element listy statystycznej }
     Data: PString;
     Count: Integer;
     constructor Init(AData: String);
+    constructor Load(var S: TStream);
     destructor Done; virtual;
     function GetText(MaxLen: Integer): String; virtual;
     function Compare(AData: PStatisticListItem): Integer; virtual;
+    procedure Store(var S: TStream); virtual;
   end;
 
 type { typ opisuj¥cy kolekcj© element¢w statystycznych }
@@ -27,6 +29,25 @@ type { typ opisuj¥cy ListBox element¢w statystycznych }
     function GetText(Item: Integer; MaxLen: Integer): String; virtual;
   end;
 
+const
+  RStatisticListItem: TStreamRec = (
+    ObjType: $C000;
+    VmtLink: Ofs(TypeOf(TStatisticListItem)^);
+    Load   : @TStatisticListItem.Load;
+    Store  : @TStatisticListItem.Store);
+  RStatisticList: TStreamRec = (
+    ObjType: $C001;
+    VmtLink: Ofs(TypeOf(TStatisticList)^);
+    Load   : @TStatisticList.Load;
+    Store  : @TStatisticList.Store);
+  RStatisticListBox: TStreamRec = (
+    ObjType: $C002;
+    VmtLink: Ofs(TypeOf(TStatisticListBox)^);
+    Load   : @TStatisticListBox.Load;
+    Store  : @TStatisticListBox.Store);
+
+procedure RegisterStatystyka;
+
 implementation
 uses
   Latin2;
@@ -38,6 +59,13 @@ begin
   inherited Init;
   if AData<>'' then Data:=NewStr(AData);
   Count:=1;
+end;
+
+constructor TStatisticListItem.Load;
+begin
+  inherited Init;
+  Data:=S.ReadStr;
+  S.Read(Count, SizeOf(Count));
 end;
 
 destructor TStatisticListItem.Done;
@@ -68,6 +96,13 @@ begin
   Compare:=CompareStr(Data^, AData^.Data^, False);
 end;
 
+procedure TStatisticListItem.Store;
+begin
+  inherited Init;
+  S.WriteStr(Data);
+  S.Write(Count, SizeOf(Count));
+end;
+
 { TStatisticList }
 
 function TStatisticList.Compare;
@@ -83,6 +118,13 @@ begin
 end;
 
 { *** }
+
+procedure RegisterStatystyka;
+begin
+  RegisterType(RStatisticListItem);
+  RegisterType(RStatisticList);
+  RegisterType(RStatisticListBox);
+end;
 
 begin
 end.
