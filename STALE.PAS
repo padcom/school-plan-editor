@@ -3,6 +3,8 @@ Unit Stale;
 interface
 
 const
+  { ilo˜† dni w tygodniu }
+  IloscDni = 5;
 
   { komendy programu }
   cmNauczycielAdd   = 100;
@@ -26,6 +28,8 @@ const
   cmArchiwizacja    = 160;
   cmOdzysk          = 161;
   cmAboutBox        = 170;
+  cmClickActiveText = 250;
+  cmChooseFromList  = 251;
 
   { konteksty pomocy }
   hcNauczycielAdd   = $1100;

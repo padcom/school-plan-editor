@@ -2,7 +2,8 @@ Program MakeResources;
 uses
   App, Objects, Drivers, Views, Dialogs, Menus,
   DataObjects, DataDialogs, Resource, Stale,
-  Nauczyciel, Przedmiot, Klasa, Sala, Dzwonek, Lekcja;
+  Nauczyciel, Przedmiot, Klasa, Sala, Dzwonek, Lekcja,
+  DataBase;
 
 { *** procedury tworz¥ce poszczeg¢lne elementy aplikacji *** }
 
@@ -21,7 +22,7 @@ begin
       NewStatusKey('~Del~ Usuä', kbDel, cmLekcjaDel,
       NewStatusKey('~Ctrl+Enter~ Popraw', kbCtrlEnter, cmLekcjaEdit,
       NewStatusKey('~F10~ Menu', kbF10, cmMenu,
-      NewStatusKey('', kbF2, cmAboutBox,
+      NewStatusKey('', kbCtrlF1, cmAboutBox,
     nil))))))),
   nil)));
 
@@ -92,7 +93,7 @@ begin
   end;
 
   StoreObject(D);
-  TestDialog(D);
+{  TestDialog(D);}
 end;
 
 procedure InsertStandardButtons(D: PDataDialog);
@@ -152,7 +153,7 @@ begin
 
   StoreObject(D);
   PDataDialog(D)^.SetTitle('Okno edycji nauczyciela');
-  TestDialog(D);
+{  TestDialog(D);}
 end;
 
 procedure CreatePrzedmiotDialog;
@@ -192,7 +193,7 @@ begin
 
   StoreObject(D);
   PDataDialog(D)^.SetTitle('Okno edycji przedmiotu');
-  TestDialog(D);
+{  TestDialog(D);}
 end;
 
 procedure CreateSalaDialog;
@@ -232,9 +233,217 @@ begin
 
   StoreObject(D);
   PDataDialog(D)^.SetTitle('Okno edycji sali');
-  TestDialog(D);
+{  TestDialog(D);}
 end;
 
+procedure CreateKlasaDialog;
+var
+  R: TRect;
+  D: PDialog;
+begin
+  BeginCreating('KlasaEditDialog');
+
+  R.Assign(0, 0, 48, 11);
+  D:=New(PKlasaDialog, Init(R, ''));
+  with PKlasaDialog(D)^ do
+  begin
+    Options:=Options or ofCentered;
+
+    { standardowe przyciski }
+    InsertStandardButtons(PDataDialog(D));
+
+    { linia wprowadzania numeru klasy }
+    R.Assign(9, 2, 12, 3);
+    New(NumerInputLine, Init(R, 5));
+    Insert(NumerInputLine);
+    R.Assign(2, 2, 8, 3);
+    New(NumerLabel, Init(R, '~N~umer', NumerInputLine));
+    Insert(NumerLabel);
+
+    { linia wprowadzania litery klasy }
+    R.Assign(23, 2, 26, 3);
+    New(LiteraInputLine, Init(R, 5));
+    Insert(LiteraInputLine);
+    R.Assign(15, 2, 22, 3);
+    New(LiteraLabel, Init(R, '~L~itera', LiteraInputLine));
+    Insert(LiteraLabel);
+
+    R.Assign(3, 5, Size.X-3, 6);
+    New(IloscGrupRadioButtons, Init(R,
+      NewSItem('~1~',
+      NewSItem('~2~',
+      NewSItem('~3~',
+      NewSItem('~4~',
+      NewSItem('~5~',
+      NewSItem('~6~',
+      nil))))))));
+    Insert(IloscGrupRadioButtons);
+    R.Assign(2, 4, Size.X-3, 5);
+    New(IloscGrupLabel, Init(R, '~I~lo˜† grup', IloscGrupRadioButtons));
+    Insert(IloscGrupLabel);
+  end;
+
+  StoreObject(D);
+  PDataDialog(D)^.SetTitle('Okno edycji klasy');
+{  TestDialog(D);}
+end;
+
+procedure CreateDzwonekDialog;
+var
+  R: TRect;
+  D: PDialog;
+begin
+  BeginCreating('DzwonekEditDialog');
+
+  R.Assign(0, 0, 50, 10);
+  D:=New(PDzwonekDialog, Init(R, ''));
+  with PDzwonekDialog(D)^ do
+  begin
+    Options:=Options or ofCentered;
+
+    { standardowe przyciski }
+    InsertStandardButtons(PDataDialog(D));
+
+    { linia wprowadzania numeru pocz¥tku lekcji }
+    R.Assign(25, 2, 32, 3);
+    New(PoczatekInputLine, Init(R, 5));
+    Insert(PoczatekInputLine);
+    R.Assign(12, 2, 25, 3);
+    New(PoczatekLabel, Init(R, 'P~o~cz¥tek', PoczatekInputLine));
+    Insert(PoczatekLabel);
+
+    { linia wprowadzania dˆugo˜ci lekcji }
+    R.Assign(25, 4, 30, 5);
+    New(DlugoscInputLine, Init(R, 3));
+    Insert(DlugoscInputLine);
+    R.Assign(12, 4, 25, 5);
+    New(DlugoscLabel, Init(R, '~D~ˆugo˜†', DlugoscInputLine));
+    Insert(DlugoscLabel);
+
+    PoczatekInputLine^.Select;
+  end;
+
+  StoreObject(D);
+{  TestDialog(D);}
+End;
+
+procedure CreateLekcjaDialog;
+var
+  R: TRect;
+  D: PDialog;
+begin
+  BeginCreating('LekcjaEditDialog');
+
+  R.Assign(0, 0, 64, 12);
+  D:=New(PLekcjaDialog, Init(R, ''));
+  with PLekcjaDialog(D)^ do
+  begin
+    Options:=Options or ofCentered;
+
+    { standardowe przyciski }
+    InsertStandardButtons(PDataDialog(D));
+
+    { elementy lekcji }
+    { Nauczyciel }
+    R.Assign(18, 2, Size.X-2, 3);
+    New(NauczycielActiveText, Init(R, '(BRAK)'));
+    Insert(NauczycielActiveText);
+    R.Assign(3, 2, 16, 3);
+    New(NauczycielLabel, Init(R, '~N~auczyciel :', NauczycielActiveText));
+    Insert(NauczycielLabel);
+
+    { przedmiot }
+    R.Assign(18, 3, Size.X-2, 4);
+    New(PrzedmiotActiveText, Init(R, '(BRAK)'));
+    Insert(PrzedmiotActiveText);
+    R.Assign(3, 3, 16, 4);
+    New(PrzedmiotLabel, Init(R, '~P~rzedmiot  :', PrzedmiotActiveText));
+    Insert(PrzedmiotLabel);
+
+    { sala }
+    R.Assign(18, 4, Size.X-2, 5);
+    New(SalaActiveText, Init(R, '(BRAK)'));
+    Insert(SalaActiveText);
+    R.Assign(3, 4, 16, 5);
+    New(SalaLabel, Init(R, '~S~ala       :', SalaActiveText));
+    Insert(SalaLabel);
+
+    { klasa }
+    R.Assign(18, 5, Size.X-2, 6);
+    New(KlasaActiveText, Init(R, '(BRAK)'));
+    Insert(KlasaActiveText);
+    R.Assign(3, 5, 16, 6);
+    New(KlasaLabel, Init(R, '~K~lasa      :', KlasaActiveText));
+    Insert(KlasaLabel);
+
+    { grupy klasy }
+    R.Assign(18, 6, Size.X-3, 7);
+    New(GrupyCheckBoxes, Init(R,
+      NewSItem('~1~',
+      NewSItem('~2~',
+      NewSItem('~3~',
+      NewSItem('~4~',
+      NewSItem('~5~',
+      NewSItem('~6~',
+    nil))))))));
+    Insert(GrupyCheckBoxes);
+    R.Assign(3, 6, 16, 7);
+    New(GrupyLabel, Init(R, '~G~rupy   :', GrupyCheckBoxes));
+    Insert(GrupyLabel);
+
+    NauczycielActiveText^.Select;
+  end;
+
+  StoreObject(D);
+{  TestDialog(D);}
+end;
+
+var
+  N: PNauczyciel;
+
+procedure CreateChooseDataDialog;
+var
+  R: TRect;
+  D: PDialog;
+begin
+  BeginCreating('ChooseDataDialog');
+
+  R.Assign(0, 0, 50, 20);
+  D:=New(PChooseDataDialog, Init(R, ''));
+  with PChooseDataDialog(D)^ do
+  begin
+    Options:=Options or ofCentered;
+
+    { standardowe przyciski }
+    InsertStandardButtons(PDataDialog(D));
+
+    { nieaktywna linia szybkiego wyszukiwania }
+    R.Assign(3, 3, Size.X-3, 4);
+    New(QuickSearchLine, Init(R, 255));
+    Insert(QuickSearchLine);
+    with QuickSearchLine^ do Options:=Options and (not ofSelectable);
+    R.Assign(2, 2, Size.X-2, 3);
+    New(QuickSearchLabel, Init(R, '~S~zybkie wyszukiwanie', QuickSearchLine));
+    Insert(QuickSearchLabel);
+
+    { lista danych }
+    R.Assign(Size.X-4, 5, Size.X-3, Size.Y-5);
+    New(ScrollBar, Init(R));
+    Insert(ScrollBar);
+    R.Assign(3, 5, Size.X-4, Size.Y-5);
+    New(DataListBox, Init(R, 1, ScrollBar, QuickSearchLine));
+    Insert(DataListBox);
+    R.Assign(2, 4, Size.X-4, 5);
+    New(DataLabel, Init(R, '~L~ista', DataListBox));
+    Insert(DataLabel);
+  end;
+  StoreObject(D);
+{ TestDialog(D);}
+end;
+
+
+var
+  I: Integer;
 begin
   CreateResources('PLAN.RES');
   CreateStatusLine;
@@ -243,6 +452,10 @@ begin
   CreateNauczycielDialog;
   CreatePrzedmiotDialog;
   CreateSalaDialog;
+  CreateKlasaDialog;
+  CreateDzwonekDialog;
+  CreateLekcjaDialog;
+  CreateChooseDataDialog;
   DumpNames;
   CloseResources;
 end.

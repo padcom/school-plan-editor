@@ -42,6 +42,9 @@ const
     Load   : @TPrzedmiotDialog.Load;
     Store  : @TPrzedmiotDialog.Store);
 
+var
+  Przedmioty: PDataCollection;
+
 procedure RegisterPrzedmiot;
 
 implementation
@@ -132,4 +135,5 @@ begin
 end;
 
 begin
+  Przedmioty:=nil;
 end.

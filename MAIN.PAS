@@ -2,7 +2,7 @@ Program PlanLekcji;
 uses
   App, Objects, Drivers, Views, Dialogs, Menus,
   Stale, Resource,
-  DataObjects, DataDialogs,
+  DataObjects, DataDialogs, DataBase,
   Nauczyciel, Przedmiot, Klasa, Sala, Dzwonek, Lekcja;
 
 type { typ opisujcy gˆ¢wn aplikacj© }
@@ -56,15 +56,28 @@ begin
   begin
     case Event.Command of
       cmAboutBox: ShowAboutBox;
+      cmNauczycielAdd: NauczycielAdd;
+      cmNauczycielDel: NauczycielDel;
     end;
   end;
 end;
 
 var
   Main: TMainApp;
+  N: PNauczyciel;
+  L: PLekcja;
 
 begin
+  New(Nauczyciele, Init(10, 5));
+  New(N, Init); N^.ImieNazwisko:=NewStr('Maciej Hryniszak'); N^.Skrot:=NewStr('MACIE');
+  N^.Index:=Nauczyciele^.GetFirstFreeIndex;
+  Nauczyciele^.Insert(N);
+  New(N, Init); N^.ImieNazwisko:=NewStr('Marzena Hanarz'); N^.Skrot:=NewStr('MARZE');
+  N^.Index:=Nauczyciele^.GetFirstFreeIndex;
+  Nauczyciele^.Insert(N);
+
   Main.Init;
+  EditLekcja(L);
   Main.Run;
   Main.Done;
 end.

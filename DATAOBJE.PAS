@@ -22,6 +22,8 @@ type { typ opisuj¥cy kolekcj© danych }
   TDataCollection = object (TSortedCollection)
     function GetFirstFreeIndex: LongInt;
     function Compare(Key1, Key2: Pointer): Integer; virtual;
+    function Empty: Boolean; virtual;
+    function ItemByIndex(Index: LongInt): PDataObject; virtual;
   end;
 
 const
@@ -107,6 +109,32 @@ end;
 function TDataCollection.Compare;
 begin
   Compare:=PDataObject(Key1)^.Compare(Key2);
+end;
+
+function TDataCollection.Empty;
+begin
+  Empty:=Count=0;
+end;
+
+function TDataCollection.ItemByIndex;
+var
+  I: Integer;
+begin
+  if Index=-1 then ItemByIndex:=nil
+  else
+  begin
+    I:=0;
+    while I<Count do
+    begin
+      if PDataObject(Items^[I])^.Index=Index then
+      begin
+        ItemByIndex:=Items^[I];
+        Exit;
+      end
+      else Inc(I);
+    end;
+    ItemByIndex:=nil;
+  end;
 end;
 
 { *** }

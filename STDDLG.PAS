@@ -505,7 +505,7 @@ begin
   if OldValue <> Focused then SearchPos := 0;
   if Event.What = evKeyDown then
   begin
-    if Event.CharCode <> #0 then
+    if (Event.CharCode <> #0) and Assigned(List) then
     begin
       Value := Focused;
       if Value < Range then CurString := GetText(Value, 255)
@@ -527,25 +527,28 @@ begin
         CurString[SearchPos] := Event.CharCode;
       end;
       K := GetKey(CurString);
-      T := PSortedCollection(List)^.Search(K, Value);
-      if Value < Range then
+      if Assigned(K) then
       begin
-        if Value < Range then NewString := GetText(Value, 255)
-        else NewString := '';
-        if Equal(NewString, CurString, SearchPos) then
+        T := PSortedCollection(List)^.Search(K, Value);
+        if Value < Range then
         begin
-          if Value <> OldValue then
+          if Value < Range then NewString := GetText(Value, 255)
+          else NewString := '';
+          if Equal(NewString, CurString, SearchPos) then
           begin
-            FocusItem(Value);
-            { Assumes ListControl will set the cursor to the first character }
-            { of the sfFocused item }
-            SetCursor(Cursor.X+SearchPos, Cursor.Y);
+            if Value <> OldValue then
+            begin
+              FocusItem(Value);
+              { Assumes ListControl will set the cursor to the first character }
+              { of the sfFocused item }
+              SetCursor(Cursor.X+SearchPos, Cursor.Y);
+            end
+            else SetCursor(Cursor.X+(SearchPos-OldPos), Cursor.Y);
           end
-          else SetCursor(Cursor.X+(SearchPos-OldPos), Cursor.Y);
+          else SearchPos := OldPos;
         end
         else SearchPos := OldPos;
-      end
-      else SearchPos := OldPos;
+      end;
       if (SearchPos <> OldPos) or (Event.CharCode in ['A'..'Z','a'..'z']) then
         ClearEvent(Event);
     end;

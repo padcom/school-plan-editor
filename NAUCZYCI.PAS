@@ -109,11 +109,31 @@ begin
 end;
 
 procedure TNauczycielDialog.GetData;
+var
+  S: String;
 begin
+  with TNauczyciel(Rec) do
+  begin
+    ImieNazwiskoInputLine^.GetData(S);
+    if Assigned(ImieNazwisko) then DisposeStr(ImieNazwisko);
+    ImieNazwisko:=NewStr(S);
+    SkrotInputLine^.GetData(S);
+    if Assigned(Skrot) then DisposeStr(Skrot);
+    Skrot:=NewStr(S);
+  end;
 end;
 
 procedure TNauczycielDialog.SetData;
+var
+  S: String;
 begin
+  with TNauczyciel(Rec) do
+  begin
+    if Assigned(ImieNazwisko) then S:=ImieNazwisko^ else S:='';
+    ImieNazwiskoInputLine^.SetData(S);
+    if Assigned(Skrot) then S:=Skrot^ else S:='';
+    SkrotInputLine^.SetData(S);
+  end;
 end;
 
 procedure TNauczycielDialog.Store;
@@ -134,4 +154,5 @@ begin
 end;
 
 begin
+  Nauczyciele:=nil;
 end.

@@ -36,15 +36,18 @@ type { typ opisuj¥cy okno edycji danych klasy }
 
 const
   RKlasa: TStreamRec = (
-    ObjType: $5000;
+    ObjType: $5001;
     VmtLink: Ofs(TypeOf(TKlasa)^);
     Load   : @TKlasa.Load;
     Store  : @TKlasa.Store);
   RKlasaDialog: TStreamRec = (
-    ObjType: $5001;
+    ObjType: $5002;
     VmtLink: Ofs(TypeOf(TKlasaDialog)^);
     Load   : @TKlasaDialog.Load;
     Store  : @TKlasaDialog.Store);
+
+var
+  Klasy: PDataCollection;
 
 procedure RegisterKlasa;
 
@@ -142,4 +145,5 @@ begin
 end;
 
 begin
+  Klasy:=nil;
 end.

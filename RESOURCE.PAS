@@ -54,7 +54,6 @@ begin
   RegisterPrzedmiot;
   RegisterKlasa;
   RegisterSala;
-  RegisterKlasa;
   RegisterDzwonek;
   RegisterLekcja;
   Writeln('OK.');
@@ -123,7 +122,7 @@ begin
   ResourceFile.Put(Data, ObjectName);
   if ResourceFile.Stream^.Status<>stOK then
   begin
-    Writeln('ERROR !');
+    Writeln('ERROR ! (', ResourceFile.Stream^.Status, ', ',ResourceFile.Stream^.ErrorInfo,')');
     Halt(2);
   end
   else Writeln('OK.');

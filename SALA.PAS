@@ -42,6 +42,9 @@ const
     Load   : @TSalaDialog.Load;
     Store  : @TSalaDialog.Store);
 
+var
+  Sale: PDataCollection;
+
 procedure RegisterSala;
 
 implementation
@@ -134,4 +137,5 @@ begin
 end;
 
 begin
+  Sale:=nil;
 end.
