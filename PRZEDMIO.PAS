@@ -123,11 +123,10 @@ var
 begin
   with TPrzedmiot(Rec) do
   begin
+    Clear;
     NazwaInputLine^.GetData(S);
-    if Assigned(Nazwa) then DisposeStr(Nazwa);
     Nazwa:=NewStr(S);
     SkrotInputLine^.GetData(S);
-    if Assigned(Skrot) then DisposeStr(Skrot);
     Skrot:=NewStr(S);
   end;
 end;

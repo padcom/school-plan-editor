@@ -12,6 +12,9 @@ function NauczycielEdit: Boolean;
 function PrzedmiotAdd: Boolean;
 function PrzedmiotDel: Boolean;
 function PrzedmiotEdit: Boolean;
+function SalaAdd: Boolean;
+function SalaDel: Boolean;
+function SalaEdit: Boolean;
 
 function ChooseNauczyciel(List: PDataCollection): PNauczyciel;
 function ChoosePrzedmiot(List: PDataCollection): PPrzedmiot;
@@ -29,7 +32,7 @@ var
 begin
   New(Data, Init);
   Dialog:=PDataDialog(ResourceFile.Get('NauczycielEditDialog'));
-  if Application^.ExecuteDialog(Dialog, Data)=cmOK then
+  if LoadSuccessful(Dialog) and (Application^.ExecuteDialog(Dialog, Data)=cmOK) then
   begin
     if Nauczyciele^.Search(Data, I) then
     begin
@@ -48,7 +51,6 @@ begin
     NauczycielAdd:=False;
   end;
 end;
-
 
 function NauczycielDel;
 var
@@ -88,7 +90,7 @@ begin
   Nauczyciele^.Delete(Data);
 
   Dialog:=PDataDialog(ResourceFile.Get('NauczycielEditDialog'));
-  if Application^.ExecuteDialog(Dialog, Temp)=cmOK then
+  if LoadSuccessful(Dialog) and (Application^.ExecuteDialog(Dialog, Temp)=cmOK) then
   begin
     if Nauczyciele^.Search(Temp, I) then
     begin
@@ -119,7 +121,7 @@ var
 begin
   New(Data, Init);
   Dialog:=PDataDialog(ResourceFile.Get('PrzedmiotEditDialog'));
-  if Application^.ExecuteDialog(Dialog, Data)=cmOK then
+  if LoadSuccessful(Dialog) and (Application^.ExecuteDialog(Dialog, Data)=cmOK) then
   begin
     if Przedmioty^.Search(Data, I) then
     begin
@@ -138,7 +140,6 @@ begin
     PrzedmiotAdd:=False;
   end;
 end;
-
 
 function PrzedmiotDel;
 var
@@ -178,7 +179,7 @@ begin
   Przedmioty^.Delete(Data);
 
   Dialog:=PDataDialog(ResourceFile.Get('PrzedmiotEditDialog'));
-  if Application^.ExecuteDialog(Dialog, Temp)=cmOK then
+  if LoadSuccessful(Dialog) and (Application^.ExecuteDialog(Dialog, Temp)=cmOK) then
   begin
     if Przedmioty^.Search(Temp, I) then
     begin
@@ -197,6 +198,95 @@ begin
   begin
     Przedmioty^.Insert(Data);
     PrzedmiotEdit:=False;
+  end;
+  Dispose(Temp, Done);
+end;
+
+function SalaAdd;
+var
+  Data: PSala;
+  Dialog: PDataDialog;
+  I: Integer;
+begin
+  New(Data, Init);
+  Dialog:=PDataDialog(ResourceFile.Get('SalaEditDialog'));
+  if LoadSuccessful(Dialog) and (Application^.ExecuteDialog(Dialog, Data)=cmOK) then
+  begin
+    if Sale^.Search(Data, I) then
+    begin
+      MessageBox(#3'Taka sala ju¾ istnieje !', nil, mfError or mfCancelButton);
+      SalaAdd:=False;
+    end
+    else
+    begin
+      Sale^.Insert(Data);
+      SalaAdd:=True;
+    end;
+  end
+  else
+  begin
+    Dispose(Data, Done);
+    SalaAdd:=False;
+  end;
+end;
+
+function SalaDel;
+var
+  Data: PDataObject;
+  I: Integer;
+
+procedure UsunSaleZLekcji(Item: Pointer); far;
+begin
+  if PLekcja(Item)^.SalaIndex=Data^.Index then PLekcja(Item)^.SalaIndex:=-1;
+end;
+
+begin
+  Data:=ChooseSala(Sale);
+  if Assigned(Data) then
+  begin
+    if MessageBox(#3'Czy na pewno chcesz usun¥† t¥ sal© ?',nil,mfConfirmation or mfYesButton or mfNoButton)=cmYes then
+    begin
+      for I:=1 to IloscDni do if Assigned(Lekcje[I]) then Lekcje[I]^.ForEach(@UsunSaleZLekcji);
+      Sale^.Free(Data);
+      SalaDel:=True;
+    end;
+    SalaDel:=False;
+  end;
+end;
+
+function SalaEdit;
+var
+  Data, Temp: PSala;
+  Dialog: PDataDialog;
+  I: Integer;
+begin
+  Data:=ChooseSala(Sale);
+  if not Assigned(Data) then Exit;
+
+  New(Temp, Init);
+  Temp^.Assign(Data);
+  Sale^.Delete(Data);
+
+  Dialog:=PDataDialog(ResourceFile.Get('SalaEditDialog'));
+  if LoadSuccessful(Dialog) and (Application^.ExecuteDialog(Dialog, Temp)=cmOK) then
+  begin
+    if Sale^.Search(Temp, I) then
+    begin
+      MessageBox(#3'Taka sala ju¾ istnieje !', nil, mfError or mfCancelButton);
+      Sale^.Insert(Data);
+      SalaEdit:=False;
+    end
+    else
+    begin
+      Data^.Assign(Temp);
+      Sale^.Insert(Data);
+      SalaEdit:=True;
+    end;
+  end
+  else
+  begin
+    Sale^.Insert(Data);
+    SalaEdit:=False;
   end;
   Dispose(Temp, Done);
 end;

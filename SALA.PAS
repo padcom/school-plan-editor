@@ -13,6 +13,7 @@ type { typ opisuj¥cy sal© }
     constructor Load(var S: TStream);
     function Compare(Data: PDataObject): Integer; virtual;
     function GetText(MaxLen: Integer): String; virtual;
+    procedure Assign(Data: PDataObject); virtual;
     procedure Clear; virtual;
     procedure Store(var S: TStream); virtual;
   end;
@@ -81,8 +82,15 @@ begin
   else S1:='';
   if Assigned(Nazwa) then S2:=Nazwa^
   else S2:='';
-  if Length(S1)<5 then S1:=SpaceStr(5-Length(S1));
+  if Length(S1)<5 then S1:=S1+SpaceStr(5-Length(S1));
   GetText:=Copy(S1+' - '+S2, 1, MaxLen);
+end;
+
+procedure TSala.Assign;
+begin
+  inherited Assign(Data);
+  Numer:=NewStr(PSala(Data)^.Numer^);
+  Nazwa:=NewStr(PSala(Data)^.Nazwa^);
 end;
 
 procedure TSala.Clear;
@@ -112,11 +120,30 @@ begin
 end;
 
 procedure TSalaDialog.GetData;
+var
+  S: String;
 begin
+  with TSala(Rec) do
+  begin
+    Clear;
+    NumerInputLine^.GetData(S);
+    Numer:=NewStr(S);
+    NazwaInputLine^.GetData(S);
+    Nazwa:=NewStr(S);
+  end;
 end;
 
 procedure TSalaDialog.SetData;
+var
+  S: String;
 begin
+  with TSala(Rec) do
+  begin
+    if Assigned(Numer) then S:=Numer^ else S:='';
+    NumerInputLine^.SetData(S);
+    if Assigned(Nazwa) then S:=Nazwa^ else S:='';
+    NazwaInputLine^.SetData(S);
+  end;
 end;
 
 procedure TSalaDialog.Store;

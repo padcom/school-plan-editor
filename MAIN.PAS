@@ -62,6 +62,9 @@ begin
       cmPrzedmiotAdd: PrzedmiotAdd;
       cmPrzedmiotDel: PrzedmiotDel;
       cmPrzedmiotEdit: PrzedmiotEdit;
+      cmSalaAdd: SalaAdd;
+      cmSalaDel: SalaDel;
+      cmSalaEdit: SalaEdit;
     end;
   end;
 end;
@@ -71,6 +74,7 @@ var
   N: PNauczyciel;
 
 begin
+  New(Sale, Init(10, 5));
   New(Przedmioty, Init(10, 5));
   New(Nauczyciele, Init(10, 5));
   New(N, Init); N^.ImieNazwisko:=NewStr('Maciej Hryniszak'); N^.Skrot:=NewStr('MACIE');

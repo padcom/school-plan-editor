@@ -122,11 +122,10 @@ var
 begin
   with TNauczyciel(Rec) do
   begin
+    Clear;
     ImieNazwiskoInputLine^.GetData(S);
-    if Assigned(ImieNazwisko) then DisposeStr(ImieNazwisko);
     ImieNazwisko:=NewStr(S);
     SkrotInputLine^.GetData(S);
-    if Assigned(Skrot) then DisposeStr(Skrot);
     Skrot:=NewStr(S);
   end;
 end;
