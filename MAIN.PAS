@@ -6,6 +6,7 @@ uses
   Nauczyciel, Przedmiot, Klasa, Sala, Dzwonek, Lekcja,
   MainWin;
 
+
 type { typ opisujcy gˆ¢wn aplikacj© }
   PMainApp = ^TMainApp;
   TMainApp = object (TApplication)
@@ -15,7 +16,6 @@ type { typ opisujcy gˆ¢wn aplikacj© }
     procedure InitStatusLine; virtual;
     procedure InitMenuBar; virtual;
     procedure HandleEvent(var Event: TEvent); virtual;
-
     procedure ShowAboutBox; virtual;
   end;
 
@@ -43,7 +43,7 @@ begin
   if LoadSuccessful(MainWindow) then
   begin
     MainWindow^.SetDzwonekList(Dzwonki);
-    MainWindow^.SetLekcjaList(Lekcje[1]);
+{    MainWindow^.SetLekcjaList(Lekcje[1]);}
     InsertWindow(MainWindow);
   end;
   Message(@Self, evCommand, cmAboutBox, nil);
@@ -98,6 +98,9 @@ begin
       cmDzwonekAdd: DzwonekAdd;
       cmDzwonekDel: DzwonekDel;
       cmDzwonekEdit: DzwonekEdit;
+      cmLekcjaAdd: with MainWindow^ do LekcjaAdd(GetCurrentDzien, GetDzwonekIndex);
+      cmLekcjaDel: with MainWindow^ do LekcjaDel(GetCurrentDzien, GetCurrentLekcja);
+      cmLekcjaEdit: with MainWindow^ do LekcjaEdit(GetCurrentDzien, GetDzwonekIndex, GetCurrentLekcja);
     end;
   end;
 end;

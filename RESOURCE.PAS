@@ -11,6 +11,10 @@ uses
 var
   ResourceFile: TResourceFile;
 
+const
+  { staˆa mianowana determinuj¥ca, czy aktualnie jest tworzony plik zasob¢w }
+  CreatingResources: Boolean = False;
+
 { stworzenie nowego pliku zasob¢w }
 procedure CreateResources(FileName: String);
 { otwarcie istniej¥cego pliku zasob¢w }
@@ -64,6 +68,7 @@ end;
 
 procedure CreateResources;
 begin
+  CreatingResources:=True;
   asm mov ax, 3; int $10; end;
   RegisterTypes;
   RegisterType(RStrListMaker);

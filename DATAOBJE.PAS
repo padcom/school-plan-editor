@@ -106,9 +106,9 @@ begin
     If Index=PDataObject(Items^[I])^.Index then
     begin
       Inc(Index);
-      Inc(I);
+      I:=0;
     end
-    else Break;
+    else Inc(I);
   end;
   GetFirstFreeIndex:=Index;
 end;

@@ -16,12 +16,14 @@ type { typ opisuj¥cy widok listy dni tygodnia }
   PDzienTygodniaListView = ^TDzienTygodniaListView;
   TDzienTygodniaListView = object (TListBox)
     function GetPalette: PPalette; virtual;
+    procedure FocusItem(Item: Integer); virtual;
   end;
 
 type { typ opisuj¥cy widok listy dzwonk¢w }
   PDzwonekListView = ^TDzwonekListView;
   TDzwonekListView = object (TDataListBox)
     function GetPalette: PPalette; virtual;
+    procedure FocusItem(Item: Integer); virtual;
     procedure HandleEvent(var Event: TEvent); virtual;
   end;
 
@@ -39,6 +41,7 @@ type { typ opisuj¥cy widok detali lekcji }
     ListView: PLekcjaListView;
     constructor Init(var Bounds: TRect; AListView: PLekcjaListView);
     constructor Load(var S: TStream);
+    function GetPalette: PPalette; virtual;
     procedure Draw; virtual;
     procedure Store(var S: TStream); virtual;
   end;
@@ -61,9 +64,14 @@ type { typ opisuj¥cy gˆ¢wne okno programu }
     LekcjaDetailView: PLekcjaDetailView;
     InsideFrames: PInsideFrames;
     constructor Load(var S: TStream);
+    function GetCurrentLekcja: PLekcja; virtual;
+    function GetCurrentDzien: Integer; virtual;
+    function GetDzwonekIndex: Integer; virtual;
+    procedure PrepareLekcjaList; virtual;
     procedure HandleEvent(var Event: TEvent); virtual;
     procedure SetDzwonekList(List: PDataCollection); virtual;
     procedure SetLekcjaList(List: PDataCollection); virtual;
+    procedure SizeLimits(var Min,Max: TPoint); virtual;
     procedure Store(var S: TStream); virtual;
   end;
 
@@ -107,6 +115,8 @@ const
 procedure RegisterMainWin;
 
 implementation
+uses
+  Resource;
 
 { THighlightedLabel }
 
@@ -129,6 +139,12 @@ begin
   GetPalette:=@S;
 end;
 
+procedure TDzienTygodniaListView.FocusItem;
+begin
+  inherited FocusItem(Item);
+  if Assigned(Owner) then Message(Owner, evBroadcast, cmListItemChanged, nil);
+end;
+
 { TDzwonekListView }
 
 function TDzwonekListView.GetPalette;
@@ -138,6 +154,12 @@ begin
   S[1]:=#2; S[3]:=#4;
   S[2]:=#2; S[4]:=#4;
   GetPalette:=@S;
+end;
+
+procedure TDzwonekListView.FocusItem;
+begin
+  inherited FocusItem(Item);
+  Message(Owner, evBroadcast, cmListItemChanged, nil);
 end;
 
 procedure TDzwonekListView.HandleEvent;
@@ -248,7 +270,7 @@ begin
       else
       begin
         K:=PKlasa(Klasy^.ItemByIndex(L^.KlasaIndex));
-        if not Assigned(S) then St:='BRAK!'
+        if not Assigned(K) then St:='BRAK!'
         else St:=K^.GetText(5);
       end;
       while Length(St)<6 do St:=St+' ';
@@ -256,7 +278,7 @@ begin
       MoveStr(Buf[21], St, Color);
 
       { grupy klasy }
-      if not Assigned(K) then St:='---------'
+      if not Assigned(K) then St:='--------'
       else
       begin
         St:='';
@@ -289,9 +311,26 @@ begin
 end;
 
 procedure TLekcjaListView.HandleEvent;
+var
+  I: Integer;
+  L: PCollection;
 begin
   if (Event.What=evBroadcast) and
      (Event.Command=cmDataBaseChanged) then DrawView;
+  if (Event.What=evBroadcast) and
+     (Event.Command=cmUpdateLists) then
+  begin
+    I:=Focused;
+    if I>=List^.Count then Dec(I);
+    L:=List;
+    List:=nil;
+    NewList(L);
+    if Assigned(List) and (List^.Count>0) then
+    begin
+      FocusItem(I);
+      DrawView;
+    end;
+  end;
   inherited HandleEvent(Event);
 end;
 
@@ -307,6 +346,13 @@ constructor TLekcjaDetailView.Load;
 begin
   inherited Load(S);
   GetPeerViewPtr(S, ListView);
+end;
+
+function TLekcjaDetailView.GetPalette;
+const
+  S: String = #2;
+begin
+  GetPalette:=@S;
 end;
 
 procedure TLekcjaDetailView.Draw;
@@ -496,6 +542,47 @@ begin
   GetSubViewPtr(S, InsideFrames);
 end;
 
+function TMainWindow.GetCurrentLekcja;
+begin
+  if not Assigned(LekcjaListView^.List) then GetCurrentLekcja:=nil
+  else if LekcjaListView^.List^.Count=0 then GetCurrentLekcja:=nil
+  else GetCurrentLekcja:=LekcjaListView^.List^.At(LekcjaListView^.Focused);
+end;
+
+function TMainWindow.GetCurrentDzien;
+begin
+  GetCurrentDzien:=DzienTygodniaListView^.Focused;
+end;
+
+function TMainWindow.GetDzwonekIndex;
+begin
+  if not Assigned(DzwonekListView) then GetDzwonekIndex:=-1
+  else if not Assigned(DzwonekListView^.List) then GetDzwonekIndex:=-1
+  else if DzwonekListView^.List^.Count=0 then GetDzwonekIndex:=-1
+  else GetDzwonekIndex:=PDzwonek(Dzwonki^.At(DzwonekListView^.Focused))^.Index;
+end;
+
+procedure TMainWindow.PrepareLekcjaList;
+var
+  List: PDataCollection;
+  I: Integer;
+  DzwonekIndex: LongInt;
+  Data: PLekcja;
+begin
+  if CreatingResources then Exit;
+  if Assigned(LekcjaListView^.List) then LekcjaListView^.List^.DeleteAll;
+  New(List, Init(10, 5));
+  DzwonekIndex:=GetDzwonekIndex;
+  I:=0;
+  while I<Lekcje[GetCurrentDzien+1]^.Count do
+  begin
+    Data:=Lekcje[GetCurrentDzien+1]^.At(I);
+    if Data^.DzwonekIndex=DzwonekIndex then List^.Insert(Data);
+    Inc(I);
+  end;
+  LekcjaListView^.NewList(List);
+end;
+
 procedure TMainWindow.HandleEvent;
 begin
   if Event.What=evKeyboard then
@@ -512,6 +599,10 @@ begin
         ClearEvent(Event);
       end;
     end;
+  end
+  else if (Event.What=evBroadcast) and (Event.Command=cmListItemChanged) then
+  begin
+    PrepareLekcjaList;
   end;
   inherited HandleEvent(Event);
 end;
@@ -524,6 +615,12 @@ end;
 procedure TMainWindow.SetDzwonekList;
 begin
   DzwonekListView^.NewList(List);
+end;
+
+procedure TMainWindow.SizeLimits;
+begin
+  inherited SizeLimits(Min, Max);
+  Min.X:=80; Min.Y:=11;
 end;
 
 procedure TMainWindow.Store;

@@ -552,7 +552,7 @@ begin
     S^.AtInsert(2, NewStr('—roda'));
     S^.AtInsert(3, NewStr('Czwartek'));
     S^.AtInsert(4, NewStr('Pi¥tek'));
-    S^.AtInsert(5, NewStr('Sobota'));
+{    S^.AtInsert(5, NewStr('Sobota'));}
     DzienTygodniaListView^.NewList(S);
     R.Assign(1, 1, 15, 2);
     New(DzienTygodniaLabel, Init(R, 'Dni tygodnia', DzienTygodniaListView));
@@ -581,7 +581,7 @@ begin
   end;
 
   StoreObject(D);
-  TestDialog(D);
+{  TestDialog(D);}
 end;
 
 var

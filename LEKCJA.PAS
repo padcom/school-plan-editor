@@ -141,11 +141,29 @@ begin
 end;
 
 procedure TLekcjaDialog.GetData;
+var
+  L: LongInt;
 begin
+  TLekcja(Rec).NauczycielIndex:=NauczycielIndex;
+  TLekcja(Rec).PrzedmiotIndex:=PrzedmiotIndex;
+  TLekcja(Rec).KlasaIndex:=KlasaIndex;
+  TLekcja(Rec).SalaIndex:=SalaIndex;
+  TLekcja(Rec).KlasaIndex:=KlasaIndex;
+  L:=0; GrupyCheckBoxes^.GetData(L);
+  TLekcja(Rec).Grupy:=L;
 end;
 
 procedure TLekcjaDialog.SetData;
+var
+  L: LongInt;
 begin
+  NauczycielIndex:=TLekcja(Rec).NauczycielIndex;
+  PrzedmiotIndex:=TLekcja(Rec).PrzedmiotIndex;
+  KlasaIndex:=TLekcja(Rec).KlasaIndex;
+  SalaIndex:=TLekcja(Rec).SalaIndex;
+  KlasaIndex:=TLekcja(Rec).KlasaIndex;
+  L:=TLekcja(Rec).Grupy;
+  GrupyCheckBoxes^.SetData(L);
   SetTexts;
 end;
 
@@ -201,7 +219,7 @@ var
 begin
   Data:=nil;
   Data:=ChooseSala(Sale);
-  if Assigned(Data) then PrzedmiotIndex:=Data^.Index;
+  if Assigned(Data) then SalaIndex:=Data^.Index;
   SetTexts;
 end;
 
@@ -211,7 +229,7 @@ var
 begin
   Data:=nil;
   Data:=ChooseKlasa(Klasy);
-  if Assigned(Data) then PrzedmiotIndex:=Data^.Index;
+  if Assigned(Data) then KlasaIndex:=Data^.Index;
   SetTexts;
 end;
 
@@ -229,7 +247,7 @@ begin
       SelectNext(False);
       ClearEvent(Event);
     end;
-    kbEnter:
+    kbEnter: if (Current<>PView(OkButton)) and (Current<>PView(CancelButton)) and (Current<>PView(HelpButton)) then
     begin
       Message(Current, evKeyboard, kbF2, nil);
       ClearEvent(Event);

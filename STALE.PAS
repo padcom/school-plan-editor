@@ -34,6 +34,7 @@ const
   cmChooseFromList  = 251;
   cmUpdateLists     = 1000;
   cmDataBaseChanged = 1001;
+  cmListItemChanged = 1002;
 
   { konteksty pomocy }
   hcNauczycielAdd   = $1100;

@@ -5,7 +5,7 @@ uses
   App, Objects, Drivers, Views, Dialogs, MsgBox, Resource,
   DataObjects, DataDialogs, Stale,
   Nauczyciel, Przedmiot, Klasa, Sala, Dzwonek, Lekcja,
-  MainWin;
+  MainWin, Filtr;
 
 function NauczycielAdd: Boolean;
 function NauczycielDel: Boolean;
@@ -29,8 +29,12 @@ function ChooseSala(List: PDataCollection): PSala;
 function ChooseKlasa(List: PDataCollection): PKlasa;
 function ChooseDzwonek(List: PDataCollection): PDzwonek;
 
-function LekcjaDel(List: PDataCollection; Data: PLekcja): Boolean;
-function LekcjaEdit(var Data: PLekcja): Boolean;
+function DelLekcja(List: PDataCollection; Data: PLekcja): Boolean;
+function EditLekcja(var Data: PLekcja; ATitle: TTitleStr): Boolean;
+
+procedure LekcjaAdd(Dzien: Integer; DzwonekIndex: LongInt);
+procedure LekcjaDel(Dzien: Integer; Data: PLekcja);
+procedure LekcjaEdit(Dzien: Integer; DzwonekIndex: LongInt; Data: PLekcja);
 
 procedure OpenFiles(Dir: String);
 procedure UpdateFiles;
@@ -635,21 +639,21 @@ begin
   ChooseDzwonek:=PDzwonek(ChooseFromList(List, 'Lista dost©pnych dzwonk¢w jest pusta !', '~L~ista dzwonk¢w'));
 end;
 
-function LekcjaDel;
+function DelLekcja;
 var
   I: Integer;
 begin
-  LekcjaDel:=False;
+  DelLekcja:=False;
   if Assigned(List) and (not List^.Empty) and Assigned(Data) then
     if List^.Search(Data, I) then
       if MessageBox(#3'Czy na pewno chczes usun¥† t¥ lekcj© ?',nil,mfconfirmation or mfYesButton or mfCancelButton)=cmYes then
       begin
         List^.Delete(Data);
-        LekcjaDel:=True;
+        DelLekcja:=True;
       end;
 end;
 
-function LekcjaEdit;
+function EditLekcja;
 var
   D: PLekcjaDialog;
   DataCreated: Boolean;
@@ -664,9 +668,58 @@ begin
   D:=PLekcjaDialog(ResourceFile.Get('LekcjaEditDialog'));
   if LoadSuccessful(D) then
   begin
-    if Application^.ExecuteDialog(D, Data)=cmOK then LekcjaEdit:=True
-    else LekcjaEdit:=False;
+    D^.SetTitle(ATitle);
+    if Application^.ExecuteDialog(D, Data)=cmOK then EditLekcja:=True
+    else EditLekcja:=False;
   end;
+end;
+
+procedure LekcjaAdd;
+var
+  Data: PLekcja;
+begin
+  Inc(Dzien);
+  New(Data, Init);
+  Data^.DzwonekIndex:=DzwonekIndex;
+  FiltrujDane(Dzien, DzwonekIndex);
+  if EditLekcja(Data, 'Tworzenie nowej lekcji') then
+  begin
+    PrzywrocDane;
+    Data^.Index:=Lekcje[Dzien]^.GetFirstFreeIndex;
+    Lekcje[Dzien]^.Insert(Data);
+    Message(Desktop^.Current, evBroadcast, cmUpdateLists, nil);
+    Message(Desktop^.Current, evBroadcast, cmListItemChanged, nil);
+  end
+  else
+  begin
+    PrzywrocDane;
+    Dispose(Data, Done);
+  end;
+end;
+
+procedure LekcjaDel;
+begin
+  if not Assigned(Data) then Exit;
+  Inc(Dzien);
+  if MessageBox(#3'Czy na pewno chcesz usun¥† t¥ lekcj© ?', nil, mfConfirmation or mfYesButton or mfNoButton)=cmYes then
+  begin
+    Lekcje[Dzien]^.Free(Data);
+    Message(Desktop^.Current, evBroadcast, cmUpdateLists, nil);
+    Message(Desktop^.Current, evBroadcast, cmListItemChanged, nil);
+  end;
+end;
+
+procedure LekcjaEdit;
+begin
+  if not Assigned(Data) then Exit;
+  Inc(Dzien);
+  FiltrujDane(Dzien, DzwonekIndex);
+  Lekcje[Dzien]^.Delete(Data);
+  if EditLekcja(Data, 'Edycja wpisu lekcji') then
+  Lekcje[Dzien]^.Insert(Data);
+  PrzywrocDane;
+  Message(Desktop^.Current, evBroadcast, cmUpdateLists, nil);
+  Message(Desktop^.Current, evBroadcast, cmListItemChanged, nil);
 end;
 
 { *** }
