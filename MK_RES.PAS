@@ -67,37 +67,49 @@ begin
         NewItem('~N~owy', 'F5', kbF5, cmNauczycielAdd, hcNauczycielAdd,
         NewItem('~P~opraw', 'Shift+F5', kbShiftF5, cmNauczycielEdit, hcNauczycielEdit,
         NewItem('~U~suä', 'Ctrl+F5', KbCtrlF5, cmNauczycielDel, hcNauczycielDel,
-      nil)))),
+        NewLine(
+        NewItem('~U~suä wszystkich', '', KbNoKey, cmNauczycielDelAll, hcNauczycielDelAll,
+      nil)))))),
       NewSubMenu('~P~rzedmioty', hcPrzedmiotyMenu, NewMenu(
         NewItem('~N~owy', 'F6', kbF6, cmPrzedmiotAdd, hcPrzedmiotAdd,
         NewItem('~P~opraw', 'Shift+F6', kbShiftF6, cmPrzedmiotEdit, hcPrzedmiotEdit,
         NewItem('~U~suä', 'Ctrl+F6', KbCtrlF6, cmPrzedmiotDel, hcPrzedmiotDel,
-      nil)))),
+        NewLine(
+        NewItem('~U~suä wszystkie', '', KbNoKey, cmPrzedmiotDelAll, hcPrzedmiotDelAll,
+      nil)))))),
       NewSubMenu('~K~lasy', hcKlasyMenu, NewMenu(
         NewItem('~N~owa', 'F7', kbF7, cmKlasaAdd, hcKlasaAdd,
         NewItem('~P~opraw', 'Shift+F7', kbShiftF7, cmKlasaEdit, hcKlasaEdit,
         NewItem('~U~suä', 'Ctrl+F7', KbCtrlF7, cmKlasaDel, hcKlasaDel,
-      nil)))),
+        NewLine(
+        NewItem('~U~suä wszystkie', '', KbNoKey, cmKlasaDelAll, hcKlasaDelAll,
+      nil)))))),
       NewSubMenu('~S~ale', hcSaleMenu, NewMenu(
         NewItem('~N~owa', 'F8', kbF8, cmSalaAdd, hcSalaAdd,
         NewItem('~P~opraw', 'Shift+F8', kbShiftF8, cmSalaEdit, hcSalaEdit,
         NewItem('~U~suä', 'Ctrl+F8', KbCtrlF8, cmSalaDel, hcSalaDel,
-      nil)))),
+        NewLine(
+        NewItem('~U~suä wszystkie', '', KbNoKey, cmSalaDelAll, hcSalaDelAll,
+      nil)))))),
       NewLine(
       NewSubMenu('~D~zwonki', hcDzwonkiMenu, NewMenu(
         NewItem('~N~owy', 'F9', kbF9, cmDzwonekAdd, hcDzwonekAdd,
         NewItem('~P~opraw', 'Shift+F9', kbShiftF9, cmDzwonekEdit, hcDzwonekEdit,
         NewItem('~U~suä', 'Ctrl+F9', KbCtrlF9, cmDzwonekDel, hcDzwonekDel,
-      nil)))),
+        NewLine(
+        NewItem('~U~suä wszystkie', '', KbNoKey, cmDzwonekDelAll, hcDzwonekDelAll,
+      nil)))))),
     nil))))))),
     NewSubMenu('P~l~an lekcji', hcPlanLekcjiMenu, NewMenu(
       NewItem('~N~owa lekcja', 'Ins', kbIns, cmLekcjaAdd, hcLekcjaAdd,
       NewItem('~U~suä lekcje', 'Del', kbDel, cmLekcjaDel, hcLekcjaDel,
       NewItem('~P~opraw lekcje', 'Ctrl+Enter', kbCtrlEnter, cmLekcjaEdit, hcLekcjaEdit,
       NewLine(
+      NewItem('~U~suä wszystkie lekcje', '', KbNoKey, cmLekcjaDelAll, hcLekcjaDelAll,
+      NewLine(
       NewItem('Plan lekcji n~a~uczyciela', 'F3', kbF3, cmPlanNauczyciela, hcPlanNauczyciela,
       NewItem('Plan lekcji grupy k~l~asy', 'F4', kbF4, cmPlanKlasy, hcPlanKlasy,
-    nil))))))),
+    nil))))))))),
     NewSubMenu('~P~omoc', hcPomocMenu, NewMenu(
       NewItem('~E~lektroniczny sufler', 'F1', kbF1, cmHelp, hcHelp,
       NewItem('~O~ programie ...', '', kbNoKey, cmAboutBox, hcAboutBox,
@@ -555,21 +567,27 @@ begin
   List^.Put(hcNauczycielAdd, 'Dodawanie nowego nauczyciela');
   List^.Put(hcNauczycielDel, 'Usuwanie istniej¥cego nauczyciela');
   List^.Put(hcNauczycielEdit, 'Poprawanie wpisu nauczyciela');
+  List^.Put(hcNauczycielDelAll, 'Usuwanie wszystkich nauczycieli');
   List^.Put(hcPrzedmiotAdd, 'Dodawanie nowego przedmiotu');
   List^.Put(hcPrzedmiotDel, 'Usuwanie istniej¥cego przedmiotu');
   List^.Put(hcPrzedmiotEdit, 'Poprawanie wpisu przedmotu');
+  List^.Put(hcPrzedmiotDelAll, 'Usuwanie wszystkich przedmiot¢w');
   List^.Put(hcSalaAdd, 'Dodawanie nowej sali');
   List^.Put(hcSalaDel, 'Usuwanie istniej¥cej sali');
   List^.Put(hcSalaEdit, 'Poprawanie wpisu sali');
+  List^.Put(hcSalaDelAll, 'Usuwanie wszystkich sal');
   List^.Put(hcKlasaAdd, 'Dodawanie nowej klasy');
   List^.Put(hcKlasaDel, 'Usuwanie istniej¥cej klasy');
   List^.Put(hcKlasaEdit, 'Poprawanie wpisu klasy');
+  List^.Put(hcKlasaDelAll, 'Usuwanie wszystkich klas');
   List^.Put(hcDzwonekAdd, 'Dodawanie nowego dzwonka');
   List^.Put(hcDzwonekDel, 'Usuwanie istniej¥cego dzwonka');
   List^.Put(hcDzwonekEdit, 'Poprawanie wpisu dzwonka');
+  List^.Put(hcDzwonekDelAll, 'Usuwanie wszystkich dzwonk¢w');
   List^.Put(hcLekcjaAdd, 'Dodawanie nowej lekcji');
   List^.Put(hcLekcjaDel, 'Usuwanie istniej¥cej lekcji');
   List^.Put(hcLekcjaEdit, 'Poprawanie lekcji');
+  List^.Put(hcLekcjaDelAll, 'Usuwanie wszystkich lekcji z planu');
   List^.Put(hcAboutBox, 'Informacje o programie');
 
   StoreObject(List);

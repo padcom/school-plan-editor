@@ -73,18 +73,23 @@ begin
       cmNauczycielAdd: NauczycielAdd;
       cmNauczycielDel: NauczycielDel;
       cmNauczycielEdit: NauczycielEdit;
+      cmNauczycielDelAll: NauczycielDelAll;
       cmPrzedmiotAdd: PrzedmiotAdd;
       cmPrzedmiotDel: PrzedmiotDel;
       cmPrzedmiotEdit: PrzedmiotEdit;
+      cmPrzedmiotDelAll: PrzedmiotDelAll;
       cmSalaAdd: SalaAdd;
       cmSalaDel: SalaDel;
       cmSalaEdit: SalaEdit;
+      cmSalaDelAll: SalaDelAll;
       cmKlasaAdd: KlasaAdd;
       cmKlasaDel: KlasaDel;
       cmKlasaEdit: KlasaEdit;
+      cmKlasaDelAll: KlasaDelAll;
       cmDzwonekAdd: DzwonekAdd;
       cmDzwonekDel: DzwonekDel;
       cmDzwonekEdit: DzwonekEdit;
+      cmDzwonekDelAll: DzwonekDelAll;
       cmLekcjaAdd:
       begin
         HostWindow:=Message(Desktop, evBroadcast, cmFindEditorWindow, nil);
@@ -103,6 +108,7 @@ begin
         if Assigned(HostWindow) then with HostWindow^ do LekcjaEdit(GetCurrentDzien, GetCurrentDzwonekIndex, GetCurrentLekcja);
         ClearEvent(Event);
       end;
+      cmLekcjaDelAll: LekcjaDelAll;
       cmPlanNauczyciela: RunPlanLekcjiNauczyciela;
       cmPlanKlasy: RunPlanLekcjiKlasy;
     end;

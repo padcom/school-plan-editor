@@ -10,18 +10,23 @@ uses
 function NauczycielAdd: Boolean;
 function NauczycielDel: Boolean;
 function NauczycielEdit: Boolean;
+function NauczycielDelAll: Boolean;
 function PrzedmiotAdd: Boolean;
 function PrzedmiotDel: Boolean;
 function PrzedmiotEdit: Boolean;
+function PrzedmiotDelAll: Boolean;
 function SalaAdd: Boolean;
 function SalaDel: Boolean;
 function SalaEdit: Boolean;
+function SalaDelAll: Boolean;
 function KlasaAdd: Boolean;
 function KlasaDel: Boolean;
 function KlasaEdit: Boolean;
+function KlasaDelAll: Boolean;
 function DzwonekAdd: Boolean;
 function DzwonekDel: Boolean;
 function DzwonekEdit: Boolean;
+function DzwonekDelAll: Boolean;
 
 function ChooseNauczyciel(List: PDataCollection): PNauczyciel;
 function ChoosePrzedmiot(List: PDataCollection): PPrzedmiot;
@@ -35,6 +40,7 @@ function EditLekcja(var Data: PLekcja; ATitle: TTitleStr; HelpCtx: Word): Boolea
 procedure LekcjaAdd(Dzien: Integer; DzwonekIndex: LongInt);
 procedure LekcjaDel(Dzien: Integer; Data: PLekcja);
 procedure LekcjaEdit(Dzien: Integer; DzwonekIndex: LongInt; Data: PLekcja);
+procedure LekcjaDelAll;
 
 procedure OpenFiles(Dir: String);
 procedure UpdateFiles;
@@ -142,6 +148,39 @@ begin
   Dispose(Temp, Done);
 end;
 
+function NauczycielDelAll;
+var
+  I, J: Integer;
+  Data: PDataObject;
+
+procedure UsunNauczycielaZLekcji(Item: Pointer); far;
+begin
+  if PLekcja(Item)^.NauczycielIndex=Data^.Index then PLekcja(Item)^.NauczycielIndex:=-1;
+end;
+
+begin
+  if not Assigned(Nauczyciele) or Nauczyciele^.Empty then
+  begin
+    MessageBox(#3'Lista nauczycieli jest pusta', nil, mfError or mfCancelButton);
+    Exit;
+  end;
+  if MessageBox(#3'Czy jeste˜ pewien, ¾e chcesz usun¥† WSZYSTKICH nauczycieli ?',
+                   nil, mfConfirmation or mfYesButton or mfNoButton)=cmYes then
+  begin
+    J:=0;
+    while J<Nauczyciele^.Count do
+    begin
+      Data:=Nauczyciele^.At(J);
+      for I:=1 to IloscDni do Lekcje[I]^.ForEach(@UsunNauczycielaZLekcji);
+      Nauczyciele^.Free(Data);
+    end;
+    Message(Desktop, evBroadcast, cmUpdateLists, nil);
+    Message(Desktop, evBroadcast, cmListItemChanged, nil);
+    Message(Desktop, evBroadcast, cmDataBaseChanged, nil);
+    UpdateFiles;
+  end;
+end;
+
 function PrzedmiotAdd;
 var
   Data: PPrzedmiot;
@@ -242,6 +281,39 @@ begin
   Dispose(Temp, Done);
 end;
 
+function PrzedmiotDelAll;
+var
+  I, J: Integer;
+  Data: PDataObject;
+
+procedure UsunPrzedmiotZLekcji(Item: Pointer); far;
+begin
+  if PLekcja(Item)^.PrzedmiotIndex=Data^.Index then PLekcja(Item)^.PrzedmiotIndex:=-1;
+end;
+
+begin
+  if not Assigned(Przedmioty) or Przedmioty^.Empty then
+  begin
+    MessageBox(#3'Lista przedmiot¢w jest pusta', nil, mfError or mfCancelButton);
+    Exit;
+  end;
+  if MessageBox(#3'Czy jeste˜ pewien, ¾e chcesz usun¥† WSZYSTKIE przedmioty ?',
+                   nil, mfConfirmation or mfYesButton or mfNoButton)=cmYes then
+  begin
+    J:=0;
+    while J<Przedmioty^.Count do
+    begin
+      Data:=Przedmioty^.At(J);
+      for I:=1 to IloscDni do Lekcje[I]^.ForEach(@UsunPrzedmiotZLekcji);
+      Przedmioty^.Free(Data);
+    end;
+    Message(Desktop, evBroadcast, cmUpdateLists, nil);
+    Message(Desktop, evBroadcast, cmListItemChanged, nil);
+    Message(Desktop, evBroadcast, cmDataBaseChanged, nil);
+    UpdateFiles;
+  end;
+end;
+
 function SalaAdd;
 var
   Data: PSala;
@@ -340,6 +412,39 @@ begin
     SalaEdit:=False;
   end;
   Dispose(Temp, Done);
+end;
+
+function SalaDelAll;
+var
+  I, J: Integer;
+  Data: PDataObject;
+
+procedure UsunSaleZLekcji(Item: Pointer); far;
+begin
+  if PLekcja(Item)^.SalaIndex=Data^.Index then PLekcja(Item)^.SalaIndex:=-1;
+end;
+
+begin
+  if not Assigned(Sale) or Sale^.Empty then
+  begin
+    MessageBox(#3'Lista sal jest pusta', nil, mfError or mfCancelButton);
+    Exit;
+  end;
+  if MessageBox(#3'Czy jeste˜ pewien, ¾e chcesz usun¥† WSZYSTKIE sale ?',
+                   nil, mfConfirmation or mfYesButton or mfNoButton)=cmYes then
+  begin
+    J:=0;
+    while J<Sale^.Count do
+    begin
+      Data:=Sale^.At(J);
+      for I:=1 to IloscDni do Lekcje[I]^.ForEach(@UsunSaleZLekcji);
+      Sale^.Free(Data);
+    end;
+    Message(Desktop, evBroadcast, cmUpdateLists, nil);
+    Message(Desktop, evBroadcast, cmListItemChanged, nil);
+    Message(Desktop, evBroadcast, cmDataBaseChanged, nil);
+    UpdateFiles;
+  end;
 end;
 
 function KlasaAdd;
@@ -463,6 +568,39 @@ begin
     KlasaEdit:=False;
   end;
   Dispose(Temp, Done);
+end;
+
+function KlasaDelAll;
+var
+  I, J: Integer;
+  Data: PDataObject;
+
+procedure UsunKlaseZLekcji(Item: Pointer); far;
+begin
+  if PLekcja(Item)^.KlasaIndex=Data^.Index then PLekcja(Item)^.KlasaIndex:=-1;
+end;
+
+begin
+  if not Assigned(Klasy) or Klasy^.Empty then
+  begin
+    MessageBox(#3'Lista klas jest pusta', nil, mfError or mfCancelButton);
+    Exit;
+  end;
+  if MessageBox(#3'Czy jeste˜ pewien, ¾e chcesz usun¥† WSZYSTKIE klasy ?',
+                   nil, mfConfirmation or mfYesButton or mfNoButton)=cmYes then
+  begin
+    J:=0;
+    while J<Klasy^.Count do
+    begin
+      Data:=Klasy^.At(J);
+      for I:=1 to IloscDni do Lekcje[I]^.ForEach(@UsunKlaseZLekcji);
+      Klasy^.Free(Data);
+    end;
+    Message(Desktop, evBroadcast, cmUpdateLists, nil);
+    Message(Desktop, evBroadcast, cmListItemChanged, nil);
+    Message(Desktop, evBroadcast, cmDataBaseChanged, nil);
+    UpdateFiles;
+  end;
 end;
 
 function CheckTime(Data: PDzwonek): Boolean;
@@ -615,6 +753,28 @@ begin
     DzwonekEdit:=False;
   end;
   Dispose(Temp, Done);
+end;
+
+function DzwonekDelAll;
+var
+  I, J: Integer;
+  Data: PDataObject;
+begin
+  if not Assigned(Dzwonki) or Dzwonki^.Empty then
+  begin
+    MessageBox(#3'Lista dzwonk¢w jest pusta', nil, mfError or mfCancelButton);
+    Exit;
+  end;
+  if MessageBox(#3'Czy jeste˜ pewien, ¾e chcesz usun¥† WSZYSTKIE dzwonki ?',
+                   nil, mfConfirmation or mfYesButton or mfNoButton)=cmYes then
+  begin
+    Dzwonki^.FreeAll;
+    for I:=1 to IloscDni do if Assigned(Lekcje[I]) then Lekcje[I]^.DeleteAll;
+    Message(Desktop, evBroadcast, cmUpdateLists, nil);
+    Message(Desktop, evBroadcast, cmListItemChanged, nil);
+    Message(Desktop, evBroadcast, cmDataBaseChanged, nil);
+    UpdateFiles;
+  end;
 end;
 
 { *** }
@@ -810,6 +970,21 @@ begin
   Message(Desktop, evBroadcast, cmListItemChanged, nil);
   Message(Desktop, evBroadcast, cmDataBaseChanged, nil);
   UpdateFiles;
+end;
+
+procedure LekcjaDelAll;
+var
+  I: Integer;
+begin
+  if MessageBox(#3'Czy jeste˜ pewien, ¾e chcesz usun¥† WSZYSTKIE lekcje z planu zaj©† ?',
+                   nil, mfConfirmation or mfYesButton or mfNoButton)=cmYes then
+  begin
+    for I:=1 to IloscDni do if Assigned(Lekcje[I]) then Lekcje[I]^.DeleteAll;
+    Message(Desktop, evBroadcast, cmUpdateLists, nil);
+    Message(Desktop, evBroadcast, cmListItemChanged, nil);
+    Message(Desktop, evBroadcast, cmDataBaseChanged, nil);
+    UpdateFiles;
+  end;
 end;
 
 { *** }
